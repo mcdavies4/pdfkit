@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://rightpdfkit.com/sitemap.xml
+
+# Block any future admin or API paths from being indexed
+Disallow: /api/
+Disallow: /admin/
