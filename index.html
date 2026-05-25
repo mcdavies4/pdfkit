@@ -1315,6 +1315,68 @@ html,body{overflow-x:hidden;max-width:100vw}
   .main{margin-left:0;padding-bottom:8px}
 }
 
+
+/* ══ TOOL SEARCH ══ */
+.search-wrap{padding:10px 12px 8px;position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px solid rgba(255,255,255,.04)}
+.search-box{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:7px 10px;transition:border-color .15s}
+.search-box:focus-within{border-color:var(--accent)}
+.search-icon{font-size:13px;opacity:.4;flex-shrink:0}
+.search-input{background:none;border:none;outline:none;font-size:13px;color:var(--text);font-family:inherit;width:100%;min-width:0}
+.search-input::placeholder{color:var(--hint)}
+.search-clear{background:none;border:none;cursor:pointer;color:var(--hint);font-size:14px;padding:0;opacity:.5;display:none}
+.search-input:not(:placeholder-shown) ~ .search-clear{display:block}
+.nav-no-results{padding:12px;font-size:12px;color:var(--hint);text-align:center;display:none}
+
+/* ══ FAVOURITES ══ */
+.fav-btn{background:none;border:none;cursor:pointer;padding:2px 4px;font-size:12px;opacity:.3;transition:all .15s;flex-shrink:0;line-height:1}
+.fav-btn:hover{opacity:.7}
+.fav-btn.active{opacity:1}
+.nav{display:flex;align-items:center;justify-content:space-between}
+.nav-label{flex:1;display:flex;align-items:center;gap:6px;cursor:pointer}
+.sb-favs{display:none}
+.sb-favs.has-favs{display:block}
+
+/* ══ WHAT'S NEXT ══ */
+.whats-next{margin-top:14px;padding:12px 14px;background:rgba(232,69,10,.06);border:1px solid rgba(232,69,10,.15);border-radius:10px;display:none}
+.whats-next-title{font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.whats-next-chips{display:flex;flex-wrap:wrap;gap:6px}
+.wn-chip{background:var(--surface2);border:1px solid var(--border2);border-radius:16px;padding:5px 11px;font-size:11px;color:var(--muted);cursor:pointer;transition:all .13s;font-family:inherit}
+.wn-chip:hover{border-color:var(--accent);color:var(--accent);background:rgba(232,69,10,.07)}
+
+
+/* ══ RECENT FILES ══ */
+.recent-wrap{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)}
+.recent-title{font-size:9px;font-weight:700;color:var(--hint);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+.recent-item{display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:6px;cursor:pointer;transition:background .13s}
+.recent-item:hover{background:rgba(255,255,255,.05)}
+.recent-icon{font-size:11px;flex-shrink:0}
+.recent-name{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.recent-tool{font-size:9px;color:var(--hint);flex-shrink:0;background:rgba(232,69,10,.1);border-radius:3px;padding:1px 5px}
+
+/* ══ TOOL STREAK ══ */
+.streak-wrap{padding:8px 12px 10px;border-bottom:1px solid rgba(255,255,255,.04)}
+.streak-bar-bg{height:5px;background:var(--surface2);border-radius:20px;overflow:hidden;margin-bottom:4px}
+.streak-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),#ff6b35);border-radius:20px;transition:width .4s ease}
+.streak-label{font-size:9px;color:var(--hint);display:flex;justify-content:space-between}
+
+/* ══ KEYBOARD SHORTCUTS ══ */
+.shortcuts-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.shortcuts-overlay.show{display:flex}
+.shortcuts-modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;max-width:460px;width:90%;max-height:80vh;overflow-y:auto}
+.shortcuts-modal h3{font-size:15px;font-weight:800;color:var(--text);margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.shortcut-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px}
+.shortcut-row:last-child{border-bottom:none}
+.shortcut-key{display:flex;gap:4px}
+.kbd{background:var(--surface2);border:1px solid var(--border2);border-radius:5px;padding:2px 7px;font-size:11px;font-family:monospace;color:var(--muted)}
+.shortcut-desc{color:var(--muted)}
+
+/* ══ SHARE RESULT ══ */
+.share-strip{display:none;margin-top:10px;padding:10px 12px;background:rgba(46,204,113,.06);border:1px solid rgba(46,204,113,.15);border-radius:8px}
+.share-strip-title{font-size:10px;font-weight:700;color:#2ECC71;text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px}
+.share-btns{display:flex;gap:7px;flex-wrap:wrap}
+.share-btn{font-size:11px;padding:5px 11px;border-radius:16px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:var(--muted);cursor:pointer;transition:all .13s;font-family:inherit}
+.share-btn:hover{border-color:var(--accent);color:var(--accent)}
+
 </style>
 
 <!-- Anti-flash: runs synchronously before first paint to set correct theme -->
@@ -1414,70 +1476,95 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 </header>
 <div class="app">
 <nav class="sidebar">
+  <!-- Favourites section -->
+  <div class="sb-sec sb-favs" id="sb-favs-section">⭐ Favourites</div>
+  <div id="sb-favs-list"></div>
+  <!-- Search box -->
+  <div class="search-wrap">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" id="tool-search" placeholder="Search 51 tools…" oninput="filterTools(this.value)" autocomplete="off">
+      <button class="search-clear" onclick="clearSearch()" tabindex="-1">✕</button>
+    </div>
+  </div>
+  <div class="nav-no-results" id="nav-no-results">No tools match</div>
+  <!-- Recent files -->
+  <div class="recent-wrap" id="recent-wrap" style="display:none">
+    <div class="recent-title">
+      <span>🕐 Recent</span>
+      <button onclick="clearRecent()" style="font-size:9px;background:none;border:none;color:var(--hint);cursor:pointer;font-family:inherit">clear</button>
+    </div>
+    <div id="recent-list"></div>
+  </div>
+  <!-- Tool streak -->
+  <div class="streak-wrap" id="streak-wrap">
+    <div class="streak-bar-bg"><div class="streak-bar-fill" id="streak-fill" style="width:0%"></div></div>
+    <div class="streak-label"><span id="streak-text">0 of 51 tools tried</span><span id="streak-pct">0%</span></div>
+  </div>
   <div class="nav active" data-t="home"><span class="ni">⊞</span>Home</div>
   <div class="sb-sec" style="color:#3498db">🖼 Convert</div>
-  <div class="nav" data-t="word2pdf"><span class="ni">📝</span>Word to PDF</div>
-  <div class="nav" data-t="pdfchat"><span class="ni">💬</span>PDF Chat</div>
-  <div class="nav" data-t="pdfsummary"><span class="ni">✦</span>PDF Summariser</div>
-  <div class="nav" data-t="pdftranslate"><span class="ni">🌍</span>PDF Translate</div>
-  <div class="nav" data-t="img2pdf"><span class="ni">🖼</span>Image to PDF</div>
+  <div class="nav" data-t="word2pdf"><span class="nav-label" onclick="nav('word2pdf')"><span class="ni">📝</span>Word to PDF</span><button class="fav-btn" onclick="toggleFav(event,'word2pdf')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="pdfchat"><span class="nav-label" onclick="nav('pdfchat')"><span class="ni">💬</span>PDF Chat</span><button class="fav-btn" onclick="toggleFav(event,'pdfchat')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="pdfsummary"><span class="nav-label" onclick="nav('pdfsummary')"><span class="ni">✦</span>PDF Summariser</span><button class="fav-btn" onclick="toggleFav(event,'pdfsummary')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="pdftranslate"><span class="nav-label" onclick="nav('pdftranslate')"><span class="ni">🌍</span>PDF Translate</span><button class="fav-btn" onclick="toggleFav(event,'pdftranslate')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="img2pdf"><span class="nav-label" onclick="nav('img2pdf')"><span class="ni">🖼</span>Image to PDF</span><button class="fav-btn" onclick="toggleFav(event,'img2pdf')" title="Pin">⭐</button></div>
   <div class="sb-sec" style="color:#2ECC71">📷 Scan</div>
-  <div class="nav" data-t="scan" style="background:rgba(46,204,113,.06);border-left:2px solid #2ECC71"><span class="ni">📷</span>Scan to PDF <span class="badge badge-new" style="background:#2ECC71;color:#000;font-size:8px">NEW</span></div>
+  <div class="nav" data-t="scan" style="background:rgba(46,204,113,.06);border-left:2px solid #2ECC71"><span class="nav-label" onclick="nav('scan')"><span class="ni">📷</span>Scan to PDF<span class="badge badge-new" style="background:#2ECC71;color:#000;font-size:8px">NEW</span></span><button class="fav-btn" onclick="toggleFav(event,'scan')" title="Pin">⭐</button></div>
   <div class="sb-sec" style="color:var(--accent)">✦ AI</div>
-  <div class="nav" data-t="ai" style="background:rgba(232,69,10,.06);border-left:2px solid var(--accent)"><span class="ni">✦</span>AI Assistant <span class="badge badge-new" style="margin-left:4px;font-size:8px">NEW</span></div>
+  <div class="nav" data-t="ai" style="background:rgba(232,69,10,.06);border-left:2px solid var(--accent)"><span class="nav-label" onclick="nav('ai')"><span class="ni">✦</span>AI Assistant<span class="badge badge-new" style="margin-left:4px;font-size:8px">NEW</span></span><button class="fav-btn" onclick="toggleFav(event,'ai')" title="Pin">⭐</button></div>
   <div class="sb-sec">Organise</div>
-  <div class="nav" data-t="merge"><span class="ni">⊕</span>Merge PDFs</div>
-  <div class="nav" data-t="split"><span class="ni">⊘</span>Split PDF</div>
-  <div class="nav" data-t="reorder"><span class="ni">⇅</span>Reorder Pages</div>
-  <div class="nav" data-t="extract"><span class="ni">◈</span>Extract Pages</div>
-  <div class="nav" data-t="delete"><span class="ni">⊗</span>Delete Pages</div>
+  <div class="nav" data-t="merge"><span class="nav-label" onclick="nav('merge')"><span class="ni">⊕</span>Merge PDFs</span><button class="fav-btn" onclick="toggleFav(event,'merge')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="split"><span class="nav-label" onclick="nav('split')"><span class="ni">⊘</span>Split PDF</span><button class="fav-btn" onclick="toggleFav(event,'split')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="reorder"><span class="nav-label" onclick="nav('reorder')"><span class="ni">⇅</span>Reorder Pages</span><button class="fav-btn" onclick="toggleFav(event,'reorder')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="extract"><span class="nav-label" onclick="nav('extract')"><span class="ni">◈</span>Extract Pages</span><button class="fav-btn" onclick="toggleFav(event,'extract')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="delete"><span class="nav-label" onclick="nav('delete')"><span class="ni">⊗</span>Delete Pages</span><button class="fav-btn" onclick="toggleFav(event,'delete')" title="Pin">⭐</button></div>
   <div class="sb-sec">Edit</div>
-  <div class="nav" data-t="rotate"><span class="ni">↻</span>Rotate Pages</div>
-  <div class="nav" data-t="crop"><span class="ni">⊟</span>Crop Pages</div>
-  <div class="nav" data-t="addimage"><span class="ni">⊞</span>Add Image</div>
-  <div class="nav" data-t="annotate"><span class="ni">✎</span>Annotate</div>
-  <div class="nav" data-t="redact"><span class="ni">▪</span>Redact</div>
-  <div class="nav" data-t="headfoot"><span class="ni">≡</span>Header / Footer</div>
+  <div class="nav" data-t="rotate"><span class="nav-label" onclick="nav('rotate')"><span class="ni">↻</span>Rotate Pages</span><button class="fav-btn" onclick="toggleFav(event,'rotate')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="crop"><span class="nav-label" onclick="nav('crop')"><span class="ni">⊟</span>Crop Pages</span><button class="fav-btn" onclick="toggleFav(event,'crop')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="addimage"><span class="nav-label" onclick="nav('addimage')"><span class="ni">⊞</span>Add Image</span><button class="fav-btn" onclick="toggleFav(event,'addimage')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="annotate"><span class="nav-label" onclick="nav('annotate')"><span class="ni">✎</span>Annotate</span><button class="fav-btn" onclick="toggleFav(event,'annotate')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="redact"><span class="nav-label" onclick="nav('redact')"><span class="ni">▪</span>Redact</span><button class="fav-btn" onclick="toggleFav(event,'redact')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="headfoot"><span class="nav-label" onclick="nav('headfoot')"><span class="ni">≡</span>Header / Footer</span><button class="fav-btn" onclick="toggleFav(event,'headfoot')" title="Pin">⭐</button></div>
   <div class="sb-sec">Enhance</div>
-  <div class="nav" data-t="watermark"><span class="ni">◈</span>Watermark</div>
-  <div class="nav" data-t="pagenums"><span class="ni">#</span>Page Numbers</div>
-  <div class="nav" data-t="compress"><span class="ni">◎</span>Compress</div>
+  <div class="nav" data-t="watermark"><span class="nav-label" onclick="nav('watermark')"><span class="ni">◈</span>Watermark</span><button class="fav-btn" onclick="toggleFav(event,'watermark')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="pagenums"><span class="nav-label" onclick="nav('pagenums')"><span class="ni">#</span>Page Numbers</span><button class="fav-btn" onclick="toggleFav(event,'pagenums')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="compress"><span class="nav-label" onclick="nav('compress')"><span class="ni">◎</span>Compress</span><button class="fav-btn" onclick="toggleFav(event,'compress')" title="Pin">⭐</button></div>
   <div class="sb-sec">Security</div>
-  <div class="nav" data-t="protect"><span class="ni">⊛</span>Protect PDF</div>
-  <div class="nav" data-t="unlock"><span class="ni">⊚</span>Unlock PDF</div>
+  <div class="nav" data-t="protect"><span class="nav-label" onclick="nav('protect')"><span class="ni">⊛</span>Protect PDF</span><button class="fav-btn" onclick="toggleFav(event,'protect')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="unlock"><span class="nav-label" onclick="nav('unlock')"><span class="ni">⊚</span>Unlock PDF</span><button class="fav-btn" onclick="toggleFav(event,'unlock')" title="Pin">⭐</button></div>
   <div class="sb-sec">Analyse</div>
-  <div class="nav" data-t="ocr"><span class="ni">⊙</span>OCR</div>
-  <div class="nav" data-t="pdftext"><span class="ni">≣</span>PDF to Text</div>
-  <div class="nav" data-t="info"><span class="ni">◉</span>PDF Info</div>
-  <div class="nav" data-t="preview"><span class="ni">◻</span>Preview</div>
-  <div class="nav" data-t="images"><span class="ni">⊡</span>PDF to Images</div>
+  <div class="nav" data-t="ocr"><span class="nav-label" onclick="nav('ocr')"><span class="ni">⊙</span>OCR</span><button class="fav-btn" onclick="toggleFav(event,'ocr')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="pdftext"><span class="nav-label" onclick="nav('pdftext')"><span class="ni">≣</span>PDF to Text</span><button class="fav-btn" onclick="toggleFav(event,'pdftext')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="info"><span class="nav-label" onclick="nav('info')"><span class="ni">◉</span>PDF Info</span><button class="fav-btn" onclick="toggleFav(event,'info')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="preview"><span class="nav-label" onclick="nav('preview')"><span class="ni">◻</span>Preview</span><button class="fav-btn" onclick="toggleFav(event,'preview')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="images"><span class="nav-label" onclick="nav('images')"><span class="ni">⊡</span>PDF to Images</span><button class="fav-btn" onclick="toggleFav(event,'images')" title="Pin">⭐</button></div>
   <div class="sb-sec">Transform</div>
-  <div class="nav" data-t="blankpage"><span class="ni">□</span>Insert Blank Page</div>
-  <div class="nav" data-t="resize"><span class="ni">⊠</span>Resize Pages</div>
-  <div class="nav" data-t="flatten"><span class="ni">▣</span>Flatten Forms</div>
-  <div class="nav" data-t="grayscale"><span class="ni">◑</span>Grayscale</div>
-  <div class="nav" data-t="metadata"><span class="ni">⊜</span>Edit Metadata</div>
-  <div class="nav" data-t="pdftoword"><span class="ni">⊟</span>PDF to Word</div>
-  <div class="nav" data-t="sign"><span class="ni">✎</span>Sign PDF</div>
-  <div class="nav" data-t="esign"><span class="ni">✦</span>eSign + Certificate</div>
-  <div class="nav" data-t="dupepage"><span class="ni">⧉</span>Duplicate Page</div>
-  <div class="nav" data-t="nup"><span class="ni">⊞</span>N-up Print</div>
-  <div class="nav" data-t="repair"><span class="ni">⚕</span>Repair PDF</div>
-  <div class="nav" data-t="compare-pdf"><span class="ni">⊟</span>Compare PDFs</div>
-  <div class="nav" data-t="fillform"><span class="ni">✎</span>Fill PDF Form</div>
-  <div class="nav" data-t="qrstamp"><span class="ni">⊟</span>QR Stamp</div>
-  <div class="nav" data-t="bates"><span class="ni">⊞</span>Bates Numbers</div>
-  <div class="nav" data-t="pdftocsv"><span class="ni">⊟</span>PDF to Excel/CSV</div>
-  <div class="nav" data-t="redline"><span class="ni">✎</span>PDF Redline</div>
-  <div class="nav" data-t="pwcheck"><span class="ni">⊛</span>Password Strength</div>
+  <div class="nav" data-t="blankpage"><span class="nav-label" onclick="nav('blankpage')"><span class="ni">□</span>Insert Blank Page</span><button class="fav-btn" onclick="toggleFav(event,'blankpage')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="resize"><span class="nav-label" onclick="nav('resize')"><span class="ni">⊠</span>Resize Pages</span><button class="fav-btn" onclick="toggleFav(event,'resize')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="flatten"><span class="nav-label" onclick="nav('flatten')"><span class="ni">▣</span>Flatten Forms</span><button class="fav-btn" onclick="toggleFav(event,'flatten')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="grayscale"><span class="nav-label" onclick="nav('grayscale')"><span class="ni">◑</span>Grayscale</span><button class="fav-btn" onclick="toggleFav(event,'grayscale')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="metadata"><span class="nav-label" onclick="nav('metadata')"><span class="ni">⊜</span>Edit Metadata</span><button class="fav-btn" onclick="toggleFav(event,'metadata')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="pdftoword"><span class="nav-label" onclick="nav('pdftoword')"><span class="ni">⊟</span>PDF to Word</span><button class="fav-btn" onclick="toggleFav(event,'pdftoword')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="sign"><span class="nav-label" onclick="nav('sign')"><span class="ni">✎</span>Sign PDF</span><button class="fav-btn" onclick="toggleFav(event,'sign')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="esign"><span class="nav-label" onclick="nav('esign')"><span class="ni">✦</span>eSign + Certificate</span><button class="fav-btn" onclick="toggleFav(event,'esign')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="dupepage"><span class="nav-label" onclick="nav('dupepage')"><span class="ni">⧉</span>Duplicate Page</span><button class="fav-btn" onclick="toggleFav(event,'dupepage')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="nup"><span class="nav-label" onclick="nav('nup')"><span class="ni">⊞</span>N-up Print</span><button class="fav-btn" onclick="toggleFav(event,'nup')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="repair"><span class="nav-label" onclick="nav('repair')"><span class="ni">⚕</span>Repair PDF</span><button class="fav-btn" onclick="toggleFav(event,'repair')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="compare-pdf"><span class="nav-label" onclick="nav('compare-pdf')"><span class="ni">⊟</span>Compare PDFs</span><button class="fav-btn" onclick="toggleFav(event,'compare-pdf')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="fillform"><span class="nav-label" onclick="nav('fillform')"><span class="ni">✎</span>Fill PDF Form</span><button class="fav-btn" onclick="toggleFav(event,'fillform')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="qrstamp"><span class="nav-label" onclick="nav('qrstamp')"><span class="ni">⊟</span>QR Stamp</span><button class="fav-btn" onclick="toggleFav(event,'qrstamp')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="bates"><span class="nav-label" onclick="nav('bates')"><span class="ni">⊞</span>Bates Numbers</span><button class="fav-btn" onclick="toggleFav(event,'bates')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="pdftocsv"><span class="nav-label" onclick="nav('pdftocsv')"><span class="ni">⊟</span>PDF to Excel/CSV</span><button class="fav-btn" onclick="toggleFav(event,'pdftocsv')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="redline"><span class="nav-label" onclick="nav('redline')"><span class="ni">✎</span>PDF Redline</span><button class="fav-btn" onclick="toggleFav(event,'redline')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="pwcheck"><span class="nav-label" onclick="nav('pwcheck')"><span class="ni">⊛</span>Password Strength</span><button class="fav-btn" onclick="toggleFav(event,'pwcheck')" title="Pin">⭐</button></div>
   <div class="sb-sec" style="color:#2ECC71">📊 Data Entry</div>
-  <div class="nav" data-t="receipt"><span class="ni">🧾</span>Receipt Scanner</div>
-  <div class="nav" data-t="scan2data"><span class="ni">📋</span>Scan to Data</div>
-  <div class="nav" data-t="smartfill"><span class="ni">✦</span>Smart Form Fill</div>
-  <div class="nav" data-t="bulkextract"><span class="ni">⊞</span>Bulk Extractor</div>
-  <div class="nav" data-t="formcreate"><span class="ni">⊟</span>Form Creator</div>
+  <div class="nav" data-t="receipt"><span class="nav-label" onclick="nav('receipt')"><span class="ni">🧾</span>Receipt Scanner</span><button class="fav-btn" onclick="toggleFav(event,'receipt')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="scan2data"><span class="nav-label" onclick="nav('scan2data')"><span class="ni">📋</span>Scan to Data</span><button class="fav-btn" onclick="toggleFav(event,'scan2data')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="smartfill"><span class="nav-label" onclick="nav('smartfill')"><span class="ni">✦</span>Smart Form Fill</span><button class="fav-btn" onclick="toggleFav(event,'smartfill')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="bulkextract"><span class="nav-label" onclick="nav('bulkextract')"><span class="ni">⊞</span>Bulk Extractor</span><button class="fav-btn" onclick="toggleFav(event,'bulkextract')" title="Pin">⭐</button></div>
+  <div class="nav" data-t="formcreate"><span class="nav-label" onclick="nav('formcreate')"><span class="ni">⊟</span>Form Creator</span><button class="fav-btn" onclick="toggleFav(event,'formcreate')" title="Pin">⭐</button></div>
   <div class="sb-sec">More</div>
-  <div class="nav" data-t="compare"><span class="ni">⚖</span>Why RightPDFKit?</div>
+  <div class="nav" data-t="compare"><span class="nav-label" onclick="nav('compare')"><span class="ni">⚖</span>Why RightPDFKit?</span><button class="fav-btn" onclick="toggleFav(event,'compare')" title="Pin">⭐</button></div>
 </nav>
 <main class="main">
 <!-- HOME -->
@@ -36446,6 +36533,495 @@ async function runWord2Pdf() {
   }
 }
 
+
+
+// ══════════════════════════════════════════
+// FEATURE 1: TOOL SEARCH
+// Filter sidebar nav items by typing
+// ══════════════════════════════════════════
+
+function filterTools(query) {
+  const q = query.toLowerCase().trim();
+  const navItems = document.querySelectorAll('.sidebar .nav[data-t]');
+  const sections = document.querySelectorAll('.sidebar .sb-sec');
+  const noResults = document.getElementById('nav-no-results');
+  let visibleCount = 0;
+
+  if (!q) {
+    // Show everything
+    navItems.forEach(n => n.style.display = '');
+    sections.forEach(s => s.style.display = '');
+    if (noResults) noResults.style.display = 'none';
+    return;
+  }
+
+  // Tool search aliases — extra keywords that map to tools
+  const aliases = {
+    'merge':      ['combine','join','merge'],
+    'split':      ['split','separate','divide'],
+    'compress':   ['compress','reduce','shrink','size','optimize'],
+    'sign':       ['sign','signature','sign','draw'],
+    'esign':      ['esign','certificate','legal','tamper','sha'],
+    'protect':    ['protect','password','encrypt','lock','secure'],
+    'unlock':     ['unlock','decrypt','remove password','open'],
+    'ocr':        ['ocr','scan','text','extract text','scanned'],
+    'pdftoword':  ['word','docx','convert','editable'],
+    'word2pdf':   ['word to pdf','docx to pdf','convert word'],
+    'img2pdf':    ['image','jpg','png','photo','picture'],
+    'scan':       ['camera','scan','photograph','mobile'],
+    'watermark':  ['watermark','stamp','confidential'],
+    'redact':     ['redact','black out','remove','hide','sensitive'],
+    'fillform':   ['form','fill','fields','checkbox','input'],
+    'smartfill':  ['smart','ai form','conversational','fill'],
+    'receipt':    ['receipt','expense','shopping','invoice scan'],
+    'pdfchat':    ['chat','ask','question','ai','gpt'],
+    'pdfsummary': ['summary','summarise','summarize','tldr','overview'],
+    'pdftranslate':['translate','french','spanish','language','yoruba'],
+    'bulkextract':['bulk','batch','multiple','many','extract all'],
+    'formcreate': ['create form','build form','generate form','make form'],
+    'bates':      ['bates','legal','numbering','discovery','court'],
+    'redline':    ['redline','changes','tracked','markup'],
+    'pdftocsv':   ['csv','excel','spreadsheet','table','data'],
+    'compare-pdf':['compare','diff','difference','changes','versus'],
+    'repair':     ['repair','fix','broken','corrupt','damaged'],
+    'rotate':     ['rotate','turn','landscape','portrait'],
+    'crop':       ['crop','trim','margin','cut'],
+    'grayscale':  ['grayscale','greyscale','black white','bw','print'],
+    'compress':   ['compress','small','size','reduce'],
+    'pagenums':   ['page numbers','numbering','footer','header number'],
+    'headfoot':   ['header','footer','top','bottom','stamp'],
+    'nup':        ['nup','2up','4up','handout','print layout'],
+    'qrstamp':    ['qr','qr code','link','url stamp'],
+    'metadata':   ['metadata','title','author','properties','info'],
+    'preview':    ['preview','view','browse','render'],
+    'pdftext':    ['text','extract','copy','plain text'],
+    'info':       ['info','properties','size','pages','details'],
+    'reorder':    ['reorder','rearrange','drag','order','sort'],
+    'extract':    ['extract','pull out','get pages','copy pages'],
+    'delete':     ['delete','remove','pages','unwanted'],
+    'addimage':   ['add image','embed','insert image','logo'],
+    'annotate':   ['annotate','highlight','note','comment','label'],
+    'blankpage':  ['blank','empty','insert page','add page'],
+    'resize':     ['resize','a4','letter','paper size','scale'],
+    'flatten':    ['flatten','lock','bake','permanent'],
+    'dupepage':   ['duplicate','copy page','clone'],
+    'sign':       ['sign','signature'],
+    'images':     ['export images','png','pages as images'],
+    'scan2data':  ['scan data','invoice','structured','table scan'],
+    'pwcheck':    ['password check','strength','weak','strong'],
+  };
+
+  navItems.forEach(nav => {
+    const toolId = nav.dataset.t;
+    const label = nav.textContent.toLowerCase();
+    const toolAliases = (aliases[toolId] || []).join(' ');
+    const searchable = label + ' ' + toolAliases + ' ' + toolId;
+
+    if (searchable.includes(q)) {
+      nav.style.display = '';
+      visibleCount++;
+    } else {
+      nav.style.display = 'none';
+    }
+  });
+
+  // Hide section labels with no visible items below them
+  sections.forEach(sec => {
+    let next = sec.nextElementSibling;
+    let hasVisible = false;
+    while (next && !next.classList.contains('sb-sec')) {
+      if (next.classList.contains('nav') && next.style.display !== 'none') {
+        hasVisible = true; break;
+      }
+      next = next.nextElementSibling;
+    }
+    sec.style.display = hasVisible ? '' : 'none';
+  });
+
+  if (noResults) noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+}
+
+function clearSearch() {
+  const input = document.getElementById('tool-search');
+  if (input) { input.value = ''; filterTools(''); input.focus(); }
+}
+
+// Keyboard shortcut — / to focus search
+document.addEventListener('keydown', e => {
+  if (e.key === '/' && document.activeElement.tagName !== 'INPUT' &&
+      document.activeElement.tagName !== 'TEXTAREA') {
+    e.preventDefault();
+    const search = document.getElementById('tool-search');
+    if (search) { search.focus(); search.select(); }
+  }
+});
+
+// ══════════════════════════════════════════
+// FEATURE 2: TOOL FAVOURITES
+// Pin tools to the top of the sidebar
+// Persisted in localStorage
+// ══════════════════════════════════════════
+
+const FAVS_KEY = 'rpk-favs-v1';
+
+function getFavs() {
+  try { return JSON.parse(localStorage.getItem(FAVS_KEY) || '[]'); } catch { return []; }
+}
+
+function saveFavs(favs) {
+  localStorage.setItem(FAVS_KEY, JSON.stringify(favs));
+}
+
+function toggleFav(e, toolId) {
+  e.stopPropagation();
+  const favs = getFavs();
+  const idx = favs.indexOf(toolId);
+  if (idx >= 0) favs.splice(idx, 1);
+  else favs.unshift(toolId);
+  saveFavs(favs);
+  renderFavs();
+  updateFavButtons();
+  // Animate the button
+  const btn = e.currentTarget;
+  btn.style.transform = 'scale(1.4)';
+  setTimeout(() => btn.style.transform = '', 200);
+}
+
+function renderFavs() {
+  const favs = getFavs();
+  const section = document.getElementById('sb-favs-section');
+  const list = document.getElementById('sb-favs-list');
+  if (!section || !list) return;
+
+  if (!favs.length) {
+    section.classList.remove('has-favs');
+    list.innerHTML = '';
+    return;
+  }
+
+  section.classList.add('has-favs');
+
+  // Get tool info from existing nav items
+  list.innerHTML = favs.map(id => {
+    const navEl = document.querySelector(`.sidebar .nav[data-t="${id}"] .nav-label`);
+    if (!navEl) return '';
+    const icon = navEl.querySelector('.ni')?.textContent || '⊞';
+    const label = navEl.textContent.replace(icon, '').replace('NEW','').trim();
+    return `<div class="nav fav-item" data-t="${id}">
+      <span class="nav-label" onclick="nav('${id}')"><span class="ni">${icon}</span>${label}</span>
+      <button class="fav-btn active" onclick="toggleFav(event,'${id}')" title="Unpin">⭐</button>
+    </div>`;
+  }).join('');
+}
+
+function updateFavButtons() {
+  const favs = getFavs();
+  document.querySelectorAll('.fav-btn').forEach(btn => {
+    const toolId = btn.closest('.nav')?.dataset.t;
+    if (toolId) btn.classList.toggle('active', favs.includes(toolId));
+  });
+}
+
+// Init favourites on load
+document.addEventListener('DOMContentLoaded', () => {
+  renderFavs();
+  updateFavButtons();
+});
+
+// ══════════════════════════════════════════
+// FEATURE 3: WHAT'S NEXT SUGGESTIONS
+// Show contextual tool suggestions after download
+// ══════════════════════════════════════════
+
+// Map: tool → what to suggest next
+const WHATS_NEXT = {
+  merge:      [{id:'compress',    l:'Compress it'},    {id:'sign',      l:'Sign it'},      {id:'watermark', l:'Watermark it'},  {id:'pagenums',  l:'Add page numbers'}],
+  split:      [{id:'compress',    l:'Compress each'},  {id:'pdftoword', l:'Convert to Word'},{id:'ocr',     l:'Extract text'}],
+  compress:   [{id:'sign',        l:'Now sign it'},    {id:'watermark', l:'Add watermark'}, {id:'protect',   l:'Password protect'}],
+  sign:       [{id:'esign',       l:'Add certificate'},{id:'protect',   l:'Protect PDF'},   {id:'compress',  l:'Compress it'}],
+  esign:      [{id:'compress',    l:'Compress it'},    {id:'protect',   l:'Protect PDF'},   {id:'pdfchat',   l:'Ask about it'}],
+  rotate:     [{id:'compress',    l:'Compress it'},    {id:'merge',     l:'Merge with others'}],
+  crop:       [{id:'compress',    l:'Compress it'},    {id:'watermark', l:'Add watermark'}],
+  redact:     [{id:'protect',     l:'Password protect'},{id:'compress', l:'Compress it'},   {id:'esign',     l:'eSign it'}],
+  compress:   [{id:'sign',        l:'Sign it'},        {id:'share',     l:'Share link'},     {id:'protect',   l:'Protect it'}],
+  protect:    [{id:'esign',       l:'eSign it'},       {id:'compress',  l:'Compress it'}],
+  unlock:     [{id:'protect',     l:'Re-protect it'},  {id:'sign',      l:'Sign it'},        {id:'fillform',  l:'Fill form'}],
+  ocr:        [{id:'pdftext',     l:'Extract text'},   {id:'pdfsummary',l:'Summarise it'},   {id:'pdfchat',   l:'Chat with it'}],
+  pdftext:    [{id:'pdfsummary',  l:'Summarise it'},   {id:'pdfchat',   l:'Ask questions'},  {id:'pdftranslate',l:'Translate it'}],
+  pdftoword:  [{id:'pdfchat',     l:'Chat with it'},   {id:'pdfsummary',l:'Summarise it'}],
+  word2pdf:   [{id:'sign',        l:'Sign it'},        {id:'compress',  l:'Compress it'},    {id:'protect',   l:'Protect it'}],
+  img2pdf:    [{id:'compress',    l:'Compress it'},    {id:'merge',     l:'Merge PDFs'},     {id:'watermark', l:'Add watermark'}],
+  scan:       [{id:'ocr',         l:'Extract text'},   {id:'compress',  l:'Compress it'},    {id:'sign',      l:'Sign it'}],
+  watermark:  [{id:'protect',     l:'Password protect'},{id:'compress', l:'Compress it'},    {id:'esign',     l:'eSign it'}],
+  pagenums:   [{id:'compress',    l:'Compress it'},    {id:'watermark', l:'Add watermark'},  {id:'sign',      l:'Sign it'}],
+  headfoot:   [{id:'pagenums',    l:'Add page numbers'},{id:'watermark',l:'Add watermark'}],
+  fillform:   [{id:'esign',       l:'eSign it'},       {id:'flatten',   l:'Flatten fields'}, {id:'protect',   l:'Protect it'}],
+  smartfill:  [{id:'esign',       l:'eSign it'},       {id:'flatten',   l:'Flatten fields'}],
+  pdfchat:    [{id:'pdfsummary',  l:'Full summary'},   {id:'pdftranslate',l:'Translate it'}],
+  pdfsummary: [{id:'pdfchat',     l:'Ask follow-ups'}, {id:'pdftranslate',l:'Translate it'}],
+  pdftranslate:[{id:'compress',   l:'Compress it'},    {id:'sign',      l:'Sign it'}],
+  receipt:    [{id:'scan2data',   l:'Scan another doc'},{id:'bulkextract',l:'Bulk extract'}],
+  scan2data:  [{id:'bulkextract', l:'Bulk extract'},   {id:'receipt',   l:'Scan receipts'}],
+  bulkextract:[{id:'pdfchat',     l:'Chat with one'},  {id:'pdfsummary',l:'Summarise one'}],
+  formcreate: [{id:'fillform',    l:'Fill a form'},    {id:'smartfill', l:'AI form fill'}],
+  bates:      [{id:'redline',     l:'Add redline'},    {id:'esign',     l:'eSign it'},       {id:'protect',   l:'Protect it'}],
+  redline:    [{id:'compare-pdf', l:'Compare PDFs'},   {id:'esign',     l:'eSign it'}],
+  'compare-pdf':[{id:'redline',   l:'Make redline'},   {id:'pdfchat',   l:'Ask about changes'}],
+  pdftocsv:   [{id:'bulkextract', l:'Bulk extract'},   {id:'ocr',       l:'Extract more text'}],
+  pwcheck:    [{id:'protect',     l:'Protect PDF now'},{id:'unlock',    l:'Unlock a PDF'}],
+  repair:     [{id:'compress',    l:'Compress it'},    {id:'ocr',       l:'Extract text'},   {id:'pdftext',   l:'Get text'}],
+  metadata:   [{id:'protect',     l:'Protect it'},     {id:'compress',  l:'Compress it'}],
+  grayscale:  [{id:'compress',    l:'Compress it'},    {id:'sign',      l:'Sign it'}],
+  resize:     [{id:'compress',    l:'Compress it'},    {id:'merge',     l:'Merge PDFs'}],
+  reorder:    [{id:'compress',    l:'Compress it'},    {id:'sign',      l:'Sign it'},        {id:'watermark', l:'Add watermark'}],
+  extract:    [{id:'compress',    l:'Compress it'},    {id:'pdftoword', l:'Convert to Word'},{id:'ocr',       l:'Extract text'}],
+  delete:     [{id:'compress',    l:'Compress it'},    {id:'reorder',   l:'Reorder pages'}],
+  nup:        [{id:'compress',    l:'Compress it'},    {id:'grayscale', l:'Make grayscale'}],
+  qrstamp:    [{id:'watermark',   l:'Add watermark'},  {id:'protect',   l:'Protect it'}],
+  preview:    [{id:'compress',    l:'Compress it'},    {id:'sign',      l:'Sign it'},        {id:'pdfchat',   l:'Chat with it'}],
+  images:     [{id:'img2pdf',     l:'Images back to PDF'},{id:'merge',  l:'Merge PDFs'}],
+  blankpage:  [{id:'reorder',     l:'Reorder pages'},  {id:'sign',      l:'Sign it'}],
+  dupepage:   [{id:'compress',    l:'Compress it'},    {id:'reorder',   l:'Reorder pages'}],
+  flatten:    [{id:'compress',    l:'Compress it'},    {id:'protect',   l:'Protect it'},     {id:'esign',     l:'eSign it'}],
+  addimage:   [{id:'compress',    l:'Compress it'},    {id:'watermark', l:'Add watermark'}],
+  annotate:   [{id:'sign',        l:'Sign it'},        {id:'protect',   l:'Protect it'}],
+  info:       [{id:'metadata',    l:'Edit metadata'},  {id:'compress',  l:'Compress it'}],
+  pdftoword:  [{id:'pdfsummary',  l:'Summarise it'},   {id:'pdfchat',   l:'Chat with it'}],
+};
+
+function showWhatsNext(toolId) {
+  const suggestions = WHATS_NEXT[toolId];
+  if (!suggestions || !suggestions.length) return;
+
+  // Find the result box for this tool
+  const rb = document.getElementById(toolId.replace('-','') + '-rb') ||
+             document.querySelector(`#panel-${toolId} .rb`);
+  if (!rb) return;
+
+  // Remove any existing whats-next
+  rb.querySelectorAll('.whats-next').forEach(el => el.remove());
+
+  const div = document.createElement('div');
+  div.className = 'whats-next';
+  div.innerHTML = `
+    <div class="whats-next-title">✦ What's next?</div>
+    <div class="whats-next-chips">
+      ${suggestions.map(s => `
+        <button class="wn-chip" onclick="nav('${s.id}')">${s.l} →</button>
+      `).join('')}
+    </div>
+  `;
+  rb.appendChild(div);
+  div.style.display = 'block';
+}
+
+// Override showRes to also show whats-next
+const _originalShowRes = typeof showRes === 'function' ? showRes : null;
+function showRes(id, msg) {
+  // Call original
+  const el = document.getElementById(id);
+  if (el) {
+    el.classList.add('show');
+    const p = el.querySelector('p');
+    if (p) p.textContent = msg;
+  }
+  // Extract tool ID from result box ID (e.g. "merge-rb" → "merge")
+  const toolId = id.replace('-rb', '').replace('rb', '');
+  setTimeout(() => showWhatsNext(toolId), 300);
+}
+
+
+
+
+// ══════════════════════════════════════════
+// FEATURE 4: RECENT FILES HISTORY
+// Stores last 5 files worked on in localStorage
+// ══════════════════════════════════════════
+const RECENT_KEY = 'rpk-recent-v1';
+const TOOLS_TRIED_KEY = 'rpk-tried-v1';
+
+function getRecent() {
+  try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); } catch { return []; }
+}
+
+function addRecent(filename, toolId, toolLabel) {
+  if (!filename || !toolId) return;
+  const recent = getRecent().filter(r => !(r.file === filename && r.tool === toolId));
+  recent.unshift({ file: filename, tool: toolId, label: toolLabel, ts: Date.now() });
+  localStorage.setItem(RECENT_KEY, JSON.stringify(recent.slice(0, 5)));
+  renderRecent();
+}
+
+function clearRecent() {
+  localStorage.removeItem(RECENT_KEY);
+  renderRecent();
+}
+
+function renderRecent() {
+  const recent = getRecent();
+  const wrap = document.getElementById('recent-wrap');
+  const list = document.getElementById('recent-list');
+  if (!wrap || !list) return;
+
+  if (!recent.length) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+
+  list.innerHTML = recent.map(r => {
+    const name = r.file.length > 22 ? r.file.slice(0, 19) + '…' : r.file;
+    return `<div class="recent-item" onclick="nav('${r.tool}')">
+      <span class="recent-icon">📄</span>
+      <span class="recent-name" title="${sanitise(r.file)}">${sanitise(name)}</span>
+      <span class="recent-tool">${sanitise(r.label)}</span>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// FEATURE 5: TOOL STREAK / PROGRESS TRACKER
+// Track which tools user has tried
+// ══════════════════════════════════════════
+const TOTAL_TOOLS = 51;
+
+function getTriedTools() {
+  try { return JSON.parse(localStorage.getItem(TOOLS_TRIED_KEY) || '[]'); } catch { return []; }
+}
+
+function markToolTried(toolId) {
+  if (!toolId || toolId === 'home' || toolId === 'compare' || toolId === 'privacy') return;
+  const tried = getTriedTools();
+  if (!tried.includes(toolId)) {
+    tried.push(toolId);
+    localStorage.setItem(TOOLS_TRIED_KEY, JSON.stringify(tried));
+    updateStreak();
+    // Celebrate milestones
+    if (tried.length === 5)  toast('🎯 5 tools tried — you\'re on a roll!');
+    if (tried.length === 10) toast('🔥 10 tools tried — exploring everything!');
+    if (tried.length === 25) toast('⭐ Halfway there — 25 tools tried!');
+    if (tried.length === 51) toast('🏆 All 51 tools tried — legend!');
+  }
+}
+
+function updateStreak() {
+  const tried = getTriedTools();
+  const count = tried.length;
+  const pct = Math.round(count / TOTAL_TOOLS * 100);
+  const fill = document.getElementById('streak-fill');
+  const text = document.getElementById('streak-text');
+  const pctEl = document.getElementById('streak-pct');
+  if (fill) fill.style.width = pct + '%';
+  if (text) text.textContent = `${count} of ${TOTAL_TOOLS} tools tried`;
+  if (pctEl) pctEl.textContent = pct + '%';
+}
+
+// ══════════════════════════════════════════
+// FEATURE 6: KEYBOARD SHORTCUTS
+// ══════════════════════════════════════════
+function closeShortcuts() {
+  const el = document.getElementById('shortcuts-overlay');
+  if (el) el.classList.remove('show');
+}
+
+function openShortcuts() {
+  const el = document.getElementById('shortcuts-overlay');
+  if (el) el.classList.add('show');
+}
+
+// Add to keydown handler
+document.addEventListener('keydown', e => {
+  if (document.activeElement.tagName === 'INPUT' ||
+      document.activeElement.tagName === 'TEXTAREA') return;
+
+  if (e.key === '?') { e.preventDefault(); openShortcuts(); return; }
+  if (e.key === 'Escape') {
+    closeShortcuts();
+    if (typeof nav === 'function') nav('home');
+    return;
+  }
+
+  if (e.ctrlKey || e.metaKey) {
+    const shortcuts = {
+      'k': 'ai', 'h': 'home', 'm': 'merge',
+      'e': 'compress', 's': 'sign', 'd': 'scan', 'j': 'pdfchat'
+    };
+    const dest = shortcuts[e.key.toLowerCase()];
+    if (dest) { e.preventDefault(); if (typeof nav === 'function') nav(dest); }
+  }
+});
+
+// ══════════════════════════════════════════
+// FEATURE 7: SHARE RESULTS (viral loop)
+// Show share strip after every download
+// ══════════════════════════════════════════
+function showShareStrip(toolLabel, rbId) {
+  const rb = document.getElementById(rbId);
+  if (!rb) return;
+
+  // Remove existing
+  rb.querySelectorAll('.share-strip').forEach(el => el.remove());
+
+  const url = 'https://rightpdfkit.com';
+  const text = `Just used RightPDFKit to ${toolLabel.toLowerCase()} — all in my browser, zero uploads. Free tool 👇`;
+  const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+  const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text + ' ' + url)}`;
+
+  const strip = document.createElement('div');
+  strip.className = 'share-strip';
+  strip.innerHTML = `
+    <div class="share-strip-title">Found it useful? Share it 🙌</div>
+    <div class="share-btns">
+      <button class="share-btn" onclick="window.open('${tweetUrl}','_blank')">𝕏 Tweet</button>
+      <button class="share-btn" onclick="window.open('${waUrl}','_blank')">💬 WhatsApp</button>
+      <button class="share-btn" onclick="copyShareLink()">📋 Copy link</button>
+    </div>
+  `;
+  rb.appendChild(strip);
+  strip.style.display = 'block';
+}
+
+function copyShareLink() {
+  navigator.clipboard?.writeText('https://rightpdfkit.com').then(() => toast('Link copied!'));
+}
+
+// ══════════════════════════════════════════
+// HOOK INTO NAV() TO TRACK TOOL USAGE
+// + log recent files + show streak updates
+// ══════════════════════════════════════════
+const _originalNav = typeof nav === 'function' ? nav : null;
+// Override nav to track tool tries
+if (typeof nav === 'function') {
+  const __nav = nav;
+  window.nav = function(toolId) {
+    __nav(toolId);
+    markToolTried(toolId);
+  };
+}
+
+// ══════════════════════════════════════════
+// HOOK INTO dlBytes() TO LOG RECENT FILES
+// ══════════════════════════════════════════
+if (typeof dlBytes === 'function') {
+  const __dlBytes = dlBytes;
+  window.dlBytes = function(bytes, filename) {
+    __dlBytes(bytes, filename);
+    // Figure out current tool from URL hash or active panel
+    const hash = window.location.hash.replace('#', '');
+    const activePanel = document.querySelector('.panel.active');
+    const toolId = hash || activePanel?.id?.replace('panel-', '') || 'unknown';
+    const navEl = document.querySelector(`.sidebar .nav[data-t="${toolId}"] .nav-label`);
+    const toolLabel = navEl ? navEl.textContent.replace(/NEW/g,'').trim().slice(0, 20) : toolId;
+    addRecent(filename, toolId, toolLabel);
+    // Show share strip
+    const rbId = toolId.replace('-','') + '-rb';
+    setTimeout(() => showShareStrip(toolLabel, rbId), 400);
+  };
+}
+
+// Init on load
+document.addEventListener('DOMContentLoaded', () => {
+  renderRecent();
+  updateStreak();
+});
+
 </script>
 
 <!-- Cookie Banner -->
@@ -36607,6 +37183,25 @@ async function runWord2Pdf() {
     <li><a href="#compare">Smallpdf alternative free — privacy first</a></li>
   </ul>
   <p>RightPDFKit is a free online PDF editor that runs entirely in your browser. Unlike iLovePDF, Smallpdf and Adobe Acrobat online, your files never leave your device. No uploads, no account, works offline.</p>
+</div>
+
+
+<!-- KEYBOARD SHORTCUTS OVERLAY -->
+<div class="shortcuts-overlay" id="shortcuts-overlay" onclick="closeShortcuts()">
+  <div class="shortcuts-modal" onclick="event.stopPropagation()">
+    <h3>⌨ Keyboard Shortcuts <button onclick="closeShortcuts()" style="background:none;border:none;cursor:pointer;color:var(--hint);font-size:18px">✕</button></h3>
+    <div class="shortcut-row"><span class="shortcut-desc">Search tools</span><div class="shortcut-key"><span class="kbd">/</span></div></div>
+    <div class="shortcut-row"><span class="shortcut-desc">Show shortcuts</span><div class="shortcut-key"><span class="kbd">?</span></div></div>
+    <div class="shortcut-row"><span class="shortcut-desc">Go to AI Assistant</span><div class="shortcut-key"><span class="kbd">Ctrl</span><span class="kbd">K</span></div></div>
+    <div class="shortcut-row"><span class="shortcut-desc">Go home</span><div class="shortcut-key"><span class="kbd">Ctrl</span><span class="kbd">H</span></div></div>
+    <div class="shortcut-row"><span class="shortcut-desc">Merge PDFs</span><div class="shortcut-key"><span class="kbd">Ctrl</span><span class="kbd">M</span></div></div>
+    <div class="shortcut-row"><span class="shortcut-desc">Compress PDF</span><div class="shortcut-key"><span class="kbd">Ctrl</span><span class="kbd">E</span></div></div>
+    <div class="shortcut-row"><span class="shortcut-desc">Sign PDF</span><div class="shortcut-key"><span class="kbd">Ctrl</span><span class="kbd">S</span></div></div>
+    <div class="shortcut-row"><span class="shortcut-desc">Scan to PDF</span><div class="shortcut-key"><span class="kbd">Ctrl</span><span class="kbd">D</span></div></div>
+    <div class="shortcut-row"><span class="shortcut-desc">PDF Chat</span><div class="shortcut-key"><span class="kbd">Ctrl</span><span class="kbd">J</span></div></div>
+    <div class="shortcut-row"><span class="shortcut-desc">Close panel / go home</span><div class="shortcut-key"><span class="kbd">Esc</span></div></div>
+    <div style="margin-top:12px;font-size:10px;color:var(--hint)">Press <span class="kbd">?</span> anytime to show this panel</div>
+  </div>
 </div>
 
 </body>
