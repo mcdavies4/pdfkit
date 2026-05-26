@@ -1619,6 +1619,34 @@ html,body{overflow-x:hidden;max-width:100vw}
   .panel{}
 }
 
+
+/* ══ SCROLL TO TOP ══ */
+.scroll-top{
+  position:fixed;
+  bottom:80px;right:16px;
+  width:40px;height:40px;
+  background:var(--accent);
+  color:#fff;border:none;
+  border-radius:50%;
+  cursor:pointer;
+  font-size:18px;
+  display:none;
+  align-items:center;justify-content:center;
+  box-shadow:0 4px 14px rgba(232,69,10,.35);
+  transition:all .2s ease;
+  z-index:998;
+  font-family:inherit;
+  line-height:1;
+}
+.scroll-top:hover{
+  transform:translateY(-3px);
+  box-shadow:0 6px 20px rgba(232,69,10,.45);
+}
+.scroll-top.show{display:flex}
+@media(min-width:769px){
+  .scroll-top{bottom:24px;right:24px;width:44px;height:44px}
+}
+
 </style>
 
 <!-- Anti-flash: runs synchronously before first paint to set correct theme -->
@@ -37312,6 +37340,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+
+
+// ── Scroll to top ──
+function scrollToTop() {
+  const main = document.querySelector('.main');
+  if (main) main.scrollTo({top:0, behavior:'smooth'});
+  else window.scrollTo({top:0, behavior:'smooth'});
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('scroll-top-btn');
+  const main = document.querySelector('.main');
+  if (!btn) return;
+  const scrollEl = main || window;
+  const getScrollTop = () => main ? main.scrollTop : window.scrollY;
+  scrollEl.addEventListener('scroll', () => {
+    btn.classList.toggle('show', getScrollTop() > 300);
+  });
+});
+
 </script>
 
 <!-- Cookie Banner -->
@@ -37504,6 +37552,10 @@ document.addEventListener('DOMContentLoaded', () => {
   <button class="mobile-search-close" onclick="closeMobileSearch()">✕</button>
 </div>
 <div class="mobile-search-results" id="mobile-search-results"></div>
+
+
+<!-- SCROLL TO TOP -->
+<button class="scroll-top" id="scroll-top-btn" onclick="scrollToTop()" aria-label="Scroll to top" title="Back to top">↑</button>
 
 </body>
 </html>
