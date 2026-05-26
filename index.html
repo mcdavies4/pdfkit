@@ -1377,6 +1377,104 @@ html,body{overflow-x:hidden;max-width:100vw}
 .share-btn{font-size:11px;padding:5px 11px;border-radius:16px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:var(--muted);cursor:pointer;transition:all .13s;font-family:inherit}
 .share-btn:hover{border-color:var(--accent);color:var(--accent)}
 
+
+/* ══ MOBILE SEARCH BUTTON IN BOTTOM NAV ══ */
+.bnav-search{
+  position:fixed;
+  bottom:calc(60px + env(safe-area-inset-bottom));
+  right:16px;
+  z-index:1000;
+  display:none;
+}
+.bnav-search-inner{
+  background:#E8450A;
+  border-radius:50px;
+  padding:10px 18px;
+  display:flex;align-items:center;gap:7px;
+  box-shadow:0 4px 20px rgba(232,69,10,.4);
+  cursor:pointer;
+}
+.bnav-search-inner .bnav-label{
+  font-size:13px;font-weight:700;color:#fff;
+}
+@media(max-width:768px){
+  .bnav-search{ display:block; }
+}
+/* Also add a mobile search drawer */
+.mobile-search-drawer{
+  position:fixed;top:0;left:0;right:0;
+  background:var(--bg);
+  padding:16px;
+  z-index:2000;
+  border-bottom:1px solid var(--border);
+  display:none;
+  gap:10px;
+  align-items:center;
+  transform:translateY(-100%);
+  transition:transform .2s ease;
+}
+.mobile-search-drawer.show{
+  display:flex;
+  transform:translateY(0);
+}
+.mobile-search-input{
+  flex:1;background:var(--surface2);border:1px solid var(--border2);
+  border-radius:10px;padding:10px 14px;font-size:16px;
+  color:var(--text);font-family:inherit;outline:none;
+}
+.mobile-search-input:focus{border-color:var(--accent)}
+.mobile-search-close{
+  background:none;border:none;cursor:pointer;
+  color:var(--muted);font-size:20px;padding:4px 8px;
+  font-family:inherit;
+}
+.mobile-search-results{
+  position:fixed;top:70px;left:0;right:0;bottom:0;
+  background:var(--bg);z-index:1999;
+  overflow-y:auto;padding:8px;
+  display:none;
+}
+.mobile-search-results.show{display:block}
+.mobile-result-item{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 16px;border-radius:10px;
+  cursor:pointer;transition:background .13s;
+  border-bottom:1px solid rgba(255,255,255,.04);
+}
+.mobile-result-item:hover,.mobile-result-item:active{background:rgba(255,255,255,.05)}
+.mobile-result-icon{font-size:20px;flex-shrink:0}
+.mobile-result-name{font-size:14px;font-weight:600;color:var(--text)}
+.mobile-result-hint{font-size:11px;color:var(--hint);margin-top:1px}
+
+
+/* ══ BREADCRUMB / ACTIVE TOOL ══ */
+.active-tool-label{
+  display:none;font-size:13px;font-weight:700;
+  color:var(--text);flex:1;text-align:center;
+  letter-spacing:-.01em;
+}
+@media(max-width:768px){
+  .active-tool-label{display:block}
+}
+
+
+/* ══ SIDEBAR MOBILE OVERLAY ══ */
+@media(max-width:768px){
+  #sidebar-close-btn{ display:flex !important; }
+  .sidebar{
+    position:fixed;left:-280px;top:0;bottom:0;
+    z-index:1000;width:260px;
+    transition:left .25s ease;
+    overflow-y:auto;
+  }
+  .sidebar.open{ left:0; }
+  .sidebar-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.5);
+    z-index:999;display:none;
+  }
+  .sidebar-overlay.show{ display:block; }
+}
+
 </style>
 
 <!-- Anti-flash: runs synchronously before first paint to set correct theme -->
@@ -1466,7 +1564,8 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
       <div class="logo-sub">Privacy-first PDF tools</div>
     </div>
   </div>
-  <div class="header-right">
+  <div class="active-tool-label" id="active-tool-label"></div>
+    <div class="header-right">
     <span class="tool-badge">51 tools</span>
     <span class="pro-badge" id="pro-badge" style="display:none">⭐ PRO</span>
     <!-- Pro upgrade button: activate when ads approved -->
@@ -1475,7 +1574,8 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
   </div>
 </header>
 <div class="app">
-<nav class="sidebar">
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+<nav class="sidebar" id="main-sidebar">
   <!-- Favourites section -->
   <div class="sb-sec sb-favs" id="sb-favs-section">⭐ Favourites</div>
   <div id="sb-favs-list"></div>
@@ -3829,7 +3929,27 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
   <div class="rb" id="es-rb"><h4>✦ Document signed</h4><p id="es-rm"></p></div>
 </div>
 
-</main></div>
+</main>
+<!-- FOOTER -->
+<footer style="background:#080812;border-top:1px solid rgba(255,255,255,.05);padding:24px 20px;margin-top:auto">
+  <div style="max-width:800px;margin:0 auto;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:28px;height:28px;background:#E8450A;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff;flex-shrink:0">R</div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--text)">RightPDF<span style="color:var(--accent)">Kit</span></div>
+        <div style="font-size:10px;color:var(--hint)">Privacy-first PDF tools</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:20px;flex-wrap:wrap">
+      <a href="#compare" onclick="nav('compare')" style="font-size:12px;color:var(--muted);text-decoration:none;transition:color .13s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Why RightPDFKit?</a>
+      <a href="#privacy" onclick="nav('privacy')" style="font-size:12px;color:var(--muted);text-decoration:none;transition:color .13s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Privacy Policy</a>
+      <a href="https://twitter.com/RightPDFKit" target="_blank" rel="noopener" style="font-size:12px;color:var(--muted);text-decoration:none;transition:color .13s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">𝕏 @RightPDFKit</a>
+      <a href="mailto:support@rightpdfkit.com" style="font-size:12px;color:var(--muted);text-decoration:none;transition:color .13s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Contact</a>
+    </div>
+    <div style="font-size:10px;color:var(--hint);opacity:.5">© 2026 The 36th Company Ltd · Built in London</div>
+  </div>
+</footer>
+</div>
 <div id="toast"></div>
 <script>/* pdf-lib@1.17.1 */
 !function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"function"==typeof define&&define.amd?define(["exports"],e):e((t=t||self).PDFLib={})}(this,(function(t){"use strict";
@@ -30015,6 +30135,24 @@ function buildMobileNav(){
     inner.appendChild(item);
   });
   bn.appendChild(inner);document.body.appendChild(bn);
+  // Add search button to bottom nav
+  const searchBtn=document.createElement('div');
+  searchBtn.className='bnav-search';
+  searchBtn.innerHTML='<div class="bnav-search-inner"><span style="font-size:16px">🔍</span><span class="bnav-label">Search</span></div>';
+  searchBtn.addEventListener('click',()=>{
+    // Open sidebar and focus search
+    const sidebar=document.querySelector('.sidebar');
+    const overlay=document.querySelector('.sidebar-overlay');
+    if(sidebar){
+      sidebar.classList.add('open');
+      if(overlay) overlay.style.display='block';
+    }
+    setTimeout(()=>{
+      const search=document.getElementById('tool-search');
+      if(search){ search.focus(); search.select(); }
+    },200);
+  });
+  bn.appendChild(searchBtn);
   const pills=document.createElement('div');pills.className='section-pills';
   PILL_SECTIONS.forEach((ps,i)=>{
     const pill=document.createElement('button');
@@ -37022,6 +37160,693 @@ document.addEventListener('DOMContentLoaded', () => {
   updateStreak();
 });
 
+
+
+// ══════════════════════════════════════════
+// FEATURE 1: TOOL SEARCH
+// Filter sidebar nav items by typing
+// ══════════════════════════════════════════
+
+function filterTools(query) {
+  const q = query.toLowerCase().trim();
+  const navItems = document.querySelectorAll('.sidebar .nav[data-t]');
+  const sections = document.querySelectorAll('.sidebar .sb-sec');
+  const noResults = document.getElementById('nav-no-results');
+  let visibleCount = 0;
+
+  if (!q) {
+    // Show everything
+    navItems.forEach(n => n.style.display = '');
+    sections.forEach(s => s.style.display = '');
+    if (noResults) noResults.style.display = 'none';
+    return;
+  }
+
+  // Tool search aliases — extra keywords that map to tools
+  const aliases = {
+    'merge':      ['combine','join','merge'],
+    'split':      ['split','separate','divide'],
+    'compress':   ['compress','reduce','shrink','size','optimize'],
+    'sign':       ['sign','signature','sign','draw'],
+    'esign':      ['esign','certificate','legal','tamper','sha'],
+    'protect':    ['protect','password','encrypt','lock','secure'],
+    'unlock':     ['unlock','decrypt','remove password','open'],
+    'ocr':        ['ocr','scan','text','extract text','scanned'],
+    'pdftoword':  ['word','docx','convert','editable'],
+    'word2pdf':   ['word to pdf','docx to pdf','convert word'],
+    'img2pdf':    ['image','jpg','png','photo','picture'],
+    'scan':       ['camera','scan','photograph','mobile'],
+    'watermark':  ['watermark','stamp','confidential'],
+    'redact':     ['redact','black out','remove','hide','sensitive'],
+    'fillform':   ['form','fill','fields','checkbox','input'],
+    'smartfill':  ['smart','ai form','conversational','fill'],
+    'receipt':    ['receipt','expense','shopping','invoice scan'],
+    'pdfchat':    ['chat','ask','question','ai','gpt'],
+    'pdfsummary': ['summary','summarise','summarize','tldr','overview'],
+    'pdftranslate':['translate','french','spanish','language','yoruba'],
+    'bulkextract':['bulk','batch','multiple','many','extract all'],
+    'formcreate': ['create form','build form','generate form','make form'],
+    'bates':      ['bates','legal','numbering','discovery','court'],
+    'redline':    ['redline','changes','tracked','markup'],
+    'pdftocsv':   ['csv','excel','spreadsheet','table','data'],
+    'compare-pdf':['compare','diff','difference','changes','versus'],
+    'repair':     ['repair','fix','broken','corrupt','damaged'],
+    'rotate':     ['rotate','turn','landscape','portrait'],
+    'crop':       ['crop','trim','margin','cut'],
+    'grayscale':  ['grayscale','greyscale','black white','bw','print'],
+    'compress':   ['compress','small','size','reduce'],
+    'pagenums':   ['page numbers','numbering','footer','header number'],
+    'headfoot':   ['header','footer','top','bottom','stamp'],
+    'nup':        ['nup','2up','4up','handout','print layout'],
+    'qrstamp':    ['qr','qr code','link','url stamp'],
+    'metadata':   ['metadata','title','author','properties','info'],
+    'preview':    ['preview','view','browse','render'],
+    'pdftext':    ['text','extract','copy','plain text'],
+    'info':       ['info','properties','size','pages','details'],
+    'reorder':    ['reorder','rearrange','drag','order','sort'],
+    'extract':    ['extract','pull out','get pages','copy pages'],
+    'delete':     ['delete','remove','pages','unwanted'],
+    'addimage':   ['add image','embed','insert image','logo'],
+    'annotate':   ['annotate','highlight','note','comment','label'],
+    'blankpage':  ['blank','empty','insert page','add page'],
+    'resize':     ['resize','a4','letter','paper size','scale'],
+    'flatten':    ['flatten','lock','bake','permanent'],
+    'dupepage':   ['duplicate','copy page','clone'],
+    'sign':       ['sign','signature'],
+    'images':     ['export images','png','pages as images'],
+    'scan2data':  ['scan data','invoice','structured','table scan'],
+    'pwcheck':    ['password check','strength','weak','strong'],
+  };
+
+  navItems.forEach(nav => {
+    const toolId = nav.dataset.t;
+    const label = nav.textContent.toLowerCase();
+    const toolAliases = (aliases[toolId] || []).join(' ');
+    const searchable = label + ' ' + toolAliases + ' ' + toolId;
+
+    if (searchable.includes(q)) {
+      nav.style.display = '';
+      visibleCount++;
+    } else {
+      nav.style.display = 'none';
+    }
+  });
+
+  // Hide section labels with no visible items below them
+  sections.forEach(sec => {
+    let next = sec.nextElementSibling;
+    let hasVisible = false;
+    while (next && !next.classList.contains('sb-sec')) {
+      if (next.classList.contains('nav') && next.style.display !== 'none') {
+        hasVisible = true; break;
+      }
+      next = next.nextElementSibling;
+    }
+    sec.style.display = hasVisible ? '' : 'none';
+  });
+
+  if (noResults) noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+}
+
+function clearSearch() {
+  const input = document.getElementById('tool-search');
+  if (input) { input.value = ''; filterTools(''); input.focus(); }
+}
+
+// Keyboard shortcut — / to focus search
+document.addEventListener('keydown', e => {
+  if (e.key === '/' && document.activeElement.tagName !== 'INPUT' &&
+      document.activeElement.tagName !== 'TEXTAREA') {
+    e.preventDefault();
+    const search = document.getElementById('tool-search');
+    if (search) { search.focus(); search.select(); }
+  }
+});
+
+// ══════════════════════════════════════════
+// FEATURE 2: TOOL FAVOURITES
+// Pin tools to the top of the sidebar
+// Persisted in localStorage
+// ══════════════════════════════════════════
+
+const FAVS_KEY = 'rpk-favs-v1';
+
+function getFavs() {
+  try { return JSON.parse(localStorage.getItem(FAVS_KEY) || '[]'); } catch { return []; }
+}
+
+function saveFavs(favs) {
+  localStorage.setItem(FAVS_KEY, JSON.stringify(favs));
+}
+
+function toggleFav(e, toolId) {
+  e.stopPropagation();
+  const favs = getFavs();
+  const idx = favs.indexOf(toolId);
+  if (idx >= 0) favs.splice(idx, 1);
+  else favs.unshift(toolId);
+  saveFavs(favs);
+  renderFavs();
+  updateFavButtons();
+  // Animate the button
+  const btn = e.currentTarget;
+  btn.style.transform = 'scale(1.4)';
+  setTimeout(() => btn.style.transform = '', 200);
+}
+
+function renderFavs() {
+  const favs = getFavs();
+  const section = document.getElementById('sb-favs-section');
+  const list = document.getElementById('sb-favs-list');
+  if (!section || !list) return;
+
+  if (!favs.length) {
+    section.classList.remove('has-favs');
+    list.innerHTML = '';
+    return;
+  }
+
+  section.classList.add('has-favs');
+
+  // Get tool info from existing nav items
+  list.innerHTML = favs.map(id => {
+    const navEl = document.querySelector(`.sidebar .nav[data-t="${id}"] .nav-label`);
+    if (!navEl) return '';
+    const icon = navEl.querySelector('.ni')?.textContent || '⊞';
+    const label = navEl.textContent.replace(icon, '').replace('NEW','').trim();
+    return `<div class="nav fav-item" data-t="${id}">
+      <span class="nav-label" onclick="nav('${id}')"><span class="ni">${icon}</span>${label}</span>
+      <button class="fav-btn active" onclick="toggleFav(event,'${id}')" title="Unpin">⭐</button>
+    </div>`;
+  }).join('');
+}
+
+function updateFavButtons() {
+  const favs = getFavs();
+  document.querySelectorAll('.fav-btn').forEach(btn => {
+    const toolId = btn.closest('.nav')?.dataset.t;
+    if (toolId) btn.classList.toggle('active', favs.includes(toolId));
+  });
+}
+
+// Init favourites on load
+document.addEventListener('DOMContentLoaded', () => {
+  renderFavs();
+  updateFavButtons();
+});
+
+// ══════════════════════════════════════════
+// FEATURE 3: WHAT'S NEXT SUGGESTIONS
+// Show contextual tool suggestions after download
+// ══════════════════════════════════════════
+
+// Map: tool → what to suggest next
+const WHATS_NEXT = {
+  merge:      [{id:'compress',    l:'Compress it'},    {id:'sign',      l:'Sign it'},      {id:'watermark', l:'Watermark it'},  {id:'pagenums',  l:'Add page numbers'}],
+  split:      [{id:'compress',    l:'Compress each'},  {id:'pdftoword', l:'Convert to Word'},{id:'ocr',     l:'Extract text'}],
+  compress:   [{id:'sign',        l:'Now sign it'},    {id:'watermark', l:'Add watermark'}, {id:'protect',   l:'Password protect'}],
+  sign:       [{id:'esign',       l:'Add certificate'},{id:'protect',   l:'Protect PDF'},   {id:'compress',  l:'Compress it'}],
+  esign:      [{id:'compress',    l:'Compress it'},    {id:'protect',   l:'Protect PDF'},   {id:'pdfchat',   l:'Ask about it'}],
+  rotate:     [{id:'compress',    l:'Compress it'},    {id:'merge',     l:'Merge with others'}],
+  crop:       [{id:'compress',    l:'Compress it'},    {id:'watermark', l:'Add watermark'}],
+  redact:     [{id:'protect',     l:'Password protect'},{id:'compress', l:'Compress it'},   {id:'esign',     l:'eSign it'}],
+  compress:   [{id:'sign',        l:'Sign it'},        {id:'share',     l:'Share link'},     {id:'protect',   l:'Protect it'}],
+  protect:    [{id:'esign',       l:'eSign it'},       {id:'compress',  l:'Compress it'}],
+  unlock:     [{id:'protect',     l:'Re-protect it'},  {id:'sign',      l:'Sign it'},        {id:'fillform',  l:'Fill form'}],
+  ocr:        [{id:'pdftext',     l:'Extract text'},   {id:'pdfsummary',l:'Summarise it'},   {id:'pdfchat',   l:'Chat with it'}],
+  pdftext:    [{id:'pdfsummary',  l:'Summarise it'},   {id:'pdfchat',   l:'Ask questions'},  {id:'pdftranslate',l:'Translate it'}],
+  pdftoword:  [{id:'pdfchat',     l:'Chat with it'},   {id:'pdfsummary',l:'Summarise it'}],
+  word2pdf:   [{id:'sign',        l:'Sign it'},        {id:'compress',  l:'Compress it'},    {id:'protect',   l:'Protect it'}],
+  img2pdf:    [{id:'compress',    l:'Compress it'},    {id:'merge',     l:'Merge PDFs'},     {id:'watermark', l:'Add watermark'}],
+  scan:       [{id:'ocr',         l:'Extract text'},   {id:'compress',  l:'Compress it'},    {id:'sign',      l:'Sign it'}],
+  watermark:  [{id:'protect',     l:'Password protect'},{id:'compress', l:'Compress it'},    {id:'esign',     l:'eSign it'}],
+  pagenums:   [{id:'compress',    l:'Compress it'},    {id:'watermark', l:'Add watermark'},  {id:'sign',      l:'Sign it'}],
+  headfoot:   [{id:'pagenums',    l:'Add page numbers'},{id:'watermark',l:'Add watermark'}],
+  fillform:   [{id:'esign',       l:'eSign it'},       {id:'flatten',   l:'Flatten fields'}, {id:'protect',   l:'Protect it'}],
+  smartfill:  [{id:'esign',       l:'eSign it'},       {id:'flatten',   l:'Flatten fields'}],
+  pdfchat:    [{id:'pdfsummary',  l:'Full summary'},   {id:'pdftranslate',l:'Translate it'}],
+  pdfsummary: [{id:'pdfchat',     l:'Ask follow-ups'}, {id:'pdftranslate',l:'Translate it'}],
+  pdftranslate:[{id:'compress',   l:'Compress it'},    {id:'sign',      l:'Sign it'}],
+  receipt:    [{id:'scan2data',   l:'Scan another doc'},{id:'bulkextract',l:'Bulk extract'}],
+  scan2data:  [{id:'bulkextract', l:'Bulk extract'},   {id:'receipt',   l:'Scan receipts'}],
+  bulkextract:[{id:'pdfchat',     l:'Chat with one'},  {id:'pdfsummary',l:'Summarise one'}],
+  formcreate: [{id:'fillform',    l:'Fill a form'},    {id:'smartfill', l:'AI form fill'}],
+  bates:      [{id:'redline',     l:'Add redline'},    {id:'esign',     l:'eSign it'},       {id:'protect',   l:'Protect it'}],
+  redline:    [{id:'compare-pdf', l:'Compare PDFs'},   {id:'esign',     l:'eSign it'}],
+  'compare-pdf':[{id:'redline',   l:'Make redline'},   {id:'pdfchat',   l:'Ask about changes'}],
+  pdftocsv:   [{id:'bulkextract', l:'Bulk extract'},   {id:'ocr',       l:'Extract more text'}],
+  pwcheck:    [{id:'protect',     l:'Protect PDF now'},{id:'unlock',    l:'Unlock a PDF'}],
+  repair:     [{id:'compress',    l:'Compress it'},    {id:'ocr',       l:'Extract text'},   {id:'pdftext',   l:'Get text'}],
+  metadata:   [{id:'protect',     l:'Protect it'},     {id:'compress',  l:'Compress it'}],
+  grayscale:  [{id:'compress',    l:'Compress it'},    {id:'sign',      l:'Sign it'}],
+  resize:     [{id:'compress',    l:'Compress it'},    {id:'merge',     l:'Merge PDFs'}],
+  reorder:    [{id:'compress',    l:'Compress it'},    {id:'sign',      l:'Sign it'},        {id:'watermark', l:'Add watermark'}],
+  extract:    [{id:'compress',    l:'Compress it'},    {id:'pdftoword', l:'Convert to Word'},{id:'ocr',       l:'Extract text'}],
+  delete:     [{id:'compress',    l:'Compress it'},    {id:'reorder',   l:'Reorder pages'}],
+  nup:        [{id:'compress',    l:'Compress it'},    {id:'grayscale', l:'Make grayscale'}],
+  qrstamp:    [{id:'watermark',   l:'Add watermark'},  {id:'protect',   l:'Protect it'}],
+  preview:    [{id:'compress',    l:'Compress it'},    {id:'sign',      l:'Sign it'},        {id:'pdfchat',   l:'Chat with it'}],
+  images:     [{id:'img2pdf',     l:'Images back to PDF'},{id:'merge',  l:'Merge PDFs'}],
+  blankpage:  [{id:'reorder',     l:'Reorder pages'},  {id:'sign',      l:'Sign it'}],
+  dupepage:   [{id:'compress',    l:'Compress it'},    {id:'reorder',   l:'Reorder pages'}],
+  flatten:    [{id:'compress',    l:'Compress it'},    {id:'protect',   l:'Protect it'},     {id:'esign',     l:'eSign it'}],
+  addimage:   [{id:'compress',    l:'Compress it'},    {id:'watermark', l:'Add watermark'}],
+  annotate:   [{id:'sign',        l:'Sign it'},        {id:'protect',   l:'Protect it'}],
+  info:       [{id:'metadata',    l:'Edit metadata'},  {id:'compress',  l:'Compress it'}],
+  pdftoword:  [{id:'pdfsummary',  l:'Summarise it'},   {id:'pdfchat',   l:'Chat with it'}],
+};
+
+function showWhatsNext(toolId) {
+  const suggestions = WHATS_NEXT[toolId];
+  if (!suggestions || !suggestions.length) return;
+
+  // Find the result box for this tool
+  const rb = document.getElementById(toolId.replace('-','') + '-rb') ||
+             document.querySelector(`#panel-${toolId} .rb`);
+  if (!rb) return;
+
+  // Remove any existing whats-next
+  rb.querySelectorAll('.whats-next').forEach(el => el.remove());
+
+  const div = document.createElement('div');
+  div.className = 'whats-next';
+  div.innerHTML = `
+    <div class="whats-next-title">✦ What's next?</div>
+    <div class="whats-next-chips">
+      ${suggestions.map(s => `
+        <button class="wn-chip" onclick="nav('${s.id}')">${s.l} →</button>
+      `).join('')}
+    </div>
+  `;
+  rb.appendChild(div);
+  div.style.display = 'block';
+}
+
+// Override showRes to also show whats-next
+const _originalShowRes = typeof showRes === 'function' ? showRes : null;
+function showRes(id, msg) {
+  // Call original
+  const el = document.getElementById(id);
+  if (el) {
+    el.classList.add('show');
+    const p = el.querySelector('p');
+    if (p) p.textContent = msg;
+  }
+  // Extract tool ID from result box ID (e.g. "merge-rb" → "merge")
+  const toolId = id.replace('-rb', '').replace('rb', '');
+  setTimeout(() => showWhatsNext(toolId), 300);
+}
+
+
+// ══════════════════════════════════════════
+// MOBILE SEARCH DRAWER
+// Full-screen search experience on mobile
+// ══════════════════════════════════════════
+
+// All tools registry for mobile search
+const MOBILE_TOOLS = [
+  {id:'merge',      icon:'⊕', name:'Merge PDFs',          hint:'Combine multiple PDFs'},
+  {id:'split',      icon:'⊘', name:'Split PDF',            hint:'Separate into pages'},
+  {id:'compress',   icon:'⤡', name:'Compress',             hint:'Reduce file size'},
+  {id:'sign',       icon:'✎', name:'Sign PDF',             hint:'Draw or type signature'},
+  {id:'esign',      icon:'✦', name:'eSign + Certificate',  hint:'Legal signature + SHA-256'},
+  {id:'protect',    icon:'🔒', name:'Protect PDF',         hint:'Add password'},
+  {id:'unlock',     icon:'🔓', name:'Unlock PDF',          hint:'Remove password'},
+  {id:'ocr',        icon:'◎', name:'OCR',                  hint:'Extract text from scan'},
+  {id:'pdftoword',  icon:'📄', name:'PDF to Word',         hint:'Convert to .docx'},
+  {id:'word2pdf',   icon:'📝', name:'Word to PDF',         hint:'Convert .docx to PDF'},
+  {id:'img2pdf',    icon:'🖼', name:'Image to PDF',        hint:'JPG, PNG to PDF'},
+  {id:'scan',       icon:'📷', name:'Scan to PDF',         hint:'Camera to PDF'},
+  {id:'pdfchat',    icon:'💬', name:'PDF Chat',            hint:'Ask your PDF questions'},
+  {id:'pdfsummary', icon:'✦', name:'PDF Summariser',       hint:'AI structured summary'},
+  {id:'pdftranslate',icon:'🌍',name:'PDF Translate',       hint:'18 languages'},
+  {id:'ai',         icon:'✦', name:'AI Assistant',         hint:'Natural language commands'},
+  {id:'receipt',    icon:'🧾', name:'Receipt Scanner',     hint:'Scan to CSV'},
+  {id:'scan2data',  icon:'📋', name:'Scan to Data',        hint:'Camera to table'},
+  {id:'smartfill',  icon:'✦', name:'Smart Form Fill',      hint:'AI fills form'},
+  {id:'bulkextract',icon:'⊞', name:'Bulk Extractor',       hint:'20 PDFs → spreadsheet'},
+  {id:'formcreate', icon:'⊟', name:'Form Creator',         hint:'Describe → AI builds form'},
+  {id:'fillform',   icon:'✎', name:'Fill PDF Form',        hint:'Fill fields locally'},
+  {id:'bates',      icon:'⊞', name:'Bates Numbers',        hint:'Legal reference stamps'},
+  {id:'redline',    icon:'✎', name:'PDF Redline',          hint:'Tracked changes PDF'},
+  {id:'compare-pdf',icon:'⚖', name:'Compare PDFs',         hint:'Word-level diff'},
+  {id:'pdftocsv',   icon:'⊟', name:'PDF to Excel/CSV',    hint:'Extract tables'},
+  {id:'pwcheck',    icon:'⊛', name:'Password Strength',    hint:'Check before setting'},
+  {id:'watermark',  icon:'◈', name:'Watermark',            hint:'Add diagonal text'},
+  {id:'pagenums',   icon:'#', name:'Page Numbers',          hint:'Insert page numbers'},
+  {id:'headfoot',   icon:'▤', name:'Header/Footer',        hint:'Add header and footer'},
+  {id:'rotate',     icon:'↻', name:'Rotate Pages',         hint:'90/180/270 degrees'},
+  {id:'crop',       icon:'⊡', name:'Crop Pages',           hint:'Trim margins'},
+  {id:'redact',     icon:'⬛', name:'Redact',               hint:'Black out sensitive text'},
+  {id:'annotate',   icon:'✏', name:'Annotate',             hint:'Add text annotations'},
+  {id:'addimage',   icon:'🖼', name:'Add Image',           hint:'Insert image on page'},
+  {id:'metadata',   icon:'ℹ', name:'Edit Metadata',        hint:'Title, author, subject'},
+  {id:'grayscale',  icon:'◑', name:'Grayscale',            hint:'Convert to black & white'},
+  {id:'resize',     icon:'⊠', name:'Resize Pages',         hint:'Change page size'},
+  {id:'flatten',    icon:'▦', name:'Flatten Forms',        hint:'Lock form fields'},
+  {id:'repair',     icon:'⚕', name:'Repair PDF',           hint:'Fix corrupted files'},
+  {id:'nup',        icon:'⊞', name:'N-up Print',           hint:'2/4 pages per sheet'},
+  {id:'qrstamp',    icon:'⊟', name:'QR Stamp',             hint:'Add QR code'},
+  {id:'dupepage',   icon:'⊕', name:'Duplicate Page',       hint:'Copy a page'},
+  {id:'blankpage',  icon:'□', name:'Insert Blank Page',    hint:'Add empty page'},
+  {id:'reorder',    icon:'⇅', name:'Reorder Pages',        hint:'Drag to rearrange'},
+  {id:'extract',    icon:'⬡', name:'Extract Pages',        hint:'Pull specific pages'},
+  {id:'delete',     icon:'✕', name:'Delete Pages',         hint:'Remove pages'},
+  {id:'preview',    icon:'👁', name:'Preview',              hint:'View before download'},
+  {id:'pdftext',    icon:'T', name:'PDF to Text',          hint:'Extract all text'},
+  {id:'images',     icon:'🖼', name:'PDF to Images',       hint:'Export pages as PNG'},
+  {id:'info',       icon:'ℹ', name:'PDF Info',             hint:'File details & metadata'},
+];
+
+function openMobileSearch() {
+  const drawer = document.getElementById('mobile-search-drawer');
+  const results = document.getElementById('mobile-search-results');
+  if (!drawer) return;
+  drawer.classList.add('show');
+  // Show all tools initially
+  mobileSearchFilter('');
+  setTimeout(() => {
+    const input = document.getElementById('mobile-search-input');
+    if (input) input.focus();
+  }, 100);
+}
+
+function closeMobileSearch() {
+  const drawer = document.getElementById('mobile-search-drawer');
+  const results = document.getElementById('mobile-search-results');
+  const input = document.getElementById('mobile-search-input');
+  if (drawer) drawer.classList.remove('show');
+  if (results) results.classList.remove('show');
+  if (input) input.value = '';
+}
+
+function mobileSearchFilter(query) {
+  const results = document.getElementById('mobile-search-results');
+  if (!results) return;
+
+  const q = query.toLowerCase().trim();
+  const filtered = q
+    ? MOBILE_TOOLS.filter(t =>
+        t.name.toLowerCase().includes(q) ||
+        t.hint.toLowerCase().includes(q) ||
+        t.id.toLowerCase().includes(q)
+      )
+    : MOBILE_TOOLS;
+
+  if (!filtered.length) {
+    results.innerHTML = '<div style="text-align:center;padding:40px;color:var(--hint);font-size:14px">No tools found</div>';
+    results.classList.add('show');
+    return;
+  }
+
+  results.innerHTML = filtered.map(t => `
+    <div class="mobile-result-item" onclick="mobileNavTo('${t.id}')">
+      <div class="mobile-result-icon">${t.icon}</div>
+      <div>
+        <div class="mobile-result-name">${t.name}</div>
+        <div class="mobile-result-hint">${t.hint}</div>
+      </div>
+    </div>
+  `).join('');
+  results.classList.add('show');
+}
+
+function mobileNavTo(toolId) {
+  closeMobileSearch();
+  if (typeof nav === 'function' || typeof window.nav === 'function') {
+    (window.nav || nav)(toolId);
+  }
+  // Close sidebar if open on mobile
+  const sidebar = document.querySelector('.sidebar');
+  if (sidebar) sidebar.classList.remove('open');
+  const overlay = document.querySelector('.sidebar-overlay');
+  if (overlay) overlay.style.display = 'none';
+}
+
+// Override the search button click to use mobile drawer on mobile
+document.addEventListener('DOMContentLoaded', () => {
+  const searchBtn = document.querySelector('.bnav-search');
+  if (searchBtn) {
+    searchBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openMobileSearch();
+    });
+  }
+
+  // Close drawer on backdrop click
+  const results = document.getElementById('mobile-search-results');
+  if (results) {
+    results.addEventListener('click', (e) => {
+      if (e.target === results) closeMobileSearch();
+    });
+  }
+});
+
+
+
+// ══════════════════════════════════════════
+// FEATURE 4: RECENT FILES HISTORY
+// Stores last 5 files worked on in localStorage
+// ══════════════════════════════════════════
+const RECENT_KEY = 'rpk-recent-v1';
+const TOOLS_TRIED_KEY = 'rpk-tried-v1';
+
+function getRecent() {
+  try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); } catch { return []; }
+}
+
+function addRecent(filename, toolId, toolLabel) {
+  if (!filename || !toolId) return;
+  const recent = getRecent().filter(r => !(r.file === filename && r.tool === toolId));
+  recent.unshift({ file: filename, tool: toolId, label: toolLabel, ts: Date.now() });
+  localStorage.setItem(RECENT_KEY, JSON.stringify(recent.slice(0, 5)));
+  renderRecent();
+}
+
+function clearRecent() {
+  localStorage.removeItem(RECENT_KEY);
+  renderRecent();
+}
+
+function renderRecent() {
+  const recent = getRecent();
+  const wrap = document.getElementById('recent-wrap');
+  const list = document.getElementById('recent-list');
+  if (!wrap || !list) return;
+
+  if (!recent.length) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+
+  list.innerHTML = recent.map(r => {
+    const name = r.file.length > 22 ? r.file.slice(0, 19) + '…' : r.file;
+    return `<div class="recent-item" onclick="nav('${r.tool}')">
+      <span class="recent-icon">📄</span>
+      <span class="recent-name" title="${sanitise(r.file)}">${sanitise(name)}</span>
+      <span class="recent-tool">${sanitise(r.label)}</span>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// FEATURE 5: TOOL STREAK / PROGRESS TRACKER
+// Track which tools user has tried
+// ══════════════════════════════════════════
+const TOTAL_TOOLS = 51;
+
+function getTriedTools() {
+  try { return JSON.parse(localStorage.getItem(TOOLS_TRIED_KEY) || '[]'); } catch { return []; }
+}
+
+function markToolTried(toolId) {
+  if (!toolId || toolId === 'home' || toolId === 'compare' || toolId === 'privacy') return;
+  const tried = getTriedTools();
+  if (!tried.includes(toolId)) {
+    tried.push(toolId);
+    localStorage.setItem(TOOLS_TRIED_KEY, JSON.stringify(tried));
+    updateStreak();
+    // Celebrate milestones
+    if (tried.length === 5)  toast('🎯 5 tools tried — you\'re on a roll!');
+    if (tried.length === 10) toast('🔥 10 tools tried — exploring everything!');
+    if (tried.length === 25) toast('⭐ Halfway there — 25 tools tried!');
+    if (tried.length === 51) toast('🏆 All 51 tools tried — legend!');
+  }
+}
+
+function updateStreak() {
+  const tried = getTriedTools();
+  const count = tried.length;
+  const pct = Math.round(count / TOTAL_TOOLS * 100);
+  const fill = document.getElementById('streak-fill');
+  const text = document.getElementById('streak-text');
+  const pctEl = document.getElementById('streak-pct');
+  if (fill) fill.style.width = pct + '%';
+  if (text) text.textContent = `${count} of ${TOTAL_TOOLS} tools tried`;
+  if (pctEl) pctEl.textContent = pct + '%';
+}
+
+// ══════════════════════════════════════════
+// FEATURE 6: KEYBOARD SHORTCUTS
+// ══════════════════════════════════════════
+function closeShortcuts() {
+  const el = document.getElementById('shortcuts-overlay');
+  if (el) el.classList.remove('show');
+}
+
+function openShortcuts() {
+  const el = document.getElementById('shortcuts-overlay');
+  if (el) el.classList.add('show');
+}
+
+// Add to keydown handler
+document.addEventListener('keydown', e => {
+  if (document.activeElement.tagName === 'INPUT' ||
+      document.activeElement.tagName === 'TEXTAREA') return;
+
+  if (e.key === '?') { e.preventDefault(); openShortcuts(); return; }
+  if (e.key === 'Escape') {
+    closeShortcuts();
+    if (typeof nav === 'function') nav('home');
+    return;
+  }
+
+  if (e.ctrlKey || e.metaKey) {
+    const shortcuts = {
+      'k': 'ai', 'h': 'home', 'm': 'merge',
+      'e': 'compress', 's': 'sign', 'd': 'scan', 'j': 'pdfchat'
+    };
+    const dest = shortcuts[e.key.toLowerCase()];
+    if (dest) { e.preventDefault(); if (typeof nav === 'function') nav(dest); }
+  }
+});
+
+// ══════════════════════════════════════════
+// FEATURE 7: SHARE RESULTS (viral loop)
+// Show share strip after every download
+// ══════════════════════════════════════════
+function showShareStrip(toolLabel, rbId) {
+  const rb = document.getElementById(rbId);
+  if (!rb) return;
+
+  // Remove existing
+  rb.querySelectorAll('.share-strip').forEach(el => el.remove());
+
+  const url = 'https://rightpdfkit.com';
+  const text = `Just used RightPDFKit to ${toolLabel.toLowerCase()} — all in my browser, zero uploads. Free tool 👇`;
+  const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+  const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text + ' ' + url)}`;
+
+  const strip = document.createElement('div');
+  strip.className = 'share-strip';
+  strip.innerHTML = `
+    <div class="share-strip-title">Found it useful? Share it 🙌</div>
+    <div class="share-btns">
+      <button class="share-btn" onclick="window.open('${tweetUrl}','_blank')">𝕏 Tweet</button>
+      <button class="share-btn" onclick="window.open('${waUrl}','_blank')">💬 WhatsApp</button>
+      <button class="share-btn" onclick="copyShareLink()">📋 Copy link</button>
+    </div>
+  `;
+  rb.appendChild(strip);
+  strip.style.display = 'block';
+}
+
+function copyShareLink() {
+  navigator.clipboard?.writeText('https://rightpdfkit.com').then(() => toast('Link copied!'));
+}
+
+// ══════════════════════════════════════════
+// HOOK INTO NAV() TO TRACK TOOL USAGE
+// + log recent files + show streak updates
+// ══════════════════════════════════════════
+const _originalNav = typeof nav === 'function' ? nav : null;
+// Override nav to track tool tries
+if (typeof nav === 'function') {
+  const __nav = nav;
+  window.nav = function(toolId) {
+    __nav(toolId);
+    markToolTried(toolId);
+  };
+}
+
+// ══════════════════════════════════════════
+// HOOK INTO dlBytes() TO LOG RECENT FILES
+// ══════════════════════════════════════════
+if (typeof dlBytes === 'function') {
+  const __dlBytes = dlBytes;
+  window.dlBytes = function(bytes, filename) {
+    __dlBytes(bytes, filename);
+    // Figure out current tool from URL hash or active panel
+    const hash = window.location.hash.replace('#', '');
+    const activePanel = document.querySelector('.panel.active');
+    const toolId = hash || activePanel?.id?.replace('panel-', '') || 'unknown';
+    const navEl = document.querySelector(`.sidebar .nav[data-t="${toolId}"] .nav-label`);
+    const toolLabel = navEl ? navEl.textContent.replace(/NEW/g,'').trim().slice(0, 20) : toolId;
+    addRecent(filename, toolId, toolLabel);
+    // Show share strip
+    const rbId = toolId.replace('-','') + '-rb';
+    setTimeout(() => showShareStrip(toolLabel, rbId), 400);
+  };
+}
+
+// Init on load
+document.addEventListener('DOMContentLoaded', () => {
+  renderRecent();
+  updateStreak();
+});
+
+// ══════════════════════════════════════════
+// SIDEBAR MOBILE OPEN/CLOSE
+// ══════════════════════════════════════════
+function openSidebar() {
+  const sidebar = document.getElementById('main-sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  if (sidebar) sidebar.classList.add('open');
+  if (overlay) overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSidebar() {
+  const sidebar = document.getElementById('main-sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  if (sidebar) sidebar.classList.remove('open');
+  if (overlay) overlay.classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+// ══════════════════════════════════════════
+// ACTIVE TOOL LABEL (breadcrumb on mobile)
+// ══════════════════════════════════════════
+function updateActiveTool(toolId) {
+  const label = document.getElementById('active-tool-label');
+  if (!label) return;
+  if (!toolId || toolId === 'home') {
+    label.textContent = 'RightPDFKit';
+    return;
+  }
+  // Get tool name from sidebar nav
+  const navEl = document.querySelector(`.sidebar .nav[data-t="${toolId}"] .nav-label`);
+  if (navEl) {
+    const text = navEl.textContent.replace(/NEW/gi, '').trim();
+    label.textContent = text.slice(0, 22);
+  }
+}
+
+// Hook into nav to update breadcrumb
+document.addEventListener('DOMContentLoaded', () => {
+  // Patch nav to update active tool label
+  if (typeof window.nav === 'function') {
+    const __nav2 = window.nav;
+    window.nav = function(toolId) {
+      __nav2(toolId);
+      updateActiveTool(toolId);
+      // Close sidebar on mobile after selecting a tool
+      if (window.innerWidth <= 768) {
+        setTimeout(closeSidebar, 150);
+      }
+    };
+  }
+  updateActiveTool('home');
+});
+
 </script>
 
 <!-- Cookie Banner -->
@@ -37203,6 +38028,17 @@ document.addEventListener('DOMContentLoaded', () => {
     <div style="margin-top:12px;font-size:10px;color:var(--hint)">Press <span class="kbd">?</span> anytime to show this panel</div>
   </div>
 </div>
+
+
+<!-- MOBILE SEARCH DRAWER -->
+<div class="mobile-search-drawer" id="mobile-search-drawer">
+  <input type="text" class="mobile-search-input" id="mobile-search-input"
+    placeholder="Search 51 tools…"
+    oninput="mobileSearchFilter(this.value)"
+    autocomplete="off">
+  <button class="mobile-search-close" onclick="closeMobileSearch()">✕</button>
+</div>
+<div class="mobile-search-results" id="mobile-search-results"></div>
 
 </body>
 </html>
