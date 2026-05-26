@@ -1630,19 +1630,20 @@ html,body{overflow-x:hidden;max-width:100vw}
   border-radius:50%;
   cursor:pointer;
   font-size:18px;
-  display:none;
+  display:flex;
   align-items:center;justify-content:center;
   box-shadow:0 4px 14px rgba(232,69,10,.35);
-  transition:all .2s ease;
+  transition:opacity .2s ease, transform .2s ease;
   z-index:998;
   font-family:inherit;
   line-height:1;
+  opacity:0;pointer-events:none;
 }
 .scroll-top:hover{
   transform:translateY(-3px);
   box-shadow:0 6px 20px rgba(232,69,10,.45);
 }
-.scroll-top.show{display:flex}
+.scroll-top.show{opacity:1;pointer-events:auto;}
 @media(min-width:769px){
   .scroll-top{bottom:24px;right:24px;width:44px;height:44px}
 }
@@ -37345,20 +37346,38 @@ document.addEventListener('DOMContentLoaded', () => {
 // ── Scroll to top ──
 function scrollToTop() {
   const main = document.querySelector('.main');
-  if (main) main.scrollTo({top:0, behavior:'smooth'});
-  else window.scrollTo({top:0, behavior:'smooth'});
+  if (main && main.scrollTop > 0) {
+    main.scrollTo({top:0, behavior:'smooth'});
+  } else {
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+// Watch both .main and window for scroll
+function initScrollTop() {
   const btn = document.getElementById('scroll-top-btn');
-  const main = document.querySelector('.main');
   if (!btn) return;
-  const scrollEl = main || window;
-  const getScrollTop = () => main ? main.scrollTop : window.scrollY;
-  scrollEl.addEventListener('scroll', () => {
-    btn.classList.toggle('show', getScrollTop() > 300);
-  });
-});
+
+  function checkScroll() {
+    const main = document.querySelector('.main');
+    const mainScroll = main ? main.scrollTop : 0;
+    const winScroll = window.scrollY || window.pageYOffset || 0;
+    btn.classList.toggle('show', mainScroll > 300 || winScroll > 300);
+  }
+
+  const main = document.querySelector('.main');
+  if (main) main.addEventListener('scroll', checkScroll, {passive:true});
+  window.addEventListener('scroll', checkScroll, {passive:true});
+  
+  // Also check on any click — panel switches cause scroll reset
+  document.addEventListener('click', () => setTimeout(checkScroll, 100));
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initScrollTop);
+} else {
+  initScrollTop();
+}
 
 </script>
 
