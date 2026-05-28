@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How to Sign a PDF Free Without Adobe — Including Legal Certificate | RightPDFKit Blog</title>
+<meta name="description" content="Sign any PDF for free without Adobe Acrobat. Draw, type or use initials. Generates a certificate page with SHA-256 document hash. No upload, no account.">
+<link rel="canonical" href="https://rightpdfkit.com/blog/sign-pdf-free-without-adobe">
+<meta property="og:title" content="How to Sign a PDF Free Without Adobe — Including Legal Certificate">
+<meta property="og:description" content="Sign any PDF for free without Adobe Acrobat. Draw, type or use initials. Generates a certificate page with SHA-256 document hash. No upload, no account.">
+<meta property="og:url" content="https://rightpdfkit.com/blog/sign-pdf-free-without-adobe">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://rightpdfkit.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@RightPDFKit">
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"Article",
+  "headline":"How to Sign a PDF Free Without Adobe — Including Legal Certificate",
+  "description":"Sign any PDF for free without Adobe Acrobat. Draw, type or use initials. Generates a certificate page with SHA-256 document hash. No upload, no account.",
+  "author":{"@type":"Person","name":"Chukwuemeka","url":"https://rightpdfkit.com"},
+  "publisher":{"@type":"Organization","name":"RightPDFKit","url":"https://rightpdfkit.com"},
+  "datePublished":"2026-05-28",
+  "mainEntityOfPage":"https://rightpdfkit.com/blog/sign-pdf-free-without-adobe"
+}
+</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0f;--surface:#0f0f1a;--border:#1a1a2e;
+  --text:#F0EDE8;--muted:#888;--hint:#444;
+  --accent:#E8450A;--green:#2ECC71;
+}
+body{font-family:'Georgia',serif;background:var(--bg);color:var(--text);line-height:1.8;font-size:18px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* Header */
+.site-header{background:#080812;border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-mark{width:32px;height:32px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:system-ui;font-weight:800;font-size:16px;color:#fff;flex-shrink:0}
+.logo-name{font-family:system-ui;font-size:16px;font-weight:800;color:var(--text);letter-spacing:-.02em}
+.logo-name span{color:var(--accent)}
+.header-cta{font-family:system-ui;font-size:12px;background:var(--accent);color:#fff;padding:7px 16px;border-radius:20px;text-decoration:none;font-weight:700}
+
+/* Article layout */
+.article-wrap{max-width:720px;margin:0 auto;padding:48px 24px 80px}
+
+/* Meta */
+.article-meta{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:32px}
+.meta-cat{font-family:system-ui;font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;background:rgba(232,69,10,.1);border:1px solid rgba(232,69,10,.2);border-radius:20px;padding:3px 10px}
+.meta-info{font-family:system-ui;font-size:12px;color:var(--muted)}
+
+/* Article heading */
+h1{font-size:clamp(28px,5vw,44px);font-weight:700;line-height:1.2;letter-spacing:-.02em;margin-bottom:16px;color:var(--text)}
+.article-sub{font-size:20px;color:var(--muted);line-height:1.6;margin-bottom:36px;font-style:italic}
+
+/* Divider */
+.article-divider{width:48px;height:3px;background:var(--accent);border-radius:2px;margin-bottom:36px}
+
+/* Content */
+.article-body h2{font-family:system-ui;font-size:24px;font-weight:800;color:var(--text);margin:40px 0 16px;letter-spacing:-.02em}
+.article-body h3{font-family:system-ui;font-size:18px;font-weight:700;color:var(--text);margin:28px 0 12px}
+.article-body p{margin-bottom:20px;color:#ccc;line-height:1.85}
+.article-body ul,.article-body ol{margin:0 0 20px 24px;color:#ccc}
+.article-body li{margin-bottom:8px;line-height:1.75}
+.article-body strong{color:var(--text);font-weight:700}
+.article-body em{color:var(--muted)}
+.article-body blockquote{border-left:3px solid var(--accent);padding:12px 20px;margin:24px 0;background:rgba(232,69,10,.05);border-radius:0 8px 8px 0;font-style:italic;color:#aaa}
+
+/* CTA box */
+.cta-box{background:rgba(232,69,10,.07);border:1px solid rgba(232,69,10,.2);border-radius:14px;padding:28px;margin:40px 0;text-align:center}
+.cta-box h3{font-family:system-ui;font-size:18px;font-weight:800;color:var(--text);margin-bottom:8px}
+.cta-box p{font-family:system-ui;font-size:14px;color:var(--muted);margin-bottom:18px}
+.cta-btn{display:inline-block;background:var(--accent);color:#fff;font-family:system-ui;font-weight:700;font-size:14px;padding:12px 28px;border-radius:10px;text-decoration:none}
+.cta-btn:hover{background:#d63d09;text-decoration:none}
+
+/* Author box */
+.author-box{display:flex;gap:16px;align-items:flex-start;padding:24px;background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-top:48px}
+.author-avatar{width:48px;height:48px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:system-ui;font-weight:800;font-size:20px;color:#fff;flex-shrink:0}
+.author-name{font-family:system-ui;font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+.author-bio{font-family:system-ui;font-size:12px;color:var(--muted);line-height:1.6}
+
+/* Back to blog */
+.back-link{font-family:system-ui;font-size:13px;color:var(--muted);display:inline-flex;align-items:center;gap:6px;margin-bottom:32px}
+.back-link:hover{color:var(--accent)}
+
+/* Footer */
+.site-footer{background:#080812;border-top:1px solid var(--border);padding:24px;text-align:center;font-family:system-ui;font-size:12px;color:var(--hint)}
+.site-footer a{color:var(--muted)}
+
+@media(max-width:600px){
+  .article-wrap{padding:24px 16px 60px}
+  h1{font-size:28px}
+  .article-sub{font-size:17px}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="https://rightpdfkit.com" class="logo">
+    <div class="logo-mark">R</div>
+    <div class="logo-name">RightPDF<span>Kit</span></div>
+  </a>
+  <a href="https://rightpdfkit.com" class="header-cta">Try Free →</a>
+</header>
+
+<main class="article-wrap">
+  <a href="https://rightpdfkit.com/blog" class="back-link">← All articles</a>
+
+  <div class="article-meta">
+    <span class="meta-cat">How-to</span>
+    <span class="meta-info">2026-05-28 · 5 min read</span>
+  </div>
+
+  <h1>How to Sign a PDF Free Without Adobe — Including Legal Certificate</h1>
+  <div class="article-divider"></div>
+
+  <div class="article-body">
+    
+<p>Adobe charges £14.99/month to sign PDFs with Acrobat. Smallpdf charges $12/month. DocuSign starts at $15/month per user.</p>
+
+<p>You don't need any of them. This guide shows you how to sign a PDF for free — including an option that generates a legally-binding certificate with a SHA-256 document hash.</p>
+
+<h2>Two ways to sign a PDF for free on RightPDFKit</h2>
+
+<h3>Option 1: Sign PDF (quick signature)</h3>
+<p>Draw, type or upload a signature image and place it anywhere on your PDF. Best for informal signatures and internal documents.</p>
+
+<h3>Option 2: eSign + Certificate (legal-grade)</h3>
+<p>Full electronic signature with a certificate page that includes your name, role, timestamp, and a SHA-256 hash of the original document. Best for contracts, NDAs, and official documents.</p>
+
+<h2>How to sign a PDF free (step by step)</h2>
+
+<ol>
+<li>Go to <a href="https://rightpdfkit.com">rightpdfkit.com</a></li>
+<li>Click <strong>eSign + Certificate</strong> in the sidebar</li>
+<li>Drop your PDF</li>
+<li>Enter your name, email, job title (optional)</li>
+<li>Choose your signature method:
+  <ul>
+    <li><strong>Draw</strong> — use mouse or finger on touchscreen</li>
+    <li><strong>Type</strong> — your name rendered in cursive, serif or print</li>
+    <li><strong>Initials</strong> — stylised initials</li>
+  </ul>
+</li>
+<li>Choose where to sign — last page, all pages, or specific page</li>
+<li>Leave <strong>Add certificate page</strong> checked for legal documents</li>
+<li>Click <strong>Sign & Download</strong></li>
+</ol>
+
+<h2>What the certificate page includes</h2>
+
+<p>The certificate page is what makes RightPDFKit's eSign different from a simple signature image:</p>
+
+<ul>
+<li>Signer name, email, job title, organisation</li>
+<li>Reason for signing (Approval, Reviewed, Certified, Witnessed)</li>
+<li>Exact timestamp in UTC</li>
+<li>Pages signed</li>
+<li><strong>SHA-256 hash of the original document</strong> — a unique fingerprint of the PDF before signing. If the document is altered after signing, the hash won't match. This is verifiable proof of document integrity.</li>
+</ul>
+
+<h2>Is an electronic signature legally valid?</h2>
+
+<p>In the UK, eIDAS Regulation and the Electronic Communications Act 2000 recognise electronic signatures as legally valid. In Nigeria, the Evidence Act and Cybercrimes Act provide a framework for electronic signatures. In the US, the ESIGN Act covers electronic signatures.</p>
+
+<p>For most commercial contracts, NDAs, and business agreements, an electronic signature with a timestamp is legally sufficient. For high-value transactions or court filings, consult a lawyer in your jurisdiction.</p>
+
+<h2>How this compares to Adobe and DocuSign</h2>
+
+<ul>
+<li><strong>Adobe Acrobat Sign:</strong> £14.99/month, uploads your documents, requires account</li>
+<li><strong>DocuSign:</strong> $15+/month, cloud-based, all documents stored on their servers</li>
+<li><strong>HelloSign (Dropbox):</strong> $15/month, uploads everything</li>
+<li><strong>RightPDFKit eSign:</strong> Free, no upload, no account, SHA-256 certificate included</li>
+</ul>
+
+<blockquote>The key difference: Adobe and DocuSign store your signed documents on their servers. RightPDFKit processes the signature entirely in your browser. Your signed document never leaves your device.</blockquote>
+
+<div class="cta-box">
+  <h3>Sign your PDF free — with certificate</h3>
+  <p>Draw your signature, add a timestamp, generate a SHA-256 certificate. No Adobe. No upload. Free.</p>
+  <a href="https://rightpdfkit.com" class="cta-btn">Sign PDF free →</a>
+</div>
+
+<h2>Frequently asked questions</h2>
+
+<h3>Is the signature legally binding?</h3>
+<p>Electronic signatures are legally recognised in the UK, EU, Nigeria, and US for most commercial agreements. The certificate page provides timestamp and integrity proof.</p>
+
+<h3>What is a SHA-256 hash?</h3>
+<p>A SHA-256 hash is a unique digital fingerprint of your document. If anyone changes even one character after signing, the hash changes — proving tampering. It's the same technology used in blockchain and digital certificates.</p>
+
+<h3>Can the other party verify the signature?</h3>
+<p>Yes — the certificate page includes all verification details. Anyone can hash the original document and compare it to the hash on the certificate.</p>
+
+<h3>Does my signature get stored anywhere?</h3>
+<p>No — your signature is drawn in your browser, applied to the PDF locally, and the result downloads to your device. Nothing is stored or transmitted.</p>
+
+  </div>
+
+  <div class="author-box">
+    <div class="author-avatar">C</div>
+    <div>
+      <div class="author-name">Chukwuemeka · The 36th Company Ltd</div>
+      <div class="author-bio">Solo founder building RightPDFKit — 51 free PDF tools that run entirely in your browser. Based in London. Nigerian. Building in public.<br>
+      <a href="https://twitter.com/RightPDFKit" style="color:var(--accent)">@RightPDFKit</a></div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <a href="https://rightpdfkit.com">rightpdfkit.com</a> · 
+  <a href="https://rightpdfkit.com/blog">Blog</a> · 
+  © 2026 The 36th Company Ltd · Built in London
+</footer>
+
+</body>
+</html>
