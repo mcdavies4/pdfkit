@@ -1,6 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+<script>
+// Unregister old service workers that intercept blog URLs
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(function(registrations) {
+    for (let registration of registrations) {
+      // Check if this SW is intercepting blog pages
+      if (registration.scope && registration.scope.includes('rightpdfkit.com')) {
+        registration.unregister();
+        console.log('Old SW unregistered, reloading...');
+      }
+    }
+  });
+}
+</script>
+
 <meta charset="UTF-8">
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta name="referrer" content="strict-origin-when-cross-origin">
