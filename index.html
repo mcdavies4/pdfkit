@@ -2,20 +2,7 @@
 <html lang="en">
 <head>
 
-<script>
-// Unregister old service workers that intercept blog URLs
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(function(registrations) {
-    for (let registration of registrations) {
-      // Check if this SW is intercepting blog pages
-      if (registration.scope && registration.scope.includes('rightpdfkit.com')) {
-        registration.unregister();
-        console.log('Old SW unregistered, reloading...');
-      }
-    }
-  });
-}
-</script>
+
 
 <meta charset="UTF-8">
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
@@ -30628,13 +30615,7 @@ window.nav=function(t){
 initTheme();
 buildMobileNav();
 // Register service worker for offline/PWA support
-if('serviceWorker' in navigator){
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(reg => console.log('SW registered:', reg.scope))
-      .catch(err => console.log('SW error:', err));
-  });
-}
+
 initCookieBanner();
 initMergeDrag();
 setTimeout(wmPreview,100);
