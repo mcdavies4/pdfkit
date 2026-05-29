@@ -229,7 +229,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:14p
 .nav-item:hover{background:var(--surface2);color:var(--text)}
 .nav-item.active{background:var(--accent-bg);color:var(--accent);font-weight:600;border:1px solid var(--accent-border)}
 .nav-icon{font-size:15px;width:18px;text-align:center;flex-shrink:0}
-.main{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:20px;align-items:stretch}
+.main{flex:1;overflow-y:auto;padding:24px 24px 60px;display:flex;flex-direction:column;gap:20px;align-items:stretch}
 .tool-panel{display:none;flex-direction:column;gap:16px;}
 .tool-panel.active{display:flex}
 .home-panel{display:none;flex-direction:column;gap:20px}
@@ -1819,6 +1819,12 @@ html,body{overflow-x:hidden;max-width:100vw}
 }
 @media(max-width:400px) {
   .tool-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+
+@media(max-width:768px){
+  footer { bottom: 58px !important; font-size:11px; padding: 8px 14px !important; }
+  .main { padding-bottom: 120px !important; }
 }
 
 </style>
@@ -31669,23 +31675,7 @@ function showShareStrip(toolLabel, rbId) {
       <button class="share-btn" onclick="copyShareLink()">📋 Copy link</button>
     </div>
 </div><!-- end app -->
-<footer style="background:var(--surface);border-top:1px solid var(--border);padding:16px 20px;margin-top:auto">
-  <div style="max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between">
-    <div style="display:flex;align-items:center;gap:8px">
-      <div style="width:24px;height:24px;background:#E8450A;border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#fff;flex-shrink:0">R</div>
-      <span style="font-size:13px;font-weight:700;color:var(--text)">RightPDF<span style="color:var(--accent)">Kit</span></span>
-      <span style="font-size:11px;color:var(--muted)">· Built in London</span>
-    </div>
-    <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center">
-      <a href="#pricing" onclick="nav('pricing')" style="font-size:12px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Pricing</a>
-      <a href="/blog" style="font-size:12px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Blog</a>
-      <a href="#compare" onclick="nav('compare')" style="font-size:12px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Why Us?</a>
-      <a href="https://twitter.com/RightPDFKit" target="_blank" rel="noopener" style="font-size:12px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">𝕏 Twitter</a>
-      <a href="mailto:support@odogwu.online" style="font-size:12px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Contact</a>
-      <span style="font-size:11px;color:var(--hint)">© 2026 The 36th Company Ltd</span>
-    </div>
-  </div>
-</footer>
+
   `;
   rb.appendChild(strip);
   strip.style.display = 'block';
@@ -32832,5 +32822,23 @@ function filterHomeTools(query) {
 
 
 
+
+<footer style="background:var(--surface);border-top:1px solid var(--border);padding:12px 24px;position:fixed;bottom:0;left:0;right:0;z-index:100;width:100%;box-sizing:border-box;">
+  <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;width:100%;max-width:100%">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="width:24px;height:24px;background:#E8450A;border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#fff;flex-shrink:0">R</div>
+      <span style="font-size:13px;font-weight:700;color:var(--text)">RightPDF<span style="color:var(--accent)">Kit</span></span>
+      <span style="font-size:11px;color:var(--muted)">· Built in London</span>
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center">
+      <a href="#pricing" onclick="nav('pricing')" style="font-size:12px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Pricing</a>
+      <a href="/blog" style="font-size:12px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Blog</a>
+      <a href="#compare" onclick="nav('compare')" style="font-size:12px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Why Us?</a>
+      <a href="https://twitter.com/RightPDFKit" target="_blank" rel="noopener" style="font-size:12px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">𝕏 Twitter</a>
+      <a href="mailto:support@odogwu.online" style="font-size:12px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Contact</a>
+      <span style="font-size:11px;color:var(--hint)">© 2026 The 36th Company Ltd</span>
+    </div>
+  </div>
+</footer>
 </body>
 </html>
