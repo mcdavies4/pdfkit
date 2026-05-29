@@ -1090,9 +1090,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 /* ══════════════════════════════
    AI COMMAND PANEL
 ══════════════════════════════ */
-#panel-ai{
-  max-width:680px;
-}
+
 .ai-command-wrap{
   position:relative;
   background:var(--surface);
@@ -1848,6 +1846,27 @@ html,body{overflow-x:hidden;max-width:100vw}
   border-bottom-color: rgba(0,0,0,0.1);
 }
 
+
+/* ── Upload zone attention ── */
+@keyframes dz-pulse {
+  0%   { border-color: var(--accent); box-shadow: 0 0 0 0 rgba(232,69,10,.3); }
+  70%  { border-color: var(--accent); box-shadow: 0 0 0 8px rgba(232,69,10,0); }
+  100% { border-color: var(--border2); box-shadow: none; }
+}
+.dz { animation: dz-pulse 1.4s ease 0.3s 2; }
+.panel.active .dz { animation: dz-pulse 1.4s ease 0.3s 2; }
+
+/* ── Upload hint banner ── */
+.upload-hint {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--accent-bg); border: 1px solid var(--accent-border);
+  border-radius: 10px; padding: 10px 14px; margin-bottom: 12px;
+  font-size: 13px; color: var(--text); font-weight: 500;
+  animation: fadeIn .3s ease;
+}
+.upload-hint-icon { font-size: 18px; flex-shrink:0; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:none} }
+
 </style>
 
 <!-- Anti-flash: runs synchronously before first paint to set correct theme -->
@@ -2279,6 +2298,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
   <div id="merge-list" class="fl"></div>
   <div class="size-warn" id="merge-size-warn">⚠ One or more files is large (&gt;30MB). Processing may be slow on older devices.</div>
   <div class="eb" id="merge-err"></div>
+  <p id="merge-hint" style="font-size:12px;color:var(--muted);margin:4px 0 8px">Add at least 2 PDFs</p>
   <button class="btn btn-p btn-blk" id="merge-btn" onclick="runMerge()" disabled>Merge PDFs &amp; Download</button>
   <div class="pw" id="merge-pw"><div class="pb"><div class="pf" id="merge-pf"></div></div><div class="pl"><span>Merging…</span><span class="pp" id="merge-pp">0%</span></div></div>
   <div class="rb" id="merge-rb"><h4>✓ Merged successfully</h4><p id="merge-rm"></p></div>
@@ -2607,7 +2627,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
   </div>
   <div class="eb" id="ulk-err"></div>
   <button class="btn btn-p btn-blk" id="ulk-btn" onclick="runUnlock()" disabled>Unlock &amp; Download</button>
-  <div class="pw" id="ulk-pw"><div class="pb"><div class="pf" id="ulk-pf"></div></div><div class="pl"><span>Decrypting…</span><span class="pp" id="ulk-pp">0%</span></div></div>
+  <div class="pw" id="ulk-pw2""><div class="pb"><div class="pf" id="ulk-pf"></div></div><div class="pl"><span>Decrypting…</span><span class="pp" id="ulk-pp">0%</span></div></div>
   <div class="rb" id="ulk-rb"><h4>✓ PDF unlocked</h4><p id="ulk-rm"></p></div>
 </div>
 
@@ -29604,18 +29624,20 @@ const S={
 function nav(t){
   document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n.dataset.t===t));
   document.querySelectorAll('.panel,.home').forEach(p=>p.classList.remove('active'));
-  const panel = document.getElementById('panel-'+t);
+  const panel=document.getElementById('panel-'+t);
   if(panel) panel.classList.add('active');
-  // Init sign canvas when navigating to sign tool
-  if(t === 'sign') setTimeout(initSignCanvas, 50);
-  if(t === 'qrstamp') setTimeout(qrPreview, 50);
+  // Scroll to top every time a tool opens
+  const main=document.getElementById('main-content')||document.querySelector('.main');
+  if(main){ main.scrollTop=0; }
+  // Init canvases
+  if(t==='sign') setTimeout(initSignCanvas,50);
+  if(t==='esign') setTimeout(initEsCanvas,50);
+  if(t==='qrstamp') setTimeout(qrPreview,50);
   // Analytics
-  if(t !== 'home' && t !== 'privacy' && t !== 'compare' && typeof trackEvent === 'function'){
-    trackEvent('tool_open', {tool: t});
-  }
-  if(t === 'compare' && typeof trackEvent === 'function'){
-    trackEvent('compare_page_view');
-  }
+  if(t!=='home'&&t!=='privacy'&&t!=='compare'&&typeof trackEvent==='function') trackEvent('tool_open',{tool:t});
+  if(t==='compare'&&typeof trackEvent==='function') trackEvent('compare_page_view');
+  // Show upload hint for tool panels
+  if(t!=='home'&&t!=='pricing'&&t!=='compare'&&t!=='privacy') setTimeout(()=>showUploadHint(t), 100);
 }
 window.nav = nav; // export for global access
 
@@ -29646,7 +29668,10 @@ function showErr(id,m){const e=document.getElementById(id);e.textContent='⚠ '+
 function showRes(id,m){const e=document.getElementById(id);e.querySelector('p').textContent=m;e.classList.add('show');}
 // animProg — see updated version below with tab title progress
 
-function chip(f,rm){return`<div class="fc"><span class="fi">📄</span><span class="fn" title="${f.name}">${f.name}</span><span class="fs">${fmt(f.size)}</span>${rm?`<span class="fr" onclick="${rm}">✕</span>`:''}</div>`;}
+function chip(f,rm){
+  const n = (f.name||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return`<div class="fc"><span class="fi">📄</span><span class="fn" title="${n}">${n}</span><span class="fs">${fmt(f.size)}</span>${rm?`<span class="fr" onclick="${rm}">✕</span>`:''}</div>`;
+}
 function readBytes(file){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=e=>res(new Uint8Array(e.target.result));fr.onerror=rej;fr.readAsArrayBuffer(file);});}
 function dlBytes(bytes,name){const b=new Blob([bytes],{type:'application/pdf'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),2000);}
 function dlCanvas(canvas,name){const a=document.createElement('a');a.href=canvas.toDataURL('image/png');a.download=name;a.click();}
@@ -29958,7 +29983,16 @@ async function runCompress(){
 }
 
 // PROTECT
-function prtLoad(f){if(!f)return;S.prtFile=f;document.getElementById('prt-fd').innerHTML=chip(f,'prtClr()');document.getElementById('prt-opts').style.display='block';document.getElementById('prt-btn').disabled=false;}
+function prtLoad(f){
+  if(!f)return;
+  S.prtFile=f;
+  const fd=document.getElementById('prt-fd');
+  if(fd) fd.innerHTML=chip(f);
+  const opts=document.getElementById('prt-opts');
+  if(opts) opts.style.display='block';
+  const btn=document.getElementById('prt-btn');
+  if(btn) btn.disabled=false;
+}
 function prtClr(){S.prtFile=null;document.getElementById('prt-fd').innerHTML='';document.getElementById('prt-opts').style.display='none';document.getElementById('prt-btn').disabled=true;}
 function prtStrength(){const pw=document.getElementById('prt-upw').value;const bar=document.getElementById('prt-sb');const lbl=document.getElementById('prt-sl');if(!pw){bar.style.width='0';lbl.textContent='';return;}let sc=0;if(pw.length>=8)sc++;if(pw.length>=12)sc++;if(/[A-Z]/.test(pw))sc++;if(/[0-9]/.test(pw))sc++;if(/[^A-Za-z0-9]/.test(pw))sc++;const lvl=[['10%','#e74c3c','Weak'],['30%','#e67e22','Fair'],['58%','#f1c40f','Good'],['80%','#2ecc71','Strong'],['100%','#27ae60','Very strong']][Math.min(sc,4)];bar.style.width=lvl[0];bar.style.background=lvl[1];lbl.textContent=lvl[2];lbl.style.color=lvl[1];}
 async function runProtect(){
@@ -30243,8 +30277,7 @@ function renderMerge(){
       <span class="fr" onclick="mergeRm(${i})">✕</span>
     </div>`).join('');
   document.getElementById('merge-btn').disabled=S.mergeFiles.length<2;
-  document.getElementById('merge-hint').textContent=
-    S.mergeFiles.length>1?'Drag to reorder, then merge':'Add at least 2 PDFs';
+  const mh=document.getElementById('merge-hint');if(mh)mh.textContent=S.mergeFiles.length>1?'Drag to reorder, then merge':'Add at least 2 PDFs';
 }
 
 // ── FILE SIZE WARNING helper ──
@@ -30984,22 +31017,22 @@ function resetCookieConsent(){
 
 <script>
 
-// ══════════════════════════════════════════
+// ==========================================
 // RIGHTPDFKIT PRO SYSTEM
 // Free limits + upgrade modal + Pro token
-// ══════════════════════════════════════════
+// ==========================================
 
 const PRO_KEY      = 'rpk-pro-token-v1';
 const PRO_PRICE_ID = 'STRIPE_PRICE_ID'; // Replace with your Stripe price ID
 
-// ── Limits config ──
+// -- Limits config --
 const FREE_LIMITS = {
 };
 
 const MAX_FILE_SIZE_FREE = 20 * 1024 * 1024; // 20MB
 const MAX_FILE_SIZE_PRO  = 100 * 1024 * 1024; // 100MB
 
-// ── Pro status ──
+// -- Pro status --
 function isPro() {
   const token = localStorage.getItem(PRO_KEY);
   if (!token) return false;
@@ -31029,7 +31062,7 @@ function updateProUI() {
   }
 }
 
-// ── Usage tracking ──
+// -- Usage tracking --
 function getUsageKey(key, period) {
   if (period === 'day') return `rpk-usage-${key}-${new Date().toDateString()}`;
   return `rpk-usage-${key}-session`; // session resets on page load
@@ -31051,7 +31084,7 @@ function incrementUsage(toolId) {
   localStorage.setItem(key, current + 1);
 }
 
-// ── Check limit before running a tool ──
+// -- Check limit before running a tool --
 // Returns true if allowed, false if blocked
 function checkLimit(toolId, amount = 1) {
   if (isPro()) return true;
@@ -31065,7 +31098,7 @@ function checkLimit(toolId, amount = 1) {
   return true;
 }
 
-// ── File size check ──
+// -- File size check --
 function checkFileSize(file, toolPanel) {
   if (isPro()) return true;
   if (file && file.size > MAX_FILE_SIZE_FREE) {
@@ -31075,7 +31108,7 @@ function checkFileSize(file, toolPanel) {
   return true;
 }
 
-// ── Show upgrade modal ──
+// -- Show upgrade modal --
 function showUpgrade(toolId, customMsg) {
   const overlay = document.getElementById('upgrade-overlay');
   const title   = document.getElementById('upgrade-title');
@@ -31115,7 +31148,7 @@ function showUpgradeComingSoon() {
   if (cta)  { cta.textContent = 'Copy email address'; cta.onclick = () => { navigator.clipboard?.writeText('support@rightpdfkit.com'); toast('Email copied!'); }; }
 }
 
-// ── Usage bars — show in panels ──
+// -- Usage bars — show in panels --
 function renderUsageBar(toolId) {
   if (isPro()) return;
   const limit = FREE_LIMITS[toolId];
@@ -31151,7 +31184,7 @@ function renderUsageBar(toolId) {
   `;
 }
 
-// ── Hook into existing tool functions ──
+// -- Hook into existing tool functions --
 
 // PDF Chat — check per question sent
 const _pcSend_orig = typeof pcSend === 'function' ? pcSend : null;
@@ -31230,10 +31263,10 @@ if (typeof window !== 'undefined') {
 }
 
 
-// ══════════════════════════════════════════
+// ==========================================
 // FEATURE 1: TOOL SEARCH
 // Filter sidebar nav items by typing
-// ══════════════════════════════════════════
+// ==========================================
 
 function filterTools(query) {
   const q = query.toLowerCase().trim();
@@ -31267,13 +31300,7 @@ function filterTools(query) {
     'watermark':  ['watermark','stamp','confidential'],
     'redact':     ['redact','black out','remove','hide','sensitive'],
     'fillform':   ['form','fill','fields','checkbox','input'],
-    'smartfill':  ['smart','ai form','conversational','fill'],
-    'receipt':    ['expense','shopping','invoice scan'],
-    'pdfchat':    ['chat','ask','question','gpt'],
-    'pdfsummary': ['summary','summarise','summarize','tldr','overview'],
-    'pdftranslate':['translate','french','spanish','language','yoruba'],
     'bulkextract':['bulk','batch','multiple','many','extract all'],
-    'formcreate': ['create form','build form','generate form','make form'],
     'bates':      ['bates','legal','numbering','discovery','court'],
     'redline':    ['redline','changes','tracked','markup'],
     'pdftocsv':   ['csv','excel','spreadsheet','table','data'],
@@ -31302,7 +31329,6 @@ function filterTools(query) {
     'dupepage':   ['duplicate','copy page','clone'],
     'sign':       ['sign','signature'],
     'images':     ['export images','png','pages as images'],
-    'scan2data':  ['scan data','invoice','structured','table scan'],
     'pwcheck':    ['password check','strength','weak','strong'],
   };
 
@@ -31351,11 +31377,11 @@ document.addEventListener('keydown', e => {
   }
 });
 
-// ══════════════════════════════════════════
+// ==========================================
 // FEATURE 2: TOOL FAVOURITES
 // Pin tools to the top of the sidebar
 // Persisted in localStorage
-// ══════════════════════════════════════════
+// ==========================================
 
 const FAVS_KEY = 'rpk-favs-v1';
 
@@ -31423,10 +31449,10 @@ document.addEventListener('DOMContentLoaded', () => {
   updateFavButtons();
 });
 
-// ══════════════════════════════════════════
+// ==========================================
 // FEATURE 3: WHAT'S NEXT SUGGESTIONS
 // Show contextual tool suggestions after download
-// ══════════════════════════════════════════
+// ==========================================
 
 // Map: tool → what to suggest next
 const WHATS_NEXT = {
@@ -31451,14 +31477,7 @@ const WHATS_NEXT = {
   pagenums:   [{id:'compress',    l:'Compress it'},    {id:'watermark', l:'Add watermark'},  {id:'sign',      l:'Sign it'}],
   headfoot:   [{id:'pagenums',    l:'Add page numbers'},{id:'watermark',l:'Add watermark'}],
   fillform:   [{id:'esign',       l:'eSign it'},       {id:'flatten',   l:'Flatten fields'}, {id:'protect',   l:'Protect it'}],
-  smartfill:  [{id:'esign',       l:'eSign it'},       {id:'flatten',   l:'Flatten fields'}],
-  pdfchat:    [],
-  pdfsummary: [],
-  pdftranslate:[{id:'compress',   l:'Compress it'},    {id:'sign',      l:'Sign it'}],
-  receipt:    [{id:'bulkextract',l:'Bulk extract'}],
-  scan2data:  [{id:'bulkextract', l:'Bulk extract'},],
   bulkextract:[],
-  formcreate: [{id:'fillform',    l:'Fill a form'},],
   bates:      [{id:'redline',     l:'Add redline'},    {id:'esign',     l:'eSign it'},       {id:'protect',   l:'Protect it'}],
   redline:    [{id:'compare-pdf', l:'Compare PDFs'},   {id:'esign',     l:'eSign it'}],
   'compare-pdf':[{id:'redline',   l:'Make redline'},],
@@ -31526,10 +31545,10 @@ function showRes(id, msg) {
 }
 
 
-// ══════════════════════════════════════════
+// ==========================================
 // MOBILE SEARCH DRAWER
 // Full-screen search experience on mobile
-// ══════════════════════════════════════════
+// ==========================================
 
 // All tools registry for mobile search
 
@@ -31557,10 +31576,10 @@ function mobileNavTo(toolId) {
 
 
 
-// ══════════════════════════════════════════
+// ==========================================
 // FEATURE 4: RECENT FILES HISTORY
 // Stores last 5 files worked on in localStorage
-// ══════════════════════════════════════════
+// ==========================================
 const RECENT_KEY = 'rpk-recent-v1';
 const TOOLS_TRIED_KEY = 'rpk-tried-v1';
 
@@ -31600,10 +31619,10 @@ function renderRecent() {
   }).join('');
 }
 
-// ══════════════════════════════════════════
+// ==========================================
 // FEATURE 5: TOOL STREAK / PROGRESS TRACKER
 // Track which tools user has tried
-// ══════════════════════════════════════════
+// ==========================================
 const TOTAL_TOOLS = 42;
 
 function getTriedTools() {
@@ -31637,9 +31656,9 @@ function updateStreak() {
   if (pctEl) pctEl.textContent = pct + '%';
 }
 
-// ══════════════════════════════════════════
+// ==========================================
 // FEATURE 6: KEYBOARD SHORTCUTS
-// ══════════════════════════════════════════
+// ==========================================
 function closeShortcuts() {
   const el = document.getElementById('shortcuts-overlay');
   if (el) el.classList.remove('show');
@@ -31664,18 +31683,19 @@ document.addEventListener('keydown', e => {
 
   if (e.ctrlKey || e.metaKey) {
     const shortcuts = {
-      'k':  'h': 'home', 'm': 'merge',
-      'e': 'compress', 's': 'sign', 'd': 'scan', 'j': 'pdfchat'
+      'h': 'home', 'm': 'merge', 'e': 'compress',
+      's': 'sign', 'd': 'scan', 'o': 'ocr',
+      'p': 'protect', 'r': 'rotate', 'w': 'watermark'
     };
     const dest = shortcuts[e.key.toLowerCase()];
     if (dest) { e.preventDefault(); if (typeof nav === 'function') nav(dest); }
   }
 });
 
-// ══════════════════════════════════════════
+// ==========================================
 // FEATURE 7: SHARE RESULTS (viral loop)
 // Show share strip after every download
-// ══════════════════════════════════════════
+// ==========================================
 function showShareStrip(toolLabel, rbId) {
   const rb = document.getElementById(rbId);
   if (!rb) return;
@@ -31708,10 +31728,10 @@ function copyShareLink() {
   navigator.clipboard?.writeText('https://rightpdfkit.com').then(() => toast('Link copied!'));
 }
 
-// ══════════════════════════════════════════
+// ==========================================
 // HOOK INTO NAV() TO TRACK TOOL USAGE
 // + log recent files + show streak updates
-// ══════════════════════════════════════════
+// ==========================================
 const _originalNav = typeof nav === 'function' ? nav : null;
 // Override nav to track tool tries
 if (typeof nav === 'function') {
@@ -31722,9 +31742,9 @@ if (typeof nav === 'function') {
   };
 }
 
-// ══════════════════════════════════════════
+// ==========================================
 // HOOK INTO dlBytes() TO LOG RECENT FILES
-// ══════════════════════════════════════════
+// ==========================================
 if (typeof dlBytes === 'function') {
   const __dlBytes = dlBytes;
   window.dlBytes = function(bytes, filename) {
@@ -31748,9 +31768,9 @@ document.addEventListener('DOMContentLoaded', () => {
   updateStreak();
 });
 
-// ══════════════════════════════════════════
+// ==========================================
 // SIDEBAR MOBILE OPEN/CLOSE
-// ══════════════════════════════════════════
+// ==========================================
 function openSidebar() {
   const sidebar = document.getElementById('main-sidebar');
   const overlay = document.getElementById('sidebar-overlay');
@@ -31767,9 +31787,9 @@ function closeSidebar() {
   document.body.style.overflow = '';
 }
 
-// ══════════════════════════════════════════
+// ==========================================
 // ACTIVE TOOL LABEL (breadcrumb on mobile)
-// ══════════════════════════════════════════
+// ==========================================
 function updateActiveTool(toolId) {
   const label = document.getElementById('active-tool-label');
   if (!label) return;
@@ -31803,9 +31823,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// ══════════════════════════════════════════
+// ==========================================
 // PURCHASING POWER PARITY PRICING
-// ══════════════════════════════════════════
+// ==========================================
 const STRIPE_GLOBAL  = 'https://buy.stripe.com/8x200jfuu9vjdv7c3q7Re03';
 const STRIPE_NIGERIA = 'https://buy.stripe.com/aFacN582222RezbffC7Re05';
 
@@ -31938,7 +31958,7 @@ detectCountry();
 })();
 
 
-// ── Scroll to top ──
+// -- Scroll to top --
 function scrollToTop() {
   const main = document.querySelector('.main');
   if (main && main.scrollTop > 0) main.scrollTo({top:0, behavior:'smooth'});
@@ -31961,13 +31981,22 @@ function initScrollTop() {
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initScrollTop);
 else initScrollTop();
 
+
+// Export Pro functions to global scope
+window.goToPro = goToPro;
+window.isPro = isPro;
+window.checkLimit = checkLimit;
+window.activatePro = activatePro;
+window.showUpgrade = showUpgrade;
+window.closeUpgrade = closeUpgrade;
+window.renderUsageBar = typeof renderUsageBar !== 'undefined' ? renderUsageBar : function(){};
 </script>
 
 <!-- SCROLL TO TOP -->
 <button class="scroll-top" id="scroll-top-btn" onclick="scrollToTop()" aria-label="Scroll to top" title="Back to top">↑</button>
 <script>if(document.readyState!=="loading"){initScrollTop();}else{document.addEventListener("DOMContentLoaded",initScrollTop);}
 
-// ── Sign tool canvas init ──
+// -- Sign tool canvas init --
 function initSignCanvas() {
   const canvas = document.getElementById('sign-canvas');
   if (!canvas || canvas._initialized) return;
@@ -32074,7 +32103,7 @@ function signImgLoad(file) {
 
 
 
-// ── QR Stamp preview ──
+// -- QR Stamp preview --
 function qrPreview() {
   const input = document.getElementById('qr-text');
   const preview = document.getElementById('qr-preview-img');
@@ -32089,7 +32118,7 @@ function qrPreview() {
 
 
 
-// ── Progress animation helper ──
+// -- Progress animation helper --
 function animProg(barId, pctId, wrapId) {
   const bar = document.getElementById(barId);
   const pct = document.getElementById(pctId);
@@ -32115,11 +32144,11 @@ function animProg(barId, pctId, wrapId) {
 
 
 
-// ═══════════════════════════════════════════════════════
+// =======================================================
 // RIGHTPDFKIT — FIXED TOOL FUNCTIONS
-// ═══════════════════════════════════════════════════════
+// =======================================================
 
-// ── Generic load helper ──
+// -- Generic load helper --
 function _load(file, stateKey, fdId, btnId) {
   if (!file) return;
   S[stateKey] = file;
@@ -32129,7 +32158,7 @@ function _load(file, stateKey, fdId, btnId) {
   if (btn) btn.disabled = false;
 }
 
-// ── Extract text from PDF using PDF.js ──
+// -- Extract text from PDF using PDF.js --
 async function extractPdfText(file, maxPages) {
   const pj = await loadPJ(file);
   const total = Math.min(pj.numPages, maxPages || pj.numPages);
@@ -32142,7 +32171,7 @@ async function extractPdfText(file, maxPages) {
   return text.trim().substring(0, 12000);
 }
 
-// ── Safe API fetch helper ──
+// -- Safe API fetch helper --
 async function callAI(body) {
   const res = await fetch('/api/ai-pdf', {
     method: 'POST',
@@ -32158,7 +32187,7 @@ async function callAI(body) {
 }
 
 
-// ── Load functions ──
+// -- Load functions --
 function ptLoad(f) { _load(f, 'ptFile', 'pt-fd', 'pt-btn'); }
 function dpLoad(f) { _load(f, 'dpFile', 'dp-fd', 'dp-btn'); }
 function nupLoad(f) { _load(f, 'nupFile', 'nup-fd', 'nup-btn'); }
@@ -32217,7 +32246,7 @@ function receiptLoadFile(f) {
   const fd = document.getElementById('receipt-fd'); if (fd) fd.innerHTML = S.receiptImages.map(f => chip(f)).join('');
 }
 
-// ── Setter functions ──
+// -- Setter functions --
 function setDpPos(v) { S.dpPos = v; }
 function setNup(v) { S.nupLayout = v; }
 function setNupOrient(v) { S.nupOrient = v; }
@@ -32269,10 +32298,10 @@ function ffToggleView(v) { S.ffView = v; }
 function ffPageNav(dir) {}
 function ffClearAll() { S.ffFields = []; }
 
-// ── eSign canvas state ──
+// -- eSign canvas state --
 const ES = { penColor: '#1a1a2e' };
 
-// ── eSign helpers ──
+// -- eSign helpers --
 function renderTypedSig() {
   const el = document.getElementById('es-typed-preview');
   const name = document.getElementById('es-type-input');
@@ -32285,7 +32314,7 @@ function esClearSig() {
   if (cv) cv.getContext('2d').clearRect(0, 0, cv.width, cv.height);
 }
 
-// ── initSignCanvas ──
+// -- initSignCanvas --
 function initSignCanvas() {
   const canvas = document.getElementById('sign-canvas');
   if (!canvas || canvas._initialized) return;
@@ -32340,7 +32369,7 @@ function initEsCanvas() {
   canvas.addEventListener('touchend', stop);
 }
 
-// ── Sign PDF ──
+// -- Sign PDF --
 function setSignMethod(method) {
   document.querySelectorAll('[data-method]').forEach(b => b.classList.toggle('active', b.dataset.method === method));
   document.querySelectorAll('.sign-method-panel').forEach(p => p.style.display = p.dataset.method === method ? 'block' : 'none');
@@ -32420,7 +32449,7 @@ async function runSign() {
   } catch(e) { fin(()=>{}); showErr('sign-err', e.message); btn.disabled = false; }
 }
 
-// ── eSign + Certificate ──
+// -- eSign + Certificate --
 async function runESign() {
   if (!S.esFile) return toast('Upload a PDF first');
   const nameEl = document.getElementById('es-name');
@@ -32443,7 +32472,7 @@ async function runESign() {
     const timestamp = new Date().toISOString();
     const dateStr = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
 
-    // ── Draw signature block ──
+    // -- Draw signature block --
     const bx = width - 220, by = 25, bw = 195, bh = 90;
     // Box border
     lastPage.drawRectangle({ x: bx, y: by, width: bw, height: bh, borderColor: PDFLib.rgb(0.2,0.2,0.6), borderWidth: 1, color: PDFLib.rgb(0.97,0.97,1) });
@@ -32478,9 +32507,9 @@ async function runESign() {
 
     const out = await doc.save();
     const certText = [
-      '═══════════════════════════════════════',
+      '=======================================',
       '      DIGITAL SIGNATURE CERTIFICATE    ',
-      '═══════════════════════════════════════',
+      '=======================================',
       '',
       'Document: ' + S.esFile.name,
       'Signer:   ' + name,
@@ -32491,7 +32520,7 @@ async function runESign() {
       '',
       'Signed using RightPDFKit',
       'rightpdfkit.com',
-      '═══════════════════════════════════════',
+      '=======================================',
     ].join('\n');
 
     fin(() => {
@@ -32502,7 +32531,7 @@ async function runESign() {
   } catch(e) { fin(()=>{}); showErr('es-err', e.message); btn.disabled = false; }
 }
 
-// ── PDF Chat ──
+// -- PDF Chat --
 async function pcSend() {
   const input = document.getElementById('pc-input');
   const msgs = document.getElementById('pc-messages');
@@ -32532,7 +32561,7 @@ function pcClear() {
   const msgs = document.getElementById('pc-messages'); if (msgs) msgs.innerHTML = '';
 }
 
-// ── PDF Summarise ──
+// -- PDF Summarise --
 async function runPdfSummary() {
   if (!S.psFile) return toast('Upload a PDF first');
   const btn = document.getElementById('ps-btn'); btn.disabled = true;
@@ -32563,7 +32592,7 @@ function psCopy() { const el = document.getElementById('ps-result'); if (el) nav
 function psReset() { S.psFile = null; const fd = document.getElementById('ps-fd'); if (fd) fd.innerHTML = ''; const btn = document.getElementById('ps-btn'); if (btn) btn.disabled = true; }
 function psDownload() { const el = document.getElementById('ps-result'); if (el) { const blob = new Blob([el.textContent],{type:'text/plain'}); const u=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=u; a.download='summary.txt'; a.click(); setTimeout(()=>URL.revokeObjectURL(u),2000); } }
 
-// ── PDF Translate ──
+// -- PDF Translate --
 async function runPdfTranslate() {
   if (!S.ptFile) return toast('Upload a PDF first');
   const btn = document.getElementById('pt-btn'); btn.disabled = true;
@@ -32580,7 +32609,7 @@ async function runPdfTranslate() {
   } catch(e) { fin(()=>{}); showErr('pt-err', e.message); btn.disabled = false; }
 }
 
-// ── AI PDF Assistant ──
+// -- AI PDF Assistant --
 async function runAiCommand() {
   if (!S.aiCmdFile) return toast('Upload a PDF first');
   const cmdEl = document.getElementById('ai-cmd-input');
@@ -32607,7 +32636,7 @@ async function runAiCommand() {
   btn.disabled = false;
 }
 
-// ── Password checker ──
+// -- Password checker --
 function checkPwStrength() {
   const input = document.getElementById('prt-upw') || document.getElementById('pw-input');
   if (!input) return;
@@ -32625,7 +32654,7 @@ function checkPwStrength() {
 function togglePwVis() { const i = document.getElementById('prt-upw')||document.getElementById('pw-input'); if (i) i.type = i.type==='password'?'text':'password'; }
 function prtStrength() { checkPwStrength(); }
 
-// ── Scan & Camera stubs ──
+// -- Scan & Camera stubs --
 function scanOpenCamera() { const el = document.getElementById('scan-camera-input'); if (el) el.click(); }
 function scanStopCamera() {}
 function scanToggleTorch() {}
@@ -32646,20 +32675,20 @@ function s2dReset() { S.s2dFile = null; }
 function s2dCopy() { const el = document.getElementById('s2d-out'); if (el) navigator.clipboard?.writeText(el.textContent); }
 function s2dExportCsv() { const el = document.getElementById('s2d-out'); if (!el) return; const blob=new Blob([el.textContent],{type:'text/csv'}); const u=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=u; a.download='scan-data.csv'; a.click(); setTimeout(()=>URL.revokeObjectURL(u),2000); }
 
-// ── Smart Form Fill stubs ──
+// -- Smart Form Fill stubs --
 async function sfFillAll() { if (!checkLimit('__removed','Smart Form Fill')) return; toast('Smart fill: upload a PDF and it will be filled automatically.'); }
 function sfSkip() {}
 async function sfSend() { if (!checkLimit('__removed','Smart Form Fill')) return; toast('Processing…'); }
 function sfDownload() {}
 
-// ── PDF Chat extra stubs ──
+// -- PDF Chat extra stubs --
 function pcAskExample(q) { pcAsk(q); }
 
-// ── Compare PDF ──
+// -- Compare PDF --
 function cpdfCopyReport() { const el = document.getElementById('cpdf-report'); if (el) navigator.clipboard?.writeText(el.textContent); }
 function cpdfDownloadReport() { const el = document.getElementById('cpdf-report'); if (!el) return; const blob=new Blob([el.textContent],{type:'text/plain'}); const u=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=u; a.download='comparison.txt'; a.click(); setTimeout(()=>URL.revokeObjectURL(u),2000); }
 
-// ── Other run stubs ──
+// -- Other run stubs --
 async function runDupePage() {
   if (!S.dpFile) return toast('Upload a PDF first');
   const btn=document.getElementById('dp-btn'); btn.disabled=true;
@@ -32690,7 +32719,7 @@ async function runComparePdf() {
   try {
     const [b1,b2]=await Promise.all([readBytes(S.cpdfFile1),readBytes(S.cpdfFile2)]);
     const [d1,d2]=await Promise.all([PDFDocument.load(b1),PDFDocument.load(b2)]);
-    const report=['PDF Comparison Report','─'.repeat(40),'File 1: '+S.cpdfFile1.name+' ('+fmt(b1.length)+', '+d1.getPageCount()+' pages)','File 2: '+S.cpdfFile2.name+' ('+fmt(b2.length)+', '+d2.getPageCount()+' pages)','','Pages: '+(d1.getPageCount()===d2.getPageCount()?'✓ Match':'✗ Different'),'Size: '+(b1.length===b2.length?'✓ Identical':'Different by '+fmt(Math.abs(b1.length-b2.length)))].join('\n');
+    const report=['PDF Comparison Report','-'.repeat(40),'File 1: '+S.cpdfFile1.name+' ('+fmt(b1.length)+', '+d1.getPageCount()+' pages)','File 2: '+S.cpdfFile2.name+' ('+fmt(b2.length)+', '+d2.getPageCount()+' pages)','','Pages: '+(d1.getPageCount()===d2.getPageCount()?'✓ Match':'✗ Different'),'Size: '+(b1.length===b2.length?'✓ Identical':'Different by '+fmt(Math.abs(b1.length-b2.length)))].join('\n');
     const el=document.getElementById('cpdf-report'); if(el) el.textContent=report;
     fin(()=>{ showRes('cpdf-rb','Comparison complete'); toast('Compared!'); btn.disabled=false; });
   } catch(e){ fin(()=>{}); showErr('cpdf-err',e.message); btn.disabled=false; }
@@ -32775,12 +32804,12 @@ async function runFormCreate() {
   } catch(e){ fin(()=>{}); showErr('fc-err',e.message); btn.disabled=false; }
 }
 
-// ── Open Pro modal ──
+// -- Open Pro modal --
 function openProModal() { goToPro(); }
 
 
 
-// ── Magic Pro activation link ──
+// -- Magic Pro activation link --
 (function() {
   const params = new URLSearchParams(window.location.search);
   const token = params.get('activate');
@@ -32839,6 +32868,31 @@ function filterHomeTools(query) {
     const visible = section.querySelectorAll('.tool-card:not(.hidden)').length > 0;
     section.style.display = visible ? '' : 'none';
   });
+}
+
+
+
+// ── Upload hint: show sticky banner pointing to dropzone ──
+function showUploadHint(panelId) {
+  const panel = document.getElementById('panel-' + panelId);
+  if (!panel) return;
+  // Remove existing hints
+  panel.querySelectorAll('.upload-hint').forEach(h => h.remove());
+  const dz = panel.querySelector('.dz');
+  if (!dz) return;
+  // Only show if no file loaded yet (check fd or list)
+  const fd = panel.querySelector('.fl, .fd');
+  if (fd && fd.children.length > 0) return;
+  const hint = document.createElement('div');
+  hint.className = 'upload-hint';
+  hint.innerHTML = '<span class="upload-hint-icon">👆</span><span>Start by uploading your PDF using the box above — drag & drop or click to browse</span>';
+  // Insert after dz
+  dz.insertAdjacentElement('afterend', hint);
+  // Remove hint once file is added
+  const observer = new MutationObserver(() => {
+    if (fd && fd.children.length > 0) { hint.remove(); observer.disconnect(); }
+  });
+  if (fd) observer.observe(fd, { childList: true });
 }
 
 </script>
