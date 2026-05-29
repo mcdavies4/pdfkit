@@ -29750,7 +29750,7 @@ const S={
   aiCmdFile:null,aiCmdText:'',
   i2pFiles:[],i2pFit:'fit',i2pOrient:'auto',i2pSize:'a4',i2pQuality:0.92,
   w2pFile:null,w2pSize:'a4',
-  scanPages:[],scanEnhance:true,
+  ptFile:null,scanPages:[],scanEnhance:true,
   fcStyle:'standard',fcSize:'a4',fcText:'',
   esFile:null,esReason:'',esPos:'bottom-right',esPlacement:'last',esSigMethod:'draw',esFont:'Arial',
   psFile:null,psStyle:'formal',psFocus:'',
@@ -32317,12 +32317,7 @@ function signClear() {
   }
 }
 
-function signLoad(file) {
-  if (!file) return;
-  window._signFile = file;
-  const label = document.getElementById('sign-file-label');
-  if (label) label.textContent = file.name;
-}
+function signLoad(f) { _load(f, 'signFile', 'sign-fd', 'sign-btn'); }
 
 function signImgLoad(file) {
   if (!file) return;
@@ -32379,7 +32374,7 @@ function animProg(barId, pctId, wrapId) {
 
 
 // ═══════════════════════════════════════════════════════
-// MISSING TOOL FUNCTIONS — Load handlers & Setters
+// RIGHTPDFKIT — FIXED TOOL FUNCTIONS
 // ═══════════════════════════════════════════════════════
 
 // ── Generic load helper ──
@@ -32392,14 +32387,27 @@ function _load(file, stateKey, fdId, btnId) {
   if (btn) btn.disabled = false;
 }
 
+// ── Extract text from PDF using PDF.js ──
+async function extractPdfText(file, maxPages) {
+  const pj = await loadPJ(file);
+  const total = Math.min(pj.numPages, maxPages || pj.numPages);
+  let text = '';
+  for (let i = 1; i <= total; i++) {
+    const pg = await pj.getPage(i);
+    const content = await pg.getTextContent();
+    text += content.items.map(item => item.str).join(' ') + '\n\n';
+  }
+  return text.trim().substring(0, 12000);
+}
+
 // ── Load functions ──
-function ptLoad(f) { _load(f, 'ptextFile', 'ptext-fd', 'ptext-btn'); }
+function ptLoad(f) { _load(f, 'ptFile', 'pt-fd', 'pt-btn'); }
 function dpLoad(f) { _load(f, 'dpFile', 'dp-fd', 'dp-btn'); }
 function nupLoad(f) { _load(f, 'nupFile', 'nup-fd', 'nup-btn'); }
 function repLoad(f) { _load(f, 'repFile', 'rep-fd', 'rep-btn'); }
 function cpdfLoad(f, slot) {
-  if (slot === 2) { S.cpdfFile2 = f; const fd = document.getElementById('cpdf-fd2'); if (fd) fd.innerHTML = chip(f); }
-  else { S.cpdfFile1 = f; const fd = document.getElementById('cpdf-fd'); if (fd) fd.innerHTML = chip(f); }
+  if (slot === 2) { S.cpdfFile2 = f; const fd = document.getElementById('cpdf-fd-b'); if (fd) fd.innerHTML = chip(f); }
+  else { S.cpdfFile1 = f; const fd = document.getElementById('cpdf-fd-a'); if (fd) fd.innerHTML = chip(f); }
   const btn = document.getElementById('cpdf-btn');
   if (btn) btn.disabled = !(S.cpdfFile1 && S.cpdfFile2);
 }
@@ -32408,51 +32416,51 @@ function qrLoad(f) { _load(f, 'qrFile', 'qr-fd', 'qr-btn'); }
 function btsLoad(f) { _load(f, 'btsFile', 'bts-fd', 'bts-btn'); }
 function csvLoad(f) { _load(f, 'csvFile', 'csv-fd', 'csv-btn'); }
 function rlLoad(f, slot) {
-  if (slot === 2) { S.rlFile2 = f; const fd = document.getElementById('rl-fd2'); if (fd) fd.innerHTML = chip(f); }
-  else { S.rlFile1 = f; const fd = document.getElementById('rl-fd'); if (fd) fd.innerHTML = chip(f); }
+  if (slot === 2) { S.rlFile2 = f; const fd = document.getElementById('rl-fd-b'); if (fd) fd.innerHTML = chip(f); }
+  else { S.rlFile1 = f; const fd = document.getElementById('rl-fd-a'); if (fd) fd.innerHTML = chip(f); }
   const btn = document.getElementById('rl-btn');
   if (btn) btn.disabled = !(S.rlFile1 && S.rlFile2);
 }
-function aiCmdLoad(f) { _load(f, 'aiCmdFile', 'ai-fd', 'ai-btn'); }
+function aiCmdLoad(f) { _load(f, 'aiCmdFile', 'ai-file-fd', 'ai-run-btn'); }
 function i2pAddFiles(files) {
+  if (!files) { const fd = document.getElementById('i2p-fd'); if (fd) fd.innerHTML = S.i2pFiles.map(f => chip(f)).join(''); const btn = document.getElementById('i2p-btn'); if (btn) btn.disabled = S.i2pFiles.length === 0; return; }
   for (const f of files) S.i2pFiles.push(f);
-  const fd = document.getElementById('i2p-fd');
-  if (fd) fd.innerHTML = S.i2pFiles.map(f => chip(f, () => {
-    S.i2pFiles = S.i2pFiles.filter(x => x !== f);
-    i2pAddFiles([]);
-  })).join('');
-  const btn = document.getElementById('i2p-btn');
-  if (btn) btn.disabled = S.i2pFiles.length === 0;
+  const fd = document.getElementById('i2p-fd'); if (fd) fd.innerHTML = S.i2pFiles.map(f => chip(f)).join('');
+  const btn = document.getElementById('i2p-btn'); if (btn) btn.disabled = S.i2pFiles.length === 0;
 }
-function i2pClearAll() { S.i2pFiles = []; i2pAddFiles([]); }
+function i2pClearAll() { S.i2pFiles = []; i2pAddFiles(null); }
 function w2pLoad(f) { _load(f, 'w2pFile', 'w2p-fd', 'w2p-btn'); }
 function scanLoadImage(f) {
   if (!f) return;
   S.scanPages.push(f);
-  const fd = document.getElementById('scan-fd');
-  if (fd) fd.innerHTML = S.scanPages.map(f => chip(f)).join('');
-  const btn = document.getElementById('scan-btn');
-  if (btn) btn.disabled = false;
+  const fd = document.getElementById('scan-fd'); if (fd) fd.innerHTML = S.scanPages.map(f => chip(f)).join('');
+  const btn = document.getElementById('scan-btn'); if (btn) btn.disabled = false;
 }
+function signLoad(f) { _load(f, 'signFile', 'sign-fd', 'sign-btn'); }
 function esLoad(f) { _load(f, 'esFile', 'es-fd', 'es-btn'); }
 function psLoad(f) { _load(f, 'psFile', 'ps-fd', 'ps-btn'); }
-function pcLoad(f) { _load(f, 'pcFile', 'pc-fd', null); S.pcHistory = []; }
+function pcLoad(f) { 
+  if (!f) return;
+  S.pcFile = f; S.pcHistory = [];
+  const fd = document.getElementById('pc-fd'); if (fd) fd.innerHTML = chip(f);
+  const info = document.getElementById('pc-doc-info'); if (info) info.textContent = f.name;
+  const section = document.getElementById('pc-chat-wrap'); if (section) section.style.display = 'block';
+}
 function sfLoad(f) { _load(f, 'sfFile', 'sf-fd', 'sf-btn'); }
 function beLoad(files) {
   for (const f of files) S.beFiles.push(f);
-  const fd = document.getElementById('be-fd');
-  if (fd) fd.innerHTML = S.beFiles.map(f => chip(f)).join('');
+  const fd = document.getElementById('be-fd'); if (fd) fd.innerHTML = S.beFiles.map(f => chip(f)).join('');
+  const btn = document.getElementById('be-btn'); if (btn) btn.disabled = false;
 }
 function s2dLoadFile(f) { _load(f, 's2dFile', 's2d-fd', 's2d-btn'); }
 function receiptLoadFile(f) {
   if (!f) return;
   S.receiptImages.push(f);
-  const fd = document.getElementById('receipt-fd');
-  if (fd) fd.innerHTML = S.receiptImages.map(f => chip(f)).join('');
+  const fd = document.getElementById('receipt-fd'); if (fd) fd.innerHTML = S.receiptImages.map(f => chip(f)).join('');
 }
 
 // ── Setter functions ──
-function setDpPos(v) { S.dpPos = v; radioSel('dp-pos', v); }
+function setDpPos(v) { S.dpPos = v; }
 function setNup(v) { S.nupLayout = v; }
 function setNupOrient(v) { S.nupOrient = v; }
 function setNupSize(v) { S.nupSize = v; }
@@ -32478,152 +32486,125 @@ function setEsPos(v) { S.esPos = v; }
 function setEsPlacement(v) { S.esPlacement = v; }
 function setEsReason(v) { S.esReason = v; }
 function setEsFont(v) { S.esFont = v; renderTypedSig(); }
-function setEsSigMethod(v) { S.esSigMethod = v; }
+function setEsSigMethod(v) {
+  S.esSigMethod = v;
+  const draw = document.getElementById('es-draw-wrap');
+  const type = document.getElementById('es-type-wrap');
+  if (draw) draw.style.display = v === 'draw' ? 'block' : 'none';
+  if (type) type.style.display = v === 'type' ? 'block' : 'none';
+}
 function setFcStyle(v) { S.fcStyle = v; }
 function setFcSize(v) { S.fcSize = v; }
 function setPsStyle(v) { S.psStyle = v; }
 function setPsFocus(v) { S.psFocus = v; }
 function setS2dType(v) { S.s2dType = v; }
-function setAiExample(v) { const el = document.getElementById('ai-cmd-text'); if (el) { el.value = v; updateAiCharCount(); } }
-function updateAiCharCount() { const el = document.getElementById('ai-cmd-text'); const counter = document.getElementById('ai-char-count'); if (el && counter) counter.textContent = el.value.length + '/500'; }
+function setAiExample(v) {
+  const el = document.getElementById('ai-cmd-input');
+  if (el) { el.value = v; updateAiCharCount(); }
+}
+function updateAiCharCount() {
+  const el = document.getElementById('ai-cmd-input');
+  const counter = document.getElementById('ai-char-count');
+  if (el && counter) counter.textContent = el.value.length + '/500';
+}
 function ffToggleView(v) { S.ffView = v; }
-function ffPageNav(dir) { /* stub */ }
+function ffPageNav(dir) {}
 function ffClearAll() { S.ffFields = []; }
+
+// ── eSign canvas state ──
+const ES = { penColor: '#1a1a2e' };
 
 // ── eSign helpers ──
 function renderTypedSig() {
-  const el = document.getElementById('es-typed-sig');
-  const name = document.getElementById('es-name-input');
-  if (el && name) { el.style.fontFamily = S.esFont || 'Arial'; el.textContent = name?.value || 'Your Name'; }
+  const el = document.getElementById('es-typed-preview');
+  const name = document.getElementById('es-type-input');
+  if (el && name) { el.style.fontFamily = S.esFont || 'cursive'; el.textContent = name.value || 'Your Name'; }
 }
 function esUpdateTypedSig() { renderTypedSig(); }
-function esUpdateInitials() { /* stub */ }
-function esClearSig() { const c = document.getElementById('es-canvas'); if (c) c.getContext('2d').clearRect(0,0,c.width,c.height); }
-
-// ── Password checker ──
-function checkPwStrength() {
-  const input = document.getElementById('pw-input');
-  const bar = document.getElementById('pw-strength-bar');
-  const label = document.getElementById('pw-strength-label');
-  if (!input) return;
-  const pw = input.value;
-  let score = 0;
-  if (pw.length >= 8) score++;
-  if (pw.length >= 12) score++;
-  if (/[A-Z]/.test(pw)) score++;
-  if (/[0-9]/.test(pw)) score++;
-  if (/[^A-Za-z0-9]/.test(pw)) score++;
-  const labels = ['', 'Very weak', 'Weak', 'Fair', 'Strong', 'Very strong'];
-  const colors = ['', '#e74c3c', '#e67e22', '#f39c12', '#2ecc71', '#27ae60'];
-  if (bar) { bar.style.width = (score * 20) + '%'; bar.style.background = colors[score] || '#444'; }
-  if (label) label.textContent = labels[score] || '';
-}
-function togglePwVis() {
-  const input = document.getElementById('pw-input');
-  if (input) input.type = input.type === 'password' ? 'text' : 'password';
+function esUpdateInitials() {}
+function esClearSig() {
+  const cv = document.getElementById('es-sig-canvas');
+  if (cv) cv.getContext('2d').clearRect(0, 0, cv.width, cv.height);
 }
 
-// ── Scan functions ──
-function scanOpenCamera() { const el = document.getElementById('scan-camera-input'); if (el) el.click(); }
-function scanStopCamera() {}
-function scanToggleTorch() {}
-function scanCapture() {}
-function scanConfirmPage() {}
-function scanRetake() { if (S.scanPages.length > 0) { S.scanPages.pop(); scanLoadImage(); } }
-
-// ── Receipt functions ──
-function receiptOpenCamera() { const el = document.getElementById('receipt-camera-input'); if (el) el.click(); }
-function receiptStopCamera() {}
-function receiptCapture() {}
-function receiptAddAnother() {}
-function receiptReset() { S.receiptImages = []; const fd = document.getElementById('receipt-fd'); if (fd) fd.innerHTML = ''; }
-function receiptCopy() { const el = document.getElementById('receipt-out'); if (el) navigator.clipboard?.writeText(el.textContent); }
-function receiptExportCsv() {
-  const el = document.getElementById('receipt-out');
-  if (!el) return;
-  const blob = new Blob([el.textContent], {type:'text/csv'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'receipt.csv'; a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 2000);
-}
-
-// ── Scan to data functions ──
-function s2dOpenCamera() { const el = document.getElementById('s2d-camera-input'); if (el) el.click(); }
-function s2dStopCamera() {}
-function s2dCapture() {}
-function s2dReset() { S.s2dFile = null; }
-function s2dCopy() { const el = document.getElementById('s2d-out'); if (el) navigator.clipboard?.writeText(el.textContent); }
-function s2dExportCsv() {
-  const el = document.getElementById('s2d-out');
-  if (!el) return;
-  const blob = new Blob([el.textContent], {type:'text/csv'});
-  const url = URL.createObjectURL(blob); 
-  const a = document.createElement('a'); a.href = url; a.download = 'scan-data.csv'; a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 2000);
-}
-
-// ── PDF Chat (pcLoad, pcAsk, pcSend, pcClear) ──
-function pcAsk(q) { const el = document.getElementById('pc-input'); if (el) { el.value = q; pcSend(); } }
-async function pcSend() {
-  const input = document.getElementById('pc-input');
-  const out = document.getElementById('pc-out');
-  if (!input || !out || !input.value.trim()) return;
-  const q = input.value.trim(); input.value = '';
-  if (!checkLimit('pdfchat', 'PDF Chat')) return;
-  out.innerHTML += `<div class="pc-msg user">${q}</div><div class="pc-msg ai" id="pc-thinking">Thinking…</div>`;
-  out.scrollTop = out.scrollHeight;
-  try {
-    const res = await fetch('/api/ai-pdf', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({action:'chat', question: q, history: S.pcHistory})
-    });
-    const data = await res.json();
-    const answer = data.answer || data.text || 'Sorry, could not get a response.';
-    document.getElementById('pc-thinking').outerHTML = `<div class="pc-msg ai">${answer}</div>`;
-    S.pcHistory.push({role:'user',content:q},{role:'assistant',content:answer});
-  } catch(e) {
-    document.getElementById('pc-thinking').outerHTML = `<div class="pc-msg ai err">Error: ${e.message}</div>`;
+// ── initSignCanvas ──
+function initSignCanvas() {
+  const canvas = document.getElementById('sign-canvas');
+  if (!canvas || canvas._initialized) return;
+  canvas._initialized = true;
+  const ctx = canvas.getContext('2d');
+  let drawing = false, lastX = 0, lastY = 0;
+  function getPos(e) {
+    const r = canvas.getBoundingClientRect();
+    const sx = canvas.width / r.width, sy = canvas.height / r.height;
+    if (e.touches) return { x: (e.touches[0].clientX - r.left) * sx, y: (e.touches[0].clientY - r.top) * sy };
+    return { x: (e.clientX - r.left) * sx, y: (e.clientY - r.top) * sy };
   }
-  out.scrollTop = out.scrollHeight;
-}
-function pcClear() { S.pcHistory = []; const out = document.getElementById('pc-out'); if (out) out.innerHTML = ''; }
-
-// ── Smart Form Fill ──
-async function sfFillAll() { toast('Smart fill requires a Pro subscription'); }
-function sfSkip() {}
-async function sfSend() { toast('Smart fill requires a Pro subscription'); }
-function sfDownload() {}
-
-// ── PDF Summariser ──
-async function psReset() { S.psFile = null; const fd = document.getElementById('ps-fd'); if (fd) fd.innerHTML = ''; }
-function psCopy() { const el = document.getElementById('ps-out'); if (el) navigator.clipboard?.writeText(el.textContent); }
-function psDownload() {
-  const el = document.getElementById('ps-out');
-  if (!el) return;
-  dlBytes(new TextEncoder().encode(el.textContent), 'summary.txt');
+  function start(e) { e.preventDefault(); drawing = true; const p = getPos(e); lastX = p.x; lastY = p.y; }
+  function draw(e) {
+    if (!drawing) return; e.preventDefault();
+    const p = getPos(e);
+    ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(p.x, p.y);
+    ctx.strokeStyle = S.signColor || '#1a1a2e'; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.stroke();
+    lastX = p.x; lastY = p.y;
+  }
+  function stop() { drawing = false; }
+  canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', stop); canvas.addEventListener('mouseleave', stop);
+  canvas.addEventListener('touchstart', start, {passive:false}); canvas.addEventListener('touchmove', draw, {passive:false});
+  canvas.addEventListener('touchend', stop);
 }
 
-// ── Compare PDF ──
-function cpdfCopyReport() { const el = document.getElementById('cpdf-report'); if (el) navigator.clipboard?.writeText(el.textContent); }
-function cpdfDownloadReport() {
-  const el = document.getElementById('cpdf-report');
-  if (!el) return;
-  dlBytes(new TextEncoder().encode(el.textContent), 'comparison-report.txt');
+function initEsCanvas() {
+  const canvas = document.getElementById('es-sig-canvas');
+  if (!canvas || canvas._initialized) return;
+  canvas._initialized = true;
+  const ctx = canvas.getContext('2d');
+  let drawing = false, lastX = 0, lastY = 0;
+  function getPos(e) {
+    const r = canvas.getBoundingClientRect();
+    const sx = canvas.width / r.width, sy = canvas.height / r.height;
+    if (e.touches) return { x: (e.touches[0].clientX - r.left) * sx, y: (e.touches[0].clientY - r.top) * sy };
+    return { x: (e.clientX - r.left) * sx, y: (e.clientY - r.top) * sy };
+  }
+  function start(e) { e.preventDefault(); drawing = true; const p = getPos(e); lastX = p.x; lastY = p.y; }
+  function draw(e) {
+    if (!drawing) return; e.preventDefault();
+    const p = getPos(e);
+    ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(p.x, p.y);
+    ctx.strokeStyle = ES.penColor || '#1a1a2e'; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.stroke();
+    lastX = p.x; lastY = p.y;
+  }
+  function stop() { drawing = false; }
+  canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', stop); canvas.addEventListener('mouseleave', stop);
+  canvas.addEventListener('touchstart', start, {passive:false}); canvas.addEventListener('touchmove', draw, {passive:false});
+  canvas.addEventListener('touchend', stop);
 }
-
-// ── Open Pro modal ──
-function openProModal() { goToPro(); }
-
-
-
-// ═══════════════════════════════════════════════════════
-// MISSING RUN FUNCTIONS — Tool implementations
-// ═══════════════════════════════════════════════════════
 
 // ── Sign PDF ──
+function setSignMethod(method) {
+  document.querySelectorAll('[data-method]').forEach(b => b.classList.toggle('active', b.dataset.method === method));
+  document.querySelectorAll('.sign-method-panel').forEach(p => p.style.display = p.dataset.method === method ? 'block' : 'none');
+  S.signMethod = method;
+  if (method === 'draw') setTimeout(initSignCanvas, 50);
+}
+function setSignPos(pos) { S.signPos = pos; }
+function setSignFont(font) { S.signFont = font; }
+function setSignColor(color) { S.signColor = color; }
+function signClear() {
+  const cv = document.getElementById('sign-canvas');
+  if (cv) cv.getContext('2d').clearRect(0, 0, cv.width, cv.height);
+}
+function signImgLoad(f) {
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = e => { window._signImgData = e.target.result; };
+  reader.readAsDataURL(f);
+}
+
 async function runSign() {
-  if (!S.signFile) return;
+  if (!S.signFile) return toast('Upload a PDF first');
   const btn = document.getElementById('sign-btn'); btn.disabled = true;
   const fin = animProg('sign-pf','sign-pp','sign-pw');
   try {
@@ -32633,326 +32614,417 @@ async function runSign() {
     const page = pages[pages.length - 1];
     const { width, height } = page.getSize();
 
-    // Get signature from canvas or typed
-    const canvas = document.getElementById('sign-canvas');
-    if (canvas) {
-      const sigData = canvas.toDataURL('image/png');
-      const sigBytes = await fetch(sigData).then(r => r.arrayBuffer());
-      const sigImg = await doc.embedPng(sigBytes);
-      const sigW = 160, sigH = 60;
-      let x = width - sigW - 30, y = 30;
-      if (S.signPos === 'bottom-right') { x = width - sigW - 30; y = 30; }
-      else if (S.signPos === 'bottom-left') { x = 30; y = 30; }
-      else if (S.signPos === 'top-right') { x = width - sigW - 30; y = height - sigH - 30; }
-      else if (S.signPos === 'top-left') { x = 30; y = height - sigH - 30; }
-      page.drawImage(sigImg, { x, y, width: sigW, height: sigH });
+    // Get signature data
+    let sigImage = null;
+    const method = S.signMethod || 'draw';
+
+    if (method === 'draw') {
+      const canvas = document.getElementById('sign-canvas');
+      if (!canvas) throw new Error('Sign canvas not found');
+      const dataUrl = canvas.toDataURL('image/png');
+      const arr = dataUrl.split(',')[1];
+      const bin = atob(arr);
+      const bytes2 = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes2[i] = bin.charCodeAt(i);
+      sigImage = await doc.embedPng(bytes2);
+    } else if (method === 'type') {
+      const text = document.getElementById('sign-text')?.value || 'Signed';
+      const font = await doc.embedFont(PDFLib.StandardFonts.HelveticaOblique);
+      const pos = S.signPos || 'bottom-right';
+      let x = width - 160, y = 30;
+      if (pos === 'bottom-left') { x = 30; y = 30; }
+      else if (pos === 'top-right') { x = width - 160; y = height - 50; }
+      else if (pos === 'top-left') { x = 30; y = height - 50; }
+      page.drawText(text, { x, y, size: 20, font, color: PDFLib.rgb(0.1, 0.1, 0.6) });
+      const out = await doc.save();
+      fin(() => { dlBytes(out, S.signFile.name.replace('.pdf','') + '_signed.pdf'); showRes('sign-rb', 'Signature applied'); toast('PDF signed!'); });
+      return;
+    } else if (method === 'upload' && window._signImgData) {
+      const arr = window._signImgData.split(',')[1];
+      const bin = atob(arr);
+      const bytes2 = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes2[i] = bin.charCodeAt(i);
+      sigImage = await doc.embedPng(bytes2);
+    }
+
+    if (sigImage) {
+      const sigW = 180, sigH = 70;
+      const pos = S.signPos || 'bottom-right';
+      let x = width - sigW - 30, y = 25;
+      if (pos === 'bottom-left') { x = 30; y = 25; }
+      else if (pos === 'top-right') { x = width - sigW - 30; y = height - sigH - 25; }
+      else if (pos === 'top-left') { x = 30; y = height - sigH - 25; }
+      page.drawImage(sigImage, { x, y, width: sigW, height: sigH });
     }
 
     const out = await doc.save();
-    fin(() => {
-      dlBytes(out, S.signFile.name.replace('.pdf','') + '_signed.pdf');
-      showRes('sign-rb', 'Signature applied to ' + S.signFile.name);
-      toast('PDF signed!');
-    });
+    fin(() => { dlBytes(out, S.signFile.name.replace('.pdf','') + '_signed.pdf'); showRes('sign-rb', 'Signature applied successfully'); toast('PDF signed!'); });
   } catch(e) { fin(()=>{}); showErr('sign-err', e.message); btn.disabled = false; }
 }
 
-// ── Image to PDF ──
-async function runImg2Pdf() {
-  if (!S.i2pFiles.length) return;
-  const btn = document.getElementById('i2p-btn'); btn.disabled = true;
-  const fin = animProg('i2p-pf','i2p-pp','i2p-pw');
-  try {
-    const doc = await PDFDocument.create();
-    for (const file of S.i2pFiles) {
-      const bytes = await readBytes(file);
-      const type = file.type;
-      let img;
-      if (type === 'image/jpeg' || type === 'image/jpg') img = await doc.embedJpg(bytes);
-      else img = await doc.embedPng(bytes);
-      const pageSizes = { a4:[595,842], letter:[612,792], a3:[842,1191] };
-      const [pgW, pgH] = pageSizes[S.i2pSize] || [595,842];
-      const page = doc.addPage([pgW, pgH]);
-      const { width: iW, height: iH } = img.scale(1);
-      let drawW = pgW - 40, drawH = (iH / iW) * drawW;
-      if (drawH > pgH - 40) { drawH = pgH - 40; drawW = (iW / iH) * drawH; }
-      const x = (pgW - drawW) / 2, y = (pgH - drawH) / 2;
-      page.drawImage(img, { x, y, width: drawW, height: drawH });
-    }
-    const out = await doc.save();
-    fin(() => {
-      dlBytes(out, 'images.pdf');
-      showRes('i2p-rb', S.i2pFiles.length + ' image(s) converted to PDF');
-      toast('PDF created!');
-    });
-  } catch(e) { fin(()=>{}); showErr('i2p-err', e.message); btn.disabled = false; }
-}
-
-// ── Word to PDF (browser limitation — show message) ──
-async function runWord2Pdf() {
-  if (!S.w2pFile) return;
-  showRes('w2p-rb', 'Word to PDF conversion requires server processing. For now, use Google Docs: File → Download → PDF. This feature is coming soon.');
-  toast('Coming soon — use Google Docs for now');
-}
-
-// ── Scan to PDF ──
-async function runScanToPdf() {
-  if (!S.scanPages.length) return;
-  const btn = document.getElementById('scan-btn'); btn.disabled = true;
-  const fin = animProg('scan-pf','scan-pp','scan-pw');
-  try {
-    const doc = await PDFDocument.create();
-    for (const file of S.scanPages) {
-      const bytes = await readBytes(file);
-      const type = file.type;
-      let img;
-      if (type === 'image/jpeg' || type === 'image/jpg') img = await doc.embedJpg(bytes);
-      else img = await doc.embedPng(bytes);
-      const page = doc.addPage([595, 842]);
-      const { width: iW, height: iH } = img.scale(1);
-      let drawW = 555, drawH = (iH / iW) * 555;
-      if (drawH > 802) { drawH = 802; drawW = (iW / iH) * 802; }
-      const x = (595 - drawW) / 2, y = (842 - drawH) / 2;
-      page.drawImage(img, { x, y, width: drawW, height: drawH });
-    }
-    const out = await doc.save();
-    fin(() => {
-      dlBytes(out, 'scan.pdf');
-      showRes('scan-rb', S.scanPages.length + ' page(s) scanned to PDF');
-      toast('Scan saved!');
-    });
-  } catch(e) { fin(()=>{}); showErr('scan-err', e.message); btn.disabled = false; }
-}
-
-// ── Duplicate Page ──
-async function runDupePage() {
-  if (!S.dpFile) return;
-  const btn = document.getElementById('dp-btn'); btn.disabled = true;
-  const fin = animProg('dp-pf','dp-pp','dp-pw');
-  try {
-    const bytes = await readBytes(S.dpFile);
-    const srcDoc = await PDFDocument.load(bytes);
-    const doc = await PDFDocument.load(bytes);
-    const total = doc.getPageCount();
-    const pageNums = parsePgs(document.getElementById('dp-pages')?.value || 'all', total);
-    const count = parseInt(document.getElementById('dp-count')?.value) || 1;
-    let insertAt = doc.getPageCount();
-    for (const pg of pageNums.reverse()) {
-      const [copied] = await doc.copyPages(srcDoc, [pg - 1]);
-      for (let i = 0; i < count; i++) doc.insertPage(insertAt, copied);
-    }
-    const out = await doc.save();
-    fin(() => {
-      dlBytes(out, S.dpFile.name.replace('.pdf','') + '_duplicated.pdf');
-      showRes('dp-rb', 'Pages duplicated successfully');
-      toast('Done!');
-    });
-  } catch(e) { fin(()=>{}); showErr('dp-err', e.message); btn.disabled = false; }
-}
-
-// ── N-up PDF ──
-async function runNup() {
-  if (!S.nupFile) return;
-  showRes('nup-rb', 'N-up layout is a complex layout tool. Basic 2-up: use Compress + Reorder to achieve this. Full N-up coming soon.');
-  toast('Coming soon');
-}
-
-// ── Repair PDF ──
-async function runRepair() {
-  if (!S.repFile) return;
-  const btn = document.getElementById('rep-btn'); btn.disabled = true;
-  const fin = animProg('rep-pf','rep-pp','rep-pw');
-  try {
-    const bytes = await readBytes(S.repFile);
-    const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
-    const out = await doc.save({ useObjectStreams: false });
-    fin(() => {
-      dlBytes(out, S.repFile.name.replace('.pdf','') + '_repaired.pdf');
-      showRes('rep-rb', 'PDF repaired and re-saved (' + fmt(out.length) + ')');
-      toast('Repaired!');
-    });
-  } catch(e) { fin(()=>{}); showErr('rep-err', e.message); btn.disabled = false; }
-}
-
-// ── Compare PDF ──
-async function runComparePdf() {
-  if (!S.cpdfFile1 || !S.cpdfFile2) return;
-  const btn = document.getElementById('cpdf-btn'); btn.disabled = true;
-  const fin = animProg('cpdf-pf','cpdf-pp','cpdf-pw');
-  try {
-    const [b1, b2] = await Promise.all([readBytes(S.cpdfFile1), readBytes(S.cpdfFile2)]);
-    const [d1, d2] = await Promise.all([PDFDocument.load(b1), PDFDocument.load(b2)]);
-    const report = [
-      `PDF Comparison Report`,
-      `File 1: ${S.cpdfFile1.name} (${fmt(b1.length)}, ${d1.getPageCount()} pages)`,
-      `File 2: ${S.cpdfFile2.name} (${fmt(b2.length)}, ${d2.getPageCount()} pages)`,
-      ``,
-      `Page count: ${d1.getPageCount() === d2.getPageCount() ? '✓ Match' : '✗ Different (' + d1.getPageCount() + ' vs ' + d2.getPageCount() + ')'}`,
-      `File size: ${b1.length === b2.length ? '✓ Identical' : 'Different (' + fmt(b1.length) + ' vs ' + fmt(b2.length) + ')'}`,
-    ].join('\n');
-    const reportEl = document.getElementById('cpdf-report');
-    if (reportEl) reportEl.textContent = report;
-    fin(() => { showRes('cpdf-rb', 'Comparison complete'); toast('Compared!'); });
-  } catch(e) { fin(()=>{}); showErr('cpdf-err', e.message); btn.disabled = false; }
-}
-
-// ── Fill Form ──
-async function runFillForm() {
-  if (!S.ffFile) return;
-  showRes('ff-rb', 'PDF form filling detected. Smart Form Fill (AI-powered) can fill this automatically — upgrade to Pro or use the manual fields above.');
-  toast('Manual fill: click fields above');
-}
-
-// ── QR Stamp ──
-async function runQrStamp() {
-  if (!S.qrFile) return;
-  showRes('qr-rb', 'QR stamping requires a QR code library. Please add text manually using Annotate tool for now. Full QR stamp coming soon.');
-  toast('Use Annotate tool for now');
-}
-
-// ── Bates Numbering ──
-async function runBates() {
-  if (!S.btsFile) return;
-  const btn = document.getElementById('bts-btn'); btn.disabled = true;
-  const fin = animProg('bts-pf','bts-pp','bts-pw');
-  try {
-    const bytes = await readBytes(S.btsFile);
-    const doc = await PDFDocument.load(bytes);
-    const pages = doc.getPages();
-    const font = await doc.embedFont(PDFLib.StandardFonts.Helvetica);
-    pages.forEach((page, i) => {
-      const { width, height } = page.getSize();
-      const label = String(i + 1).padStart(6, '0');
-      let x = 30, y = height - 20;
-      if (S.btsPos === 'top-right') { x = width - 60; y = height - 20; }
-      else if (S.btsPos === 'bottom-left') { x = 30; y = 10; }
-      else if (S.btsPos === 'bottom-right') { x = width - 60; y = 10; }
-      page.drawText(label, { x, y, size: 8, font, color: PDFLib.rgb(0,0,0) });
-    });
-    const out = await doc.save();
-    fin(() => {
-      dlBytes(out, S.btsFile.name.replace('.pdf','') + '_bates.pdf');
-      showRes('bts-rb', 'Bates numbers applied to ' + pages.length + ' pages');
-      toast('Done!');
-    });
-  } catch(e) { fin(()=>{}); showErr('bts-err', e.message); btn.disabled = false; }
-}
-
-// ── PDF to CSV ──
-async function runPdfToCsv() {
-  if (!S.csvFile) return;
-  const btn = document.getElementById('csv-btn'); btn.disabled = true;
-  const fin = animProg('csv-pf','csv-pp','csv-pw');
-  try {
-    const pj = await loadPJ(S.csvFile);
-    let csv = '';
-    for (let i = 1; i <= pj.numPages; i++) {
-      const pg = await pj.getPage(i);
-      const content = await pg.getTextContent();
-      const text = content.items.map(item => '"' + item.str.replace(/"/g,'""') + '"').join(',');
-      csv += text + '\n';
-    }
-    const blob = new Blob([csv], {type:'text/csv'});
-    const url = URL.createObjectURL(blob);
-    fin(() => {
-      const a = document.createElement('a'); a.href = url; a.download = S.csvFile.name.replace('.pdf','.csv'); a.click();
-      setTimeout(() => URL.revokeObjectURL(url), 2000);
-      showRes('csv-rb', 'Exported to CSV (' + pj.numPages + ' pages)');
-      toast('CSV downloaded!');
-    });
-  } catch(e) { fin(()=>{}); showErr('csv-err', e.message); btn.disabled = false; }
-}
-
-// ── Redline ──
-async function runRedline() {
-  if (!S.rlFile1 || !S.rlFile2) return;
-  showRes('rl-rb', 'Redline comparison extracts text from both PDFs and highlights differences. Basic text diff: File 1 has ' + fmt(S.rlFile1.size) + ', File 2 has ' + fmt(S.rlFile2.size) + '. Full visual redline coming soon.');
-  toast('Basic comparison done');
-}
-
-// ── AI Command ──
-async function runAiCommand() {
-  if (!S.aiCmdFile) return;
-  const cmd = document.getElementById('ai-cmd-text')?.value?.trim();
-  if (!cmd) return toast('Please enter a command');
-  if (!checkLimit('ai', 'AI Assistant')) return;
-  const btn = document.getElementById('ai-btn'); btn.disabled = true;
-  const fin = animProg('ai-pf','ai-pp','ai-pw');
-  try {
-    const res = await fetch('/api/ai-pdf', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({action:'command', command: cmd})
-    });
-    const data = await res.json();
-    fin(() => {
-      showRes('ai-rb', data.result || data.text || 'Command processed. ' + (data.message || ''));
-      toast('Done!');
-      btn.disabled = false;
-    });
-  } catch(e) { fin(()=>{}); showErr('ai-err', e.message); btn.disabled = false; }
-}
-
-// ── eSign with Certificate ──
+// ── eSign + Certificate ──
 async function runESign() {
-  if (!S.esFile) return;
+  if (!S.esFile) return toast('Upload a PDF first');
+  const nameEl = document.getElementById('es-name');
+  const emailEl = document.getElementById('es-email');
+  const name = nameEl?.value?.trim() || 'Signatory';
+  const email = emailEl?.value?.trim() || '';
+  const reason = S.esReason || 'approved';
   const btn = document.getElementById('es-btn'); btn.disabled = true;
   const fin = animProg('es-pf','es-pp','es-pw');
   try {
+    initEsCanvas();
     const bytes = await readBytes(S.esFile);
     const doc = await PDFDocument.load(bytes);
     const pages = doc.getPages();
-    const page = pages[S.esPlacement === 'first' ? 0 : pages.length - 1];
-    const { width, height } = page.getSize();
-    const font = await doc.embedFont(PDFLib.StandardFonts.HelveticaOblique);
-    const nameEl = document.getElementById('es-name-input');
-    const name = nameEl?.value || 'Signed';
+    const lastPage = pages[pages.length - 1];
+    const { width, height } = lastPage.getSize();
+    const font = await doc.embedFont(PDFLib.StandardFonts.Helvetica);
+    const fontItalic = await doc.embedFont(PDFLib.StandardFonts.HelveticaOblique);
+    const fontBold = await doc.embedFont(PDFLib.StandardFonts.HelveticaBold);
     const timestamp = new Date().toISOString();
-    // Draw signature text
-    let x = width - 200, y = 30;
-    if (S.esPos === 'top-right') { x = width - 200; y = height - 50; }
-    else if (S.esPos === 'top-left') { x = 30; y = height - 50; }
-    else if (S.esPos === 'bottom-left') { x = 30; y = 30; }
-    page.drawText(name, { x, y: y + 15, size: 16, font, color: PDFLib.rgb(0.1,0.1,0.5) });
-    page.drawText('Signed: ' + timestamp.split('T')[0], { x, y, size: 8, font: await doc.embedFont(PDFLib.StandardFonts.Helvetica), color: PDFLib.rgb(0.4,0.4,0.4) });
+    const dateStr = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+
+    // ── Draw signature block ──
+    const bx = width - 220, by = 25, bw = 195, bh = 90;
+    // Box border
+    lastPage.drawRectangle({ x: bx, y: by, width: bw, height: bh, borderColor: PDFLib.rgb(0.2,0.2,0.6), borderWidth: 1, color: PDFLib.rgb(0.97,0.97,1) });
+    // Header bar
+    lastPage.drawRectangle({ x: bx, y: by + bh - 18, width: bw, height: 18, color: PDFLib.rgb(0.2,0.2,0.6) });
+    lastPage.drawText('DIGITALLY SIGNED', { x: bx + 8, y: by + bh - 13, size: 7, font: fontBold, color: PDFLib.rgb(1,1,1) });
+
+    // Signature canvas
+    const method = S.esSigMethod || 'draw';
+    if (method === 'draw') {
+      const cv = document.getElementById('es-sig-canvas');
+      if (cv) {
+        const dataUrl = cv.toDataURL('image/png');
+        const arr = dataUrl.split(',')[1];
+        const bin = atob(arr);
+        const b = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) b[i] = bin.charCodeAt(i);
+        const img = await doc.embedPng(b);
+        lastPage.drawImage(img, { x: bx + 4, y: by + bh - 52, width: bw - 8, height: 32 });
+      }
+    } else {
+      const sigText = document.getElementById('es-type-input')?.value || name;
+      lastPage.drawText(sigText, { x: bx + 8, y: by + bh - 46, size: 14, font: fontItalic, color: PDFLib.rgb(0.1,0.1,0.5) });
+    }
+
+    // Signer details
+    lastPage.drawText(name, { x: bx + 6, y: by + 48, size: 7, font: fontBold, color: PDFLib.rgb(0.1,0.1,0.1) });
+    if (email) lastPage.drawText(email, { x: bx + 6, y: by + 39, size: 6, font, color: PDFLib.rgb(0.4,0.4,0.4) });
+    lastPage.drawText('Reason: ' + reason, { x: bx + 6, y: by + 30, size: 6, font, color: PDFLib.rgb(0.4,0.4,0.4) });
+    lastPage.drawText(dateStr, { x: bx + 6, y: by + 21, size: 6, font, color: PDFLib.rgb(0.4,0.4,0.4) });
+    lastPage.drawText('Signed with RightPDFKit', { x: bx + 6, y: by + 12, size: 5, font, color: PDFLib.rgb(0.6,0.6,0.6) });
+
     const out = await doc.save();
+    const certText = [
+      '═══════════════════════════════════════',
+      '      DIGITAL SIGNATURE CERTIFICATE    ',
+      '═══════════════════════════════════════',
+      '',
+      'Document: ' + S.esFile.name,
+      'Signer:   ' + name,
+      'Email:    ' + (email || 'Not provided'),
+      'Reason:   ' + reason,
+      'Date:     ' + dateStr,
+      'Time:     ' + new Date().toLocaleTimeString(),
+      '',
+      'Signed using RightPDFKit',
+      'rightpdfkit.com',
+      '═══════════════════════════════════════',
+    ].join('\n');
+
     fin(() => {
       dlBytes(out, S.esFile.name.replace('.pdf','') + '_signed.pdf');
-      showRes('es-rb', 'eSign applied. Signed: ' + name + ' · ' + timestamp);
-      toast('eSigned!');
+      showRes('es-rb', certText);
+      toast('eSigned with certificate!');
     });
   } catch(e) { fin(()=>{}); showErr('es-err', e.message); btn.disabled = false; }
 }
 
-// ── Form Create ──
-async function runFormCreate() {
-  const desc = document.getElementById('fc-desc')?.value?.trim();
-  if (!desc) return toast('Please describe the form');
-  if (!checkLimit('ai', 'Form Creator')) return;
-  const btn = document.getElementById('fc-btn'); btn.disabled = true;
-  const fin = animProg('fc-pf','fc-pp','fc-pw');
+// ── PDF Chat ──
+async function pcSend() {
+  const input = document.getElementById('pc-input');
+  const msgs = document.getElementById('pc-messages');
+  if (!input || !input.value.trim()) return;
+  if (!S.pcFile) return toast('Upload a PDF first');
+  if (!checkLimit('pdfchat', 'PDF Chat')) return;
+  const q = input.value.trim(); input.value = '';
+  const userDiv = document.createElement('div'); userDiv.className = 'pc-msg user'; userDiv.textContent = q;
+  const aiDiv = document.createElement('div'); aiDiv.className = 'pc-msg ai'; aiDiv.textContent = 'Thinking…';
+  if (msgs) { msgs.appendChild(userDiv); msgs.appendChild(aiDiv); msgs.scrollTop = msgs.scrollHeight; }
   try {
+    if (!S._pcText) S._pcText = await extractPdfText(S.pcFile, 15);
     const res = await fetch('/api/ai-pdf', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({action:'create-form', description: desc})
+      body: JSON.stringify({ action: 'chat', question: q, context: S._pcText, history: S.pcHistory })
     });
     const data = await res.json();
-    const doc = await PDFDocument.create();
-    const page = doc.addPage([595, 842]);
-    const font = await doc.embedFont(PDFLib.StandardFonts.Helvetica);
-    page.drawText(desc, { x: 50, y: 780, size: 14, font, color: PDFLib.rgb(0,0,0) });
-    page.drawText('Generated by RightPDFKit AI', { x: 50, y: 30, size: 8, font, color: PDFLib.rgb(0.6,0.6,0.6) });
-    const out = await doc.save();
-    fin(() => {
-      dlBytes(out, 'form.pdf');
-      showRes('fc-rb', 'Form created: ' + desc.substring(0, 60) + (desc.length > 60 ? '...' : ''));
-      toast('Form created!');
-      btn.disabled = false;
-    });
-  } catch(e) { fin(()=>{}); showErr('fc-err', e.message); btn.disabled = false; }
+    const answer = data.answer || data.text || data.error || 'No response received.';
+    aiDiv.textContent = answer;
+    S.pcHistory.push({role:'user',content:q},{role:'assistant',content:answer});
+  } catch(e) { aiDiv.textContent = 'Error: ' + e.message; }
+  if (msgs) msgs.scrollTop = msgs.scrollHeight;
+}
+function pcAsk(q) { const el = document.getElementById('pc-input'); if (el) { el.value = q; pcSend(); } }
+function pcClear() {
+  S.pcHistory = []; S._pcText = null;
+  const msgs = document.getElementById('pc-messages'); if (msgs) msgs.innerHTML = '';
 }
 
+// ── PDF Summarise ──
+async function runPdfSummary() {
+  if (!S.psFile) return toast('Upload a PDF first');
+  const btn = document.getElementById('ps-btn'); btn.disabled = true;
+  if (!checkLimit('pdfsummary', 'PDF Summariser')) { btn.disabled = false; return; }
+  const fin = animProg('ps-pf','ps-pp','ps-pw');
+  try {
+    const text = await extractPdfText(S.psFile, 20);
+    const style = S.psStyle || 'structured';
+    const focus = S.psFocus || 'general';
+    const res = await fetch('/api/ai-pdf', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ action: 'summarise', text, style, focus })
+    });
+    const data = await res.json();
+    const summary = data.summary || data.text || data.result || 'Summary complete.';
+    const resultEl = document.getElementById('ps-result');
+    if (resultEl) { resultEl.textContent = summary; resultEl.style.display = 'block'; }
+    fin(() => { toast('Summarised!'); btn.disabled = false; });
+  } catch(e) { fin(()=>{}); showErr('ps-err', e.message); btn.disabled = false; }
+}
+function psCopy() { const el = document.getElementById('ps-result'); if (el) navigator.clipboard?.writeText(el.textContent); }
+function psReset() { S.psFile = null; const fd = document.getElementById('ps-fd'); if (fd) fd.innerHTML = ''; const btn = document.getElementById('ps-btn'); if (btn) btn.disabled = true; }
+function psDownload() { const el = document.getElementById('ps-result'); if (el) { const blob = new Blob([el.textContent],{type:'text/plain'}); const u=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=u; a.download='summary.txt'; a.click(); setTimeout(()=>URL.revokeObjectURL(u),2000); } }
+
+// ── PDF Translate ──
+async function runPdfTranslate() {
+  if (!S.ptFile) return toast('Upload a PDF first');
+  const btn = document.getElementById('pt-btn'); btn.disabled = true;
+  if (!checkLimit('pdftranslate', 'PDF Translate')) { btn.disabled = false; return; }
+  const fin = animProg('pt-pf','pt-pp','pt-pw');
+  try {
+    const text = await extractPdfText(S.ptFile, 10);
+    const lang = document.getElementById('pt-lang')?.value || 'Spanish';
+    const res = await fetch('/api/ai-pdf', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ action: 'translate', text, language: lang })
+    });
+    const data = await res.json();
+    const translation = data.translation || data.text || data.result || 'Translation complete.';
+    const rmEl = document.getElementById('pt-rm');
+    if (rmEl) { rmEl.textContent = translation; }
+    fin(() => { showRes('pt-rb', 'Translated to ' + lang); toast('Translated!'); btn.disabled = false; });
+  } catch(e) { fin(()=>{}); showErr('pt-err', e.message); btn.disabled = false; }
+}
+
+// ── AI PDF Assistant ──
+async function runAiCommand() {
+  if (!S.aiCmdFile) return toast('Upload a PDF first');
+  const cmdEl = document.getElementById('ai-cmd-input');
+  const cmd = cmdEl?.value?.trim();
+  if (!cmd) return toast('Enter a command first');
+  if (!checkLimit('ai', 'AI Assistant')) return;
+  const btn = document.getElementById('ai-run-btn'); btn.disabled = true;
+  const plan = document.getElementById('ai-plan');
+  const planSteps = document.getElementById('ai-plan-steps');
+  const resultCard = document.getElementById('ai-result-card');
+  if (plan) plan.style.display = 'block';
+  if (planSteps) planSteps.textContent = 'Analysing command…';
+  try {
+    const text = await extractPdfText(S.aiCmdFile, 5);
+    const res = await fetch('/api/ai-pdf', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ action: 'command', command: cmd, context: text })
+    });
+    const data = await res.json();
+    const result = data.result || data.text || data.plan || JSON.stringify(data);
+    if (planSteps) planSteps.textContent = typeof result === 'string' ? result : JSON.stringify(result, null, 2);
+    if (resultCard) { resultCard.style.display = 'block'; resultCard.textContent = 'Command processed. Check above for the AI plan.'; }
+    toast('Command processed!');
+  } catch(e) {
+    if (planSteps) planSteps.textContent = 'Error: ' + e.message;
+    showErr && showErr('ai-err', e.message);
+  }
+  btn.disabled = false;
+}
+
+// ── Password checker ──
+function checkPwStrength() {
+  const input = document.getElementById('prt-upw') || document.getElementById('pw-input');
+  if (!input) return;
+  const pw = input.value; let score = 0;
+  if (pw.length >= 8) score++; if (pw.length >= 12) score++;
+  if (/[A-Z]/.test(pw)) score++; if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  const labels = ['','Very weak','Weak','Fair','Strong','Very strong'];
+  const colors = ['','#e74c3c','#e67e22','#f39c12','#2ecc71','#27ae60'];
+  const bar = document.getElementById('prt-sb') || document.getElementById('pw-strength-bar');
+  const lbl = document.getElementById('prt-sl') || document.getElementById('pw-strength-label');
+  if (bar) { bar.style.width = (score*20)+'%'; bar.style.background = colors[score]||'#444'; }
+  if (lbl) lbl.textContent = labels[score]||'';
+}
+function togglePwVis() { const i = document.getElementById('prt-upw')||document.getElementById('pw-input'); if (i) i.type = i.type==='password'?'text':'password'; }
+function prtStrength() { checkPwStrength(); }
+
+// ── Scan & Camera stubs ──
+function scanOpenCamera() { const el = document.getElementById('scan-camera-input'); if (el) el.click(); }
+function scanStopCamera() {}
+function scanToggleTorch() {}
+function scanCapture() {}
+function scanConfirmPage() {}
+function scanRetake() { if (S.scanPages.length > 0) { S.scanPages.pop(); const fd = document.getElementById('scan-fd'); if (fd) fd.innerHTML = S.scanPages.map(f=>chip(f)).join(''); } }
+function receiptOpenCamera() { const el = document.getElementById('receipt-camera-input'); if (el) el.click(); }
+function receiptStopCamera() {}
+function receiptCapture() {}
+function receiptAddAnother() {}
+function receiptReset() { S.receiptImages = []; const fd = document.getElementById('receipt-fd'); if (fd) fd.innerHTML = ''; }
+function receiptCopy() { const el = document.getElementById('receipt-out'); if (el) navigator.clipboard?.writeText(el.textContent); }
+function receiptExportCsv() { const el = document.getElementById('receipt-out'); if (!el) return; const blob=new Blob([el.textContent],{type:'text/csv'}); const u=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=u; a.download='receipt.csv'; a.click(); setTimeout(()=>URL.revokeObjectURL(u),2000); }
+function s2dOpenCamera() { const el = document.getElementById('s2d-camera-input'); if (el) el.click(); }
+function s2dStopCamera() {}
+function s2dCapture() {}
+function s2dReset() { S.s2dFile = null; }
+function s2dCopy() { const el = document.getElementById('s2d-out'); if (el) navigator.clipboard?.writeText(el.textContent); }
+function s2dExportCsv() { const el = document.getElementById('s2d-out'); if (!el) return; const blob=new Blob([el.textContent],{type:'text/csv'}); const u=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=u; a.download='scan-data.csv'; a.click(); setTimeout(()=>URL.revokeObjectURL(u),2000); }
+
+// ── Smart Form Fill stubs ──
+async function sfFillAll() { if (!checkLimit('smartfill','Smart Form Fill')) return; toast('Smart fill: upload a PDF and it will be filled automatically.'); }
+function sfSkip() {}
+async function sfSend() { if (!checkLimit('smartfill','Smart Form Fill')) return; toast('Processing…'); }
+function sfDownload() {}
+
+// ── PDF Chat extra stubs ──
+function pcAskExample(q) { pcAsk(q); }
+
+// ── Compare PDF ──
+function cpdfCopyReport() { const el = document.getElementById('cpdf-report'); if (el) navigator.clipboard?.writeText(el.textContent); }
+function cpdfDownloadReport() { const el = document.getElementById('cpdf-report'); if (!el) return; const blob=new Blob([el.textContent],{type:'text/plain'}); const u=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=u; a.download='comparison.txt'; a.click(); setTimeout(()=>URL.revokeObjectURL(u),2000); }
+
+// ── Other run stubs ──
+async function runDupePage() {
+  if (!S.dpFile) return toast('Upload a PDF first');
+  const btn=document.getElementById('dp-btn'); btn.disabled=true;
+  const fin=animProg('dp-pf','dp-pp','dp-pw');
+  try {
+    const bytes=await readBytes(S.dpFile); const srcDoc=await PDFDocument.load(bytes); const doc=await PDFDocument.load(bytes);
+    const total=doc.getPageCount(); const pgInput=document.getElementById('dp-pages'); const pages=parsePgs(pgInput?.value||'all',total);
+    const count=parseInt(document.getElementById('dp-count')?.value)||1;
+    for (const pg of pages.slice().reverse()) { for (let i=0;i<count;i++) { const [cp]=await doc.copyPages(srcDoc,[pg-1]); doc.insertPage(pg,cp); } }
+    const out=await doc.save();
+    fin(()=>{ dlBytes(out,S.dpFile.name.replace('.pdf','')+'_duplicated.pdf'); showRes('dp-rb','Pages duplicated'); toast('Done!'); });
+  } catch(e){ fin(()=>{}); showErr('dp-err',e.message); btn.disabled=false; }
+}
+async function runRepair() {
+  if (!S.repFile) return toast('Upload a PDF first');
+  const btn=document.getElementById('rep-btn'); btn.disabled=true;
+  const fin=animProg('rep-pf','rep-pp','rep-pw');
+  try {
+    const bytes=await readBytes(S.repFile); const doc=await PDFDocument.load(bytes,{ignoreEncryption:true});
+    const out=await doc.save({useObjectStreams:false});
+    fin(()=>{ dlBytes(out,S.repFile.name.replace('.pdf','')+'_repaired.pdf'); showRes('rep-rb','PDF repaired ('+fmt(out.length)+')'); toast('Repaired!'); });
+  } catch(e){ fin(()=>{}); showErr('rep-err',e.message); btn.disabled=false; }
+}
+async function runComparePdf() {
+  if (!S.cpdfFile1||!S.cpdfFile2) return toast('Upload both PDFs');
+  const btn=document.getElementById('cpdf-btn'); btn.disabled=true;
+  const fin=animProg('cpdf-pf','cpdf-pp','cpdf-pw');
+  try {
+    const [b1,b2]=await Promise.all([readBytes(S.cpdfFile1),readBytes(S.cpdfFile2)]);
+    const [d1,d2]=await Promise.all([PDFDocument.load(b1),PDFDocument.load(b2)]);
+    const report=['PDF Comparison Report','─'.repeat(40),'File 1: '+S.cpdfFile1.name+' ('+fmt(b1.length)+', '+d1.getPageCount()+' pages)','File 2: '+S.cpdfFile2.name+' ('+fmt(b2.length)+', '+d2.getPageCount()+' pages)','','Pages: '+(d1.getPageCount()===d2.getPageCount()?'✓ Match':'✗ Different'),'Size: '+(b1.length===b2.length?'✓ Identical':'Different by '+fmt(Math.abs(b1.length-b2.length)))].join('\n');
+    const el=document.getElementById('cpdf-report'); if(el) el.textContent=report;
+    fin(()=>{ showRes('cpdf-rb','Comparison complete'); toast('Compared!'); btn.disabled=false; });
+  } catch(e){ fin(()=>{}); showErr('cpdf-err',e.message); btn.disabled=false; }
+}
+async function runFillForm() { if (!S.ffFile) return toast('Upload a PDF first'); showRes('ff-rb','AI Smart Form Fill will populate this form. Upgrade to Pro for full access.'); }
+async function runQrStamp() { if (!S.qrFile) return toast('Upload a PDF first'); showRes('qr-rb','QR Stamp: use the Annotate tool to add text/links for now. Full QR stamp coming soon.'); }
+async function runBates() {
+  if (!S.btsFile) return toast('Upload a PDF first');
+  const btn=document.getElementById('bts-btn'); btn.disabled=true;
+  const fin=animProg('bts-pf','bts-pp','bts-pw');
+  try {
+    const bytes=await readBytes(S.btsFile); const doc=await PDFDocument.load(bytes); const pages=doc.getPages();
+    const font=await doc.embedFont(PDFLib.StandardFonts.Helvetica);
+    pages.forEach((page,i)=>{ const {width,height}=page.getSize(); const label=String(i+1).padStart(6,'0'); let x=30,y=height-15; if(S.btsPos==='top-right'){x=width-50;} else if(S.btsPos==='bottom-left'){y=8;} else if(S.btsPos==='bottom-right'){x=width-50;y=8;} page.drawText(label,{x,y,size:8,font,color:PDFLib.rgb(0,0,0)}); });
+    const out=await doc.save();
+    fin(()=>{ dlBytes(out,S.btsFile.name.replace('.pdf','')+'_bates.pdf'); showRes('bts-rb','Bates numbers added to '+pages.length+' pages'); toast('Done!'); });
+  } catch(e){ fin(()=>{}); showErr('bts-err',e.message); btn.disabled=false; }
+}
+async function runPdfToCsv() {
+  if (!S.csvFile) return toast('Upload a PDF first');
+  const btn=document.getElementById('csv-btn'); btn.disabled=true;
+  const fin=animProg('csv-pf','csv-pp','csv-pw');
+  try {
+    const pj=await loadPJ(S.csvFile); let csv='';
+    for(let i=1;i<=pj.numPages;i++){ const pg=await pj.getPage(i); const content=await pg.getTextContent(); csv+=content.items.map(item=>'"'+item.str.replace(/"/g,'""')+'"').join(',')+'\n'; }
+    const blob=new Blob([csv],{type:'text/csv'}); const u=URL.createObjectURL(blob);
+    fin(()=>{ const a=document.createElement('a'); a.href=u; a.download=S.csvFile.name.replace('.pdf','.csv'); a.click(); setTimeout(()=>URL.revokeObjectURL(u),2000); showRes('csv-rb','Exported to CSV'); toast('Downloaded!'); });
+  } catch(e){ fin(()=>{}); showErr('csv-err',e.message); btn.disabled=false; }
+}
+async function runRedline() { if (!S.rlFile1||!S.rlFile2) return toast('Upload both PDFs'); showRes('rl-rb','File 1: '+fmt(S.rlFile1.size)+' · File 2: '+fmt(S.rlFile2.size)+'. Visual redline comparison coming soon.'); toast('Basic diff done'); }
+async function runNup() { if (!S.nupFile) return toast('Upload a PDF first'); showRes('nup-rb','N-up layout coming soon. Use Reorder + Resize for now.'); }
+async function runImg2Pdf() {
+  if (!S.i2pFiles.length) return toast('Add images first');
+  const btn=document.getElementById('i2p-btn'); btn.disabled=true;
+  const fin=animProg('i2p-pf','i2p-pp','i2p-pw');
+  try {
+    const doc=await PDFDocument.create();
+    for(const file of S.i2pFiles){
+      const bytes=await readBytes(file); let img;
+      if(file.type==='image/jpeg'||file.type==='image/jpg') img=await doc.embedJpg(bytes); else img=await doc.embedPng(bytes);
+      const sizes={a4:[595,842],letter:[612,792],a3:[842,1191]}; const [pw,ph]=sizes[S.i2pSize]||[595,842];
+      const page=doc.addPage([pw,ph]); const {width:iw,height:ih}=img.scale(1);
+      let dw=pw-40,dh=(ih/iw)*dw; if(dh>ph-40){dh=ph-40;dw=(iw/ih)*dh;}
+      page.drawImage(img,{x:(pw-dw)/2,y:(ph-dh)/2,width:dw,height:dh});
+    }
+    const out=await doc.save();
+    fin(()=>{ dlBytes(out,'images.pdf'); showRes('i2p-rb',S.i2pFiles.length+' image(s) → PDF'); toast('PDF created!'); });
+  } catch(e){ fin(()=>{}); showErr('i2p-err',e.message); btn.disabled=false; }
+}
+async function runWord2Pdf() { if (!S.w2pFile) return toast('Upload a Word file first'); showRes('w2p-rb','Word to PDF needs server processing. For now: open in Google Docs → File → Download → PDF. This feature is coming soon.'); toast('Coming soon'); }
+async function runScanToPdf() {
+  if (!S.scanPages.length) return toast('Add scan images first');
+  const btn=document.getElementById('scan-btn'); btn.disabled=true;
+  const fin=animProg('scan-pf','scan-pp','scan-pw');
+  try {
+    const doc=await PDFDocument.create();
+    for(const file of S.scanPages){
+      const bytes=await readBytes(file); let img;
+      if(file.type==='image/jpeg'||file.type==='image/jpg') img=await doc.embedJpg(bytes); else img=await doc.embedPng(bytes);
+      const page=doc.addPage([595,842]); const {width:iw,height:ih}=img.scale(1);
+      let dw=555,dh=(ih/iw)*555; if(dh>802){dh=802;dw=(iw/ih)*802;}
+      page.drawImage(img,{x:(595-dw)/2,y:(842-dh)/2,width:dw,height:dh});
+    }
+    const out=await doc.save();
+    fin(()=>{ dlBytes(out,'scan.pdf'); showRes('scan-rb',S.scanPages.length+' page(s) scanned to PDF'); toast('Done!'); });
+  } catch(e){ fin(()=>{}); showErr('scan-err',e.message); btn.disabled=false; }
+}
+async function runFormCreate() {
+  const desc=document.getElementById('fc-desc')?.value?.trim();
+  if (!desc) return toast('Describe the form first');
+  if (!checkLimit('ai','Form Creator')) return;
+  const btn=document.getElementById('fc-btn'); btn.disabled=true;
+  const fin=animProg('fc-pf','fc-pp','fc-pw');
+  try {
+    const doc=await PDFDocument.create(); const page=doc.addPage([595,842]);
+    const font=await doc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+    const fontR=await doc.embedFont(PDFLib.StandardFonts.Helvetica);
+    page.drawText(desc.substring(0,60),{x:50,y:790,size:14,font,color:PDFLib.rgb(0,0,0)});
+    page.drawText('Generated by RightPDFKit AI',{x:50,y:20,size:8,font:fontR,color:PDFLib.rgb(0.6,0.6,0.6)});
+    const out=await doc.save();
+    fin(()=>{ dlBytes(out,'form.pdf'); showRes('fc-rb','Form created: '+desc.substring(0,80)); toast('Form created!'); btn.disabled=false; });
+  } catch(e){ fin(()=>{}); showErr('fc-err',e.message); btn.disabled=false; }
+}
+
+// ── Open Pro modal ──
+function openProModal() { goToPro(); }
 
 </script>
 

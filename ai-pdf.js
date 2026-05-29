@@ -1,73 +1,65 @@
-// Vercel Serverless Function — /api/ai-pdf
-// Handles three modes:
-// 1. command — NL PDF commands (existing)
-// 2. vision  — image analysis via Claude vision API
-// 3. extract — text extraction/analysis
+// Cloudflare Pages Function — /api/ai-pdf
+// Handles: chat, summarise, translate, command, create-form
 
-export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
-
-  const { command, mode, imageBase64, imageMediaType } = req.body || {};
-  if (!command) return res.status(400).json({ error: 'Missing command' });
-
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return res.status(500).json({ error: 'Server configuration error' });
-
-  const SYSTEM_PROMPT = `You are a PDF command parser for RightPDFKit.
-Convert natural language PDF editing instructions into a JSON action plan.
-Respond ONLY with a valid JSON array. No explanation, no markdown, no backticks.
-
-Available actions:
-- {"tool":"delete","pages":"1,3-5"}
-- {"tool":"rotate","angle":90,"target":"all","pages":"1-3"}
-- {"tool":"extract","pages":"1,3-5"}
-- {"tool":"watermark","text":"CONFIDENTIAL","opacity":0.25,"angle":35,"size":"medium"}
-- {"tool":"headfoot","headerText":"{page} of {total}","footerText":"","fontSize":10}
-- {"tool":"pagenums","position":"bc","startNum":1,"prefix":""}
-- {"tool":"compress"}
-- {"tool":"grayscale","scale":2}
-- {"tool":"resize","preset":"a4","scale":"fit"}
-- {"tool":"flatten","removeAnnots":true}
-- {"tool":"metadata","title":"","author":"","subject":"","keywords":""}
-- {"tool":"protect","userPassword":"pass","ownerPassword":"pass"}
-- {"tool":"unlock","password":"pass"}
-- {"tool":"blankpage","pos":"end","qty":1,"size":"match"}
-- {"tool":"dupepage","pages":"1","pos":"after","copies":1}
-- {"tool":"split","mode":"all","range":""}
-- {"tool":"pdftoword","pages":"all"}
-
-Rules:
-- Return array even for single actions
-- Default watermark opacity: 0.25, angle: 35
-- Default page numbers position: "bc"
-- If unclear: [{"tool":"error","message":"Could not understand: explain why"}]`;
+export async function onRequestPost({ request, env }) {
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Content-Type': 'application/json',
+  };
 
   try {
-    let messages;
+    const body = await request.json();
+    const { action, text, question, language, style, focus, command, context, history, description } = body;
 
-    if (mode === 'vision' && imageBase64) {
-      // Vision mode — analyse an image
-      messages = [{
-        role: 'user',
-        content: [
-          {
-            type: 'image',
-            source: {
-              type: 'base64',
-              media_type: imageMediaType || 'image/jpeg',
-              data: imageBase64,
-            }
-          },
-          { type: 'text', text: command }
-        ]
-      }];
+    const apiKey = env.ANTHROPIC_API_KEY;
+    if (!apiKey) return new Response(JSON.stringify({ error: 'API key not configured' }), { status: 500, headers });
+
+    let systemPrompt = '';
+    let userMessage = '';
+
+    if (action === 'chat') {
+      systemPrompt = `You are a helpful PDF document assistant. The user has uploaded a PDF and wants to ask questions about it. Answer based on the document context provided. Be concise and helpful.`;
+      const historyText = (history || []).slice(-6).map(h => `${h.role}: ${h.content}`).join('\n');
+      userMessage = `Document content:\n${text || context || 'No content available'}\n\n${historyText ? 'Previous conversation:\n' + historyText + '\n\n' : ''}Question: ${question}`;
+
+    } else if (action === 'summarise') {
+      const styleInstructions = {
+        structured: 'Provide a well-structured summary with sections: Overview, Key Points, Main Arguments, and Conclusion.',
+        brief: 'Provide a brief 2-3 paragraph summary.',
+        bullets: 'Provide a bullet-point summary of the main points.',
+        executive: 'Provide an executive summary suitable for senior management.'
+      };
+      const focusInstructions = {
+        legal: 'Pay special attention to legal terms, obligations, rights, and clauses.',
+        financial: 'Pay special attention to financial figures, costs, revenue, and monetary terms.',
+        technical: 'Pay special attention to technical specifications, processes, and requirements.',
+        general: ''
+      };
+      systemPrompt = `You are a professional document summariser. ${styleInstructions[style] || styleInstructions.structured} ${focusInstructions[focus] || ''}`;
+      userMessage = `Please summarise this document:\n\n${text || 'No content provided'}`;
+
+    } else if (action === 'translate') {
+      systemPrompt = `You are a professional translator. Translate the provided text to ${language || 'Spanish'}. Preserve the structure and formatting as much as possible. Only provide the translation, no explanations.`;
+      userMessage = `Translate this text to ${language || 'Spanish'}:\n\n${text || 'No content provided'}`;
+
+    } else if (action === 'command') {
+      systemPrompt = `You are a PDF editing assistant for RightPDFKit. The user wants to perform operations on their PDF. 
+Available tools: delete pages, rotate, extract, watermark, compress, add header/footer, add page numbers, protect, split, grayscale, resize, metadata.
+Parse their command and respond with:
+1. A clear plan of what actions to take
+2. Which RightPDFKit tools to use
+3. Any settings needed
+Be concise and helpful. If the command is unclear, ask for clarification.`;
+      userMessage = `PDF context: ${context || 'PDF loaded'}\n\nUser command: ${command}`;
+
+    } else if (action === 'create-form') {
+      systemPrompt = `You are a PDF form designer. When given a description, list the form fields needed with their types (text, checkbox, radio, date, signature). Be concise.`;
+      userMessage = `Create a form for: ${description || 'generic form'}`;
+
     } else {
-      // Command or extract mode — text only
-      messages = [{ role: 'user', content: command }];
+      return new Response(JSON.stringify({ error: 'Unknown action: ' + action }), { status: 400, headers });
     }
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -79,35 +71,42 @@ Rules:
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: mode === 'vision' ? 1000 : 500,
-        system: mode === 'command' || !mode ? SYSTEM_PROMPT : undefined,
-        messages,
+        max_tokens: 1500,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userMessage }],
       }),
     });
 
     if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      return res.status(502).json({ error: err.error?.message || `Claude API error ${response.status}` });
+      const err = await response.text();
+      return new Response(JSON.stringify({ error: 'API error: ' + err }), { status: 500, headers });
     }
 
     const data = await response.json();
-    const text = data.content?.[0]?.text || '';
+    const result = data.content?.[0]?.text || 'No response';
 
-    if (mode === 'command' || !mode) {
-      // Parse as JSON plan
-      const clean = text.replace(/```json|```/g, '').trim();
-      let plan;
-      try { plan = JSON.parse(clean); }
-      catch(e) { return res.status(502).json({ error: 'AI returned invalid response' }); }
-      if (!Array.isArray(plan)) return res.status(502).json({ error: 'AI returned unexpected format' });
-      return res.status(200).json({ plan });
-    } else {
-      // Return raw text result for vision/extract modes
-      return res.status(200).json({ result: text });
-    }
+    // Return appropriate field based on action
+    const responseData = {
+      text: result,
+      answer: result,      // for chat
+      summary: result,     // for summarise
+      translation: result, // for translate
+      result: result,      // for command/form
+    };
 
-  } catch (err) {
-    console.error('AI PDF error:', err);
-    return res.status(500).json({ error: 'Server error — please try again' });
+    return new Response(JSON.stringify(responseData), { status: 200, headers });
+
+  } catch (e) {
+    return new Response(JSON.stringify({ error: e.message }), { status: 500, headers });
   }
+}
+
+export async function onRequestOptions() {
+  return new Response(null, {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  });
 }
