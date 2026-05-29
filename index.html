@@ -414,7 +414,16 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 [data-theme="light"] .rr{border-color:var(--border)}
 [data-theme="light"] .bottom-nav{background:var(--surface);border-top-color:var(--border)}
 [data-theme="light"] .bnav-item:hover,[data-theme="light"] .bnav-item.active{background:var(--accent-bg);border-color:var(--accent-border)}
-[data-theme="light"] .sp-pill{border-color:var(--border2);color:var(--muted)}
+[data-theme="light"] .pill-row{
+  display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;
+}
+.sp-pill{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:20px;padding:5px 12px;
+  font-size:12px;font-weight:600;color:var(--muted);
+  white-space:nowrap;
+}
 [data-theme="light"] #toast{background:var(--surface);border-color:var(--border2);color:var(--text)}
 [data-theme="light"] .ocr-out,[data-theme="light"] .nb{background:var(--surface2)}
 [data-theme="light"] .pb{background:var(--surface2)}
@@ -984,9 +993,12 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .hero-headline em{
   font-style:normal;color:var(--accent);
 }
+.hero{
+  padding:8px 0 16px;
+}
 .hero-sub{
   font-size:14px;color:var(--muted);
-  line-height:1.65;max-width:520px;margin-bottom:20px;
+  line-height:1.65;max-width:600px;margin-bottom:16px;
 }
 .hero-trust-row{
   display:flex;align-items:center;flex-wrap:wrap;gap:16px;
@@ -1736,6 +1748,79 @@ html,body{overflow-x:hidden;max-width:100vw}
 }
 
 
+
+/* ── Home tool grid ── */
+.home { width: 100%; max-width: 100%; }
+#home-tool-grid { width: 100%; }
+
+.tool-section { margin-bottom: 32px; }
+.tool-section-label {
+  font-size: 11px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .1em;
+  margin-bottom: 12px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+}
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  width: 100%;
+}
+.tool-card {
+  display: flex; flex-direction: column; gap: 5px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px 14px;
+  cursor: pointer; transition: border-color .15s, background .15s, transform .15s;
+  min-height: 90px;
+}
+.tool-card:hover {
+  border-color: var(--accent);
+  background: var(--surface2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,.15);
+}
+.tc-icon { font-size: 22px; line-height: 1; margin-bottom: 2px; }
+.tc-name { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.3; }
+.tc-hint { font-size: 11px; color: var(--muted); line-height: 1.4; }
+.tool-card.hidden { display: none !important; }
+
+/* Home search */
+#tool-search-wrap .search-box {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 10px; display: flex; align-items: center;
+  gap: 8px; padding: 10px 14px; max-width: 100%;
+}
+#tool-search-wrap .search-box:focus-within {
+  border-color: var(--accent);
+}
+#home-search { background:none; border:none; outline:none; color:var(--text); font-size:15px; width:100%; font-family:inherit; }
+
+/* Mobile responsive */
+@media(max-width:768px) {
+  .sidebar { 
+    position: fixed; top: 0; left: -110%; width: 80% !important; max-width: 300px;
+    height: 100vh; z-index: 1500; transition: left .25s ease;
+    background: var(--surface); box-shadow: 4px 0 24px rgba(0,0,0,.4);
+    padding-top: 56px !important;
+  }
+  .sidebar.open { left: 0; }
+  .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 1400; display: none; }
+  .sidebar-overlay.show { display: block; }
+  .main { padding: 12px 12px 80px !important; }
+  .tool-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important; gap: 8px !important; }
+  .tool-card { padding: 12px 10px; min-height: 80px; }
+  .tc-icon { font-size: 20px; }
+  .tc-name { font-size: 12px; }
+  .tc-hint { font-size: 10px; }
+  .hero-headline { font-size: 20px !important; }
+  .hero-sub { font-size: 13px !important; }
+  .pill-row { flex-wrap: wrap; gap: 6px; }
+}
+@media(max-width:400px) {
+  .tool-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
 </style>
 
 <!-- Anti-flash: runs synchronously before first paint to set correct theme -->
@@ -1894,16 +1979,262 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <div class="home active" id="panel-home">
   <div class="hero">
     <div class="hero-headline">42 free PDF tools.<br>Zero uploads. Your files never leave.</div>
-    <div class="hero-sub">All processing happens in your browser using WebAssembly. No server. No account. No limits.</div>
+    <div class="hero-sub">All processing happens in your browser. No server. No account. Works offline.</div>
     <div class="pill-row">
       <span class="sp-pill">✓ 100% local</span>
       <span class="sp-pill">✓ No uploads</span>
       <span class="sp-pill">✓ Works offline</span>
-      <span class="sp-pill">✓ No account</span>
+      <span class="sp-pill">✓ Free forever</span>
     </div>
   </div>
-  <div class="pill-filter" id="pill-filter"></div>
-  <div class="tool-grid" id="tool-grid"></div>
+  <div id="tool-search-wrap" style="padding:0 0 8px">
+    <div class="search-box" style="max-width:400px">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="home-search" placeholder="Search 42 tools…" oninput="filterHomeTools(this.value)" autocomplete="off" style="background:none;border:none;outline:none;color:var(--text);font-size:14px;width:100%;font-family:inherit">
+    </div>
+  </div>
+  <div id="home-tool-grid">
+<div class="tool-section">
+  <div class="tool-section-label">Organise</div>
+  <div class="tool-grid">
+    <div class="tool-card" onclick="nav('merge')" data-t="merge">
+      <span class="tc-icon">⊕</span>
+      <span class="tc-name">Merge PDFs</span>
+      <span class="tc-hint">Combine multiple PDFs</span>
+    </div>
+    <div class="tool-card" onclick="nav('split')" data-t="split">
+      <span class="tc-icon">⊘</span>
+      <span class="tc-name">Split PDF</span>
+      <span class="tc-hint">Separate into pages</span>
+    </div>
+    <div class="tool-card" onclick="nav('reorder')" data-t="reorder">
+      <span class="tc-icon">⇅</span>
+      <span class="tc-name">Reorder Pages</span>
+      <span class="tc-hint">Drag to rearrange</span>
+    </div>
+    <div class="tool-card" onclick="nav('extract')" data-t="extract">
+      <span class="tc-icon">⬡</span>
+      <span class="tc-name">Extract Pages</span>
+      <span class="tc-hint">Pull specific pages</span>
+    </div>
+    <div class="tool-card" onclick="nav('delete')" data-t="delete">
+      <span class="tc-icon">✕</span>
+      <span class="tc-name">Delete Pages</span>
+      <span class="tc-hint">Remove pages</span>
+    </div>
+  </div>
+</div>
+<div class="tool-section">
+  <div class="tool-section-label">Edit</div>
+  <div class="tool-grid">
+    <div class="tool-card" onclick="nav('rotate')" data-t="rotate">
+      <span class="tc-icon">↻</span>
+      <span class="tc-name">Rotate Pages</span>
+      <span class="tc-hint">90°, 180°, 270°</span>
+    </div>
+    <div class="tool-card" onclick="nav('crop')" data-t="crop">
+      <span class="tc-icon">⊡</span>
+      <span class="tc-name">Crop Pages</span>
+      <span class="tc-hint">Trim margins</span>
+    </div>
+    <div class="tool-card" onclick="nav('addimage')" data-t="addimage">
+      <span class="tc-icon">🖼</span>
+      <span class="tc-name">Add Image</span>
+      <span class="tc-hint">Insert images</span>
+    </div>
+    <div class="tool-card" onclick="nav('annotate')" data-t="annotate">
+      <span class="tc-icon">✏️</span>
+      <span class="tc-name">Annotate</span>
+      <span class="tc-hint">Add text & highlights</span>
+    </div>
+    <div class="tool-card" onclick="nav('redact')" data-t="redact">
+      <span class="tc-icon">⬛</span>
+      <span class="tc-name">Redact</span>
+      <span class="tc-hint">Black out content</span>
+    </div>
+    <div class="tool-card" onclick="nav('headfoot')" data-t="headfoot">
+      <span class="tc-icon">≡</span>
+      <span class="tc-name">Header / Footer</span>
+      <span class="tc-hint">Add to every page</span>
+    </div>
+    <div class="tool-card" onclick="nav('watermark')" data-t="watermark">
+      <span class="tc-icon">◈</span>
+      <span class="tc-name">Watermark</span>
+      <span class="tc-hint">Add diagonal stamp</span>
+    </div>
+    <div class="tool-card" onclick="nav('pagenums')" data-t="pagenums">
+      <span class="tc-icon">#</span>
+      <span class="tc-name">Page Numbers</span>
+      <span class="tc-hint">Number your pages</span>
+    </div>
+  </div>
+</div>
+<div class="tool-section">
+  <div class="tool-section-label">Compress & Secure</div>
+  <div class="tool-grid">
+    <div class="tool-card" onclick="nav('compress')" data-t="compress">
+      <span class="tc-icon">◎</span>
+      <span class="tc-name">Compress</span>
+      <span class="tc-hint">Reduce file size</span>
+    </div>
+    <div class="tool-card" onclick="nav('protect')" data-t="protect">
+      <span class="tc-icon">🔒</span>
+      <span class="tc-name">Protect PDF</span>
+      <span class="tc-hint">Add password</span>
+    </div>
+    <div class="tool-card" onclick="nav('unlock')" data-t="unlock">
+      <span class="tc-icon">🔓</span>
+      <span class="tc-name">Unlock PDF</span>
+      <span class="tc-hint">Remove password</span>
+    </div>
+    <div class="tool-card" onclick="nav('pwcheck')" data-t="pwcheck">
+      <span class="tc-icon">⊛</span>
+      <span class="tc-name">Password Check</span>
+      <span class="tc-hint">Test strength</span>
+    </div>
+  </div>
+</div>
+<div class="tool-section">
+  <div class="tool-section-label">Convert & Extract</div>
+  <div class="tool-grid">
+    <div class="tool-card" onclick="nav('ocr')" data-t="ocr">
+      <span class="tc-icon">🔍</span>
+      <span class="tc-name">OCR</span>
+      <span class="tc-hint">Extract text from scans</span>
+    </div>
+    <div class="tool-card" onclick="nav('pdftext')" data-t="pdftext">
+      <span class="tc-icon">📝</span>
+      <span class="tc-name">PDF to Text</span>
+      <span class="tc-hint">Extract all text</span>
+    </div>
+    <div class="tool-card" onclick="nav('pdftoword')" data-t="pdftoword">
+      <span class="tc-icon">📄</span>
+      <span class="tc-name">PDF to Word</span>
+      <span class="tc-hint">Convert to .docx</span>
+    </div>
+    <div class="tool-card" onclick="nav('images')" data-t="images">
+      <span class="tc-icon">📷</span>
+      <span class="tc-name">PDF to Images</span>
+      <span class="tc-hint">Export as PNG</span>
+    </div>
+    <div class="tool-card" onclick="nav('pdftocsv')" data-t="pdftocsv">
+      <span class="tc-icon">⊟</span>
+      <span class="tc-name">PDF to CSV</span>
+      <span class="tc-hint">Extract to spreadsheet</span>
+    </div>
+    <div class="tool-card" onclick="nav('img2pdf')" data-t="img2pdf">
+      <span class="tc-icon">🖼</span>
+      <span class="tc-name">Image to PDF</span>
+      <span class="tc-hint">JPG/PNG → PDF</span>
+    </div>
+    <div class="tool-card" onclick="nav('word2pdf')" data-t="word2pdf">
+      <span class="tc-icon">📝</span>
+      <span class="tc-name">Word to PDF</span>
+      <span class="tc-hint">.docx → PDF</span>
+    </div>
+    <div class="tool-card" onclick="nav('scan')" data-t="scan">
+      <span class="tc-icon">📷</span>
+      <span class="tc-name">Scan to PDF</span>
+      <span class="tc-hint">Camera → PDF</span>
+    </div>
+    <div class="tool-card" onclick="nav('bulkextract')" data-t="bulkextract">
+      <span class="tc-icon">⊞</span>
+      <span class="tc-name">Bulk Extractor</span>
+      <span class="tc-hint">20 PDFs → CSV</span>
+    </div>
+  </div>
+</div>
+<div class="tool-section">
+  <div class="tool-section-label">Sign & Certify</div>
+  <div class="tool-grid">
+    <div class="tool-card" onclick="nav('sign')" data-t="sign">
+      <span class="tc-icon">✍️</span>
+      <span class="tc-name">Sign PDF</span>
+      <span class="tc-hint">Draw or type signature</span>
+    </div>
+    <div class="tool-card" onclick="nav('esign')" data-t="esign">
+      <span class="tc-icon">✦</span>
+      <span class="tc-name">eSign + Certificate</span>
+      <span class="tc-hint">SHA-256 certified</span>
+    </div>
+    <div class="tool-card" onclick="nav('fillform')" data-t="fillform">
+      <span class="tc-icon">✎</span>
+      <span class="tc-name">Fill Form</span>
+      <span class="tc-hint">Fill PDF fields</span>
+    </div>
+  </div>
+</div>
+<div class="tool-section">
+  <div class="tool-section-label">Advanced</div>
+  <div class="tool-grid">
+    <div class="tool-card" onclick="nav('dupepage')" data-t="dupepage">
+      <span class="tc-icon">⧉</span>
+      <span class="tc-name">Duplicate Page</span>
+      <span class="tc-hint">Copy pages</span>
+    </div>
+    <div class="tool-card" onclick="nav('nup')" data-t="nup">
+      <span class="tc-icon">⊞</span>
+      <span class="tc-name">N-up Layout</span>
+      <span class="tc-hint">Multi-page per sheet</span>
+    </div>
+    <div class="tool-card" onclick="nav('repair')" data-t="repair">
+      <span class="tc-icon">⚕</span>
+      <span class="tc-name">Repair PDF</span>
+      <span class="tc-hint">Fix corrupted files</span>
+    </div>
+    <div class="tool-card" onclick="nav('compare-pdf')" data-t="compare-pdf">
+      <span class="tc-icon">⊟</span>
+      <span class="tc-name">Compare PDFs</span>
+      <span class="tc-hint">Diff two files</span>
+    </div>
+    <div class="tool-card" onclick="nav('qrstamp')" data-t="qrstamp">
+      <span class="tc-icon">⊟</span>
+      <span class="tc-name">QR Stamp</span>
+      <span class="tc-hint">Add QR code</span>
+    </div>
+    <div class="tool-card" onclick="nav('bates')" data-t="bates">
+      <span class="tc-icon">⊞</span>
+      <span class="tc-name">Bates Numbers</span>
+      <span class="tc-hint">Legal numbering</span>
+    </div>
+    <div class="tool-card" onclick="nav('redline')" data-t="redline">
+      <span class="tc-icon">✎</span>
+      <span class="tc-name">Redline</span>
+      <span class="tc-hint">Track changes</span>
+    </div>
+    <div class="tool-card" onclick="nav('blankpage')" data-t="blankpage">
+      <span class="tc-icon">□</span>
+      <span class="tc-name">Blank Page</span>
+      <span class="tc-hint">Insert empty page</span>
+    </div>
+    <div class="tool-card" onclick="nav('resize')" data-t="resize">
+      <span class="tc-icon">⊟</span>
+      <span class="tc-name">Resize</span>
+      <span class="tc-hint">Change page size</span>
+    </div>
+    <div class="tool-card" onclick="nav('flatten')" data-t="flatten">
+      <span class="tc-icon">⊠</span>
+      <span class="tc-name">Flatten</span>
+      <span class="tc-hint">Merge annotations</span>
+    </div>
+    <div class="tool-card" onclick="nav('grayscale')" data-t="grayscale">
+      <span class="tc-icon">◑</span>
+      <span class="tc-name">Grayscale</span>
+      <span class="tc-hint">Convert to B&W</span>
+    </div>
+    <div class="tool-card" onclick="nav('metadata')" data-t="metadata">
+      <span class="tc-icon">🏷</span>
+      <span class="tc-name">Metadata</span>
+      <span class="tc-hint">Edit PDF properties</span>
+    </div>
+    <div class="tool-card" onclick="nav('preview')" data-t="preview">
+      <span class="tc-icon">◻</span>
+      <span class="tc-name">Preview</span>
+      <span class="tc-hint">View PDF pages</span>
+    </div>
+  </div>
+</div>
+  </div>
 </div>
 <div class="panel" id="panel-merge">
   <div class="ph"><h2>⊕ Merge PDFs</h2><p>Combine multiple PDFs into one document.</p></div>
@@ -3765,23 +4096,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 </main>
 </div>
 <!-- FOOTER -->
-<footer style="background:var(--surface);border-top:1px solid var(--border);padding:16px 20px;margin-top:auto">
-  <div style="max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between">
-    <div style="display:flex;align-items:center;gap:8px">
-      <div style="width:24px;height:24px;background:#E8450A;border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#fff;flex-shrink:0">R</div>
-      <span style="font-size:13px;font-weight:700;color:var(--text)">RightPDF<span style="color:var(--accent)">Kit</span></span>
-      <span style="font-size:11px;color:var(--muted)">· Built in London</span>
-    </div>
-    <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center">
-      <a href="#pricing" onclick="nav('pricing')" style="font-size:12px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Pricing</a>
-      <a href="/blog" style="font-size:12px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Blog</a>
-      <a href="#compare" onclick="nav('compare')" style="font-size:12px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Why Us?</a>
-      <a href="https://twitter.com/RightPDFKit" target="_blank" rel="noopener" style="font-size:12px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">𝕏 Twitter</a>
-      <a href="mailto:support@odogwu.online" style="font-size:12px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Contact</a>
-      <span style="font-size:11px;color:var(--hint)">© 2026 The 36th Company Ltd</span>
-    </div>
-  </div>
-</footer>
+
 <div id="toast"></div>
 <script>/* pdf-lib@1.17.1 */
 !function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"function"==typeof define&&define.amd?define(["exports"],e):e((t=t||self).PDFLib={})}(this,(function(t){"use strict";
@@ -31353,6 +31668,24 @@ function showShareStrip(toolLabel, rbId) {
       <button class="share-btn" onclick="window.open('${waUrl}','_blank')">💬 WhatsApp</button>
       <button class="share-btn" onclick="copyShareLink()">📋 Copy link</button>
     </div>
+</div><!-- end app -->
+<footer style="background:var(--surface);border-top:1px solid var(--border);padding:16px 20px;margin-top:auto">
+  <div style="max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="width:24px;height:24px;background:#E8450A;border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#fff;flex-shrink:0">R</div>
+      <span style="font-size:13px;font-weight:700;color:var(--text)">RightPDF<span style="color:var(--accent)">Kit</span></span>
+      <span style="font-size:11px;color:var(--muted)">· Built in London</span>
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center">
+      <a href="#pricing" onclick="nav('pricing')" style="font-size:12px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Pricing</a>
+      <a href="/blog" style="font-size:12px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Blog</a>
+      <a href="#compare" onclick="nav('compare')" style="font-size:12px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Why Us?</a>
+      <a href="https://twitter.com/RightPDFKit" target="_blank" rel="noopener" style="font-size:12px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">𝕏 Twitter</a>
+      <a href="mailto:support@odogwu.online" style="font-size:12px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Contact</a>
+      <span style="font-size:11px;color:var(--hint)">© 2026 The 36th Company Ltd</span>
+    </div>
+  </div>
+</footer>
   `;
   rb.appendChild(strip);
   strip.style.display = 'block';
@@ -32477,6 +32810,23 @@ function initScrollTop() {
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initScrollTop);
 else initScrollTop();
+
+
+
+function filterHomeTools(query) {
+  const q = query.toLowerCase().trim();
+  document.querySelectorAll('.tool-card').forEach(card => {
+    const name = card.querySelector('.tc-name')?.textContent?.toLowerCase() || '';
+    const hint = card.querySelector('.tc-hint')?.textContent?.toLowerCase() || '';
+    const show = !q || name.includes(q) || hint.includes(q);
+    card.classList.toggle('hidden', !show);
+  });
+  // Hide empty sections
+  document.querySelectorAll('.tool-section').forEach(section => {
+    const visible = section.querySelectorAll('.tool-card:not(.hidden)').length > 0;
+    section.style.display = visible ? '' : 'none';
+  });
+}
 
 </script>
 
