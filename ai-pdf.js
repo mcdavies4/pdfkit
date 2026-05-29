@@ -110,3 +110,6 @@ export async function onRequestOptions() {
     },
   });
 }
+
+// Note: This is a Cloudflare Pages Function
+// Make sure ANTHROPIC_API_KEY is set in Cloudflare Pages Settings → Environment Variables
