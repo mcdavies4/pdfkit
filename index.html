@@ -31149,133 +31149,7 @@ function resetCookieConsent(){
 </script>
 
 
-<script>
 
-// ── Base AI tool implementations (patched by Pro system) ──
-
-async function runPdfSummary() {
-  const btn = document.getElementById('ps-btn');
-  if (btn) btn.disabled = true;
-  if (!checkLimit('pdfsummary', 'PDF Summariser')) { if (btn) btn.disabled = false; return; }
-  const fin = animProg('ps-pf','ps-pp','ps-pw');
-  try {
-    const res = await fetch('/api/ai-pdf', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({action:'summarise'})
-    });
-    const data = await res.json();
-    const out = document.getElementById('ps-out');
-    if (out) out.textContent = data.summary || data.text || 'Summary generated.';
-    fin(() => { showRes('ps-rb', 'Summary complete'); toast('Summarised!'); });
-  } catch(e) {
-    fin(()=>{});
-    showErr('ps-err', e.message);
-    if (btn) btn.disabled = false;
-  }
-}
-
-async function runPdfTranslate() {
-  if (!S.ptFile) return toast('Upload a PDF first');
-  const btn = document.getElementById('pt-btn');
-  if (btn) btn.disabled = true;
-  if (!checkLimit('pdftranslate', 'PDF Translate')) { if (btn) btn.disabled = false; return; }
-  const fin = animProg('pt-pf','pt-pp','pt-pw');
-  try {
-    // Extract text from PDF first
-    const plbl = document.getElementById('pt-plbl');
-    if (plbl) plbl.textContent = 'Extracting text…';
-    const text = await extractPdfText(S.ptFile, 10);
-    if (!text) throw new Error('No text found in PDF. Try OCR for scanned documents.');
-    
-    // Show source text info
-    const docInfo = document.getElementById('pt-doc-info');
-    if (docInfo) docInfo.textContent = S.ptFile.name + ' — ' + text.length + ' characters extracted';
-    
-    const lang = document.getElementById('pt-lang')?.value || 'Spanish';
-    if (plbl) plbl.textContent = 'Translating to ' + lang + '…';
-    
-    const res = await fetch('/api/ai-pdf', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ action: 'translate', text, language: lang })
-    });
-    
-    if (!res.ok) {
-      const errText = await res.text();
-      throw new Error('API error: ' + res.status + ' ' + errText.substring(0, 100));
-    }
-    
-    const raw = await res.text();
-    if (!raw || !raw.trim()) throw new Error('Empty response from server');
-    
-    const data = JSON.parse(raw);
-    const translation = data.translation || data.text || data.result || 'Translation complete.';
-    
-    // Show in pt-rm (result message element)
-    const rm = document.getElementById('pt-rm');
-    if (rm) {
-      rm.textContent = translation;
-      rm.style.display = 'block';
-      rm.style.whiteSpace = 'pre-wrap';
-      rm.style.padding = '12px';
-      rm.style.background = 'var(--surface2)';
-      rm.style.borderRadius = '8px';
-      rm.style.fontSize = '14px';
-      rm.style.lineHeight = '1.7';
-      rm.style.marginTop = '12px';
-      rm.style.maxHeight = '400px';
-      rm.style.overflowY = 'auto';
-    }
-    
-    fin(() => { 
-      showRes('pt-rb', 'Translated to ' + lang + ' (' + translation.length + ' characters)');
-      toast('Translated!');
-      if (btn) btn.disabled = false;
-    });
-  } catch(e) {
-    fin(()=>{});
-    showErr('pt-err', e.message);
-    if (btn) btn.disabled = false;
-  }
-}
-
-async function runBulkExtract() {
-  const btn = document.getElementById('be-btn');
-  if (btn) btn.disabled = true;
-  if (!checkLimit('bulkextract', 'Bulk Extractor')) { if (btn) btn.disabled = false; return; }
-  if (!S.beFiles || !S.beFiles.length) { toast('Add PDF files first'); if (btn) btn.disabled = false; return; }
-  const fin = animProg('be-pf','be-pp','be-pw');
-  try {
-    let csv = 'Filename,Pages,Size,Text\n';
-    for (const file of S.beFiles) {
-      const pj = await loadPJ(file);
-      let text = '';
-      for (let i = 1; i <= Math.min(pj.numPages, 3); i++) {
-        const pg = await pj.getPage(i);
-        const content = await pg.getTextContent();
-        text += content.items.map(item => item.str).join(' ');
-      }
-      csv += `"${file.name}",${pj.numPages},"${fmt(file.size)}","${text.substring(0,200).replace(/"/g,'""')}"
-`;
-    }
-    const blob = new Blob([csv], {type:'text/csv'});
-    const url = URL.createObjectURL(blob);
-    fin(() => {
-      const a = document.createElement('a'); a.href = url; a.download = 'bulk-extract.csv'; a.click();
-      setTimeout(() => URL.revokeObjectURL(url), 2000);
-      showRes('be-rb', S.beFiles.length + ' PDFs extracted to CSV');
-      toast('CSV downloaded!');
-      if (btn) btn.disabled = false;
-    });
-  } catch(e) {
-    fin(()=>{});
-    showErr('be-err', e.message);
-    if (btn) btn.disabled = false;
-  }
-}
-
-</script>
 
 <script>
 
@@ -32442,6 +32316,22 @@ async function extractPdfText(file, maxPages) {
   return text.trim().substring(0, 12000);
 }
 
+// ── Safe API fetch helper ──
+async function callAI(body) {
+  const res = await fetch('/api/ai-pdf', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(body)
+  });
+  const raw = await res.text();
+  if (!raw || !raw.trim()) throw new Error('API returned empty response. Check ANTHROPIC_API_KEY in Cloudflare Pages → Settings → Environment Variables.');
+  let data;
+  try { data = JSON.parse(raw); } catch(e) { throw new Error('Invalid API response: ' + raw.substring(0, 100)); }
+  if (data.error) throw new Error(data.error);
+  return data;
+}
+
+
 // ── Load functions ──
 function ptLoad(f) { _load(f, 'ptFile', 'pt-fd', 'pt-btn'); }
 function dpLoad(f) { _load(f, 'dpFile', 'dp-fd', 'dp-btn'); }
@@ -32803,15 +32693,7 @@ async function pcSend() {
       S._pcText = await extractPdfText(S.pcFile, 15);
     }
     aiDiv.textContent = 'Thinking…';
-    const res = await fetch('/api/ai-pdf', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ action: 'chat', question: q, context: S._pcText, history: S.pcHistory.slice(-6) })
-    });
-    if (!res.ok) throw new Error('Server error ' + res.status + '. Check that ANTHROPIC_API_KEY is set in Cloudflare.');
-    const raw = await res.text();
-    if (!raw || !raw.trim()) throw new Error('Empty response — check ANTHROPIC_API_KEY in Cloudflare environment variables.');
-    const data = JSON.parse(raw);
+    const data = await callAI({ action: 'chat', question: q, context: S._pcText, history: S.pcHistory.slice(-6) });
     const answer = data.answer || data.text || data.result || 'No response received.';
     aiDiv.textContent = answer;
     S.pcHistory.push({role:'user',content:q},{role:'assistant',content:answer});
@@ -32834,15 +32716,7 @@ async function runPdfSummary() {
     const text = await extractPdfText(S.psFile, 20);
     const style = S.psStyle || 'structured';
     const focus = S.psFocus || 'general';
-    const res = await fetch('/api/ai-pdf', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ action: 'summarise', text, style, focus })
-    });
-    if (!res.ok) throw new Error('Server error ' + res.status + '. Check ANTHROPIC_API_KEY in Cloudflare.');
-    const raw = await res.text();
-    if (!raw || !raw.trim()) throw new Error('Empty response — check ANTHROPIC_API_KEY in Cloudflare environment variables.');
-    const data = JSON.parse(raw);
+    const data = await callAI({action:'summarise', text, style, focus});
     const summary = data.summary || data.text || data.result || 'Summary complete.';
     const resultEl = document.getElementById('ps-result');
     if (resultEl) {
@@ -32872,14 +32746,7 @@ async function runPdfTranslate() {
   try {
     const text = await extractPdfText(S.ptFile, 10);
     const lang = document.getElementById('pt-lang')?.value || 'Spanish';
-    const res = await fetch('/api/ai-pdf', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ action: 'translate', text, language: lang })
-    });
-    const _raw = await res.text();
-    if (!_raw || !_raw.trim()) throw new Error('Empty API response. Ensure ANTHROPIC_API_KEY is set in Cloudflare Pages environment variables.');
-    const data = JSON.parse(_raw);
+    const data = await callAI({action:'translate', text, language:lang});
     const translation = data.translation || data.text || data.result || 'Translation complete.';
     const rmEl = document.getElementById('pt-rm');
     if (rmEl) { rmEl.textContent = translation; }
@@ -32902,15 +32769,7 @@ async function runAiCommand() {
   if (planSteps) planSteps.textContent = 'Analysing command…';
   try {
     const text = await extractPdfText(S.aiCmdFile, 5);
-    const res = await fetch('/api/ai-pdf', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ action: 'command', command: cmd, context: text })
-    });
-    if (!res.ok) throw new Error('Server error ' + res.status + '. Check ANTHROPIC_API_KEY in Cloudflare.');
-    const raw = await res.text();
-    if (!raw || !raw.trim()) throw new Error('Empty response — check ANTHROPIC_API_KEY in Cloudflare environment variables.');
-    const data = JSON.parse(raw);
+    const data = await callAI({ action: 'command', command: cmd, context: text });
     const result = data.result || data.text || data.plan || JSON.stringify(data);
     if (planSteps) planSteps.textContent = typeof result === 'string' ? result : JSON.stringify(result, null, 2);
     if (resultCard) { resultCard.style.display = 'block'; resultCard.textContent = 'Command processed. Check above for the AI plan.'; }

@@ -1,7 +1,7 @@
-// Cloudflare Pages Function — /api/ai-pdf
-// Handles: chat, summarise, translate, command, create-form
+// Cloudflare Pages Function — functions/api/ai-pdf.js
+// Deploy to: /functions/api/ai-pdf.js in your GitHub repo
 
-export async function onRequestPost({ request, env }) {
+export async function onRequest({ request, env }) {
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
@@ -9,54 +9,61 @@ export async function onRequestPost({ request, env }) {
     'Content-Type': 'application/json',
   };
 
+  // Handle CORS preflight
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { headers });
+  }
+
+  if (request.method !== 'POST') {
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405, headers });
+  }
+
   try {
     const body = await request.json();
     const { action, text, question, language, style, focus, command, context, history, description } = body;
 
     const apiKey = env.ANTHROPIC_API_KEY;
-    if (!apiKey) return new Response(JSON.stringify({ error: 'API key not configured' }), { status: 500, headers });
+    if (!apiKey) {
+      return new Response(JSON.stringify({ 
+        error: 'ANTHROPIC_API_KEY not set. Go to Cloudflare Pages → Settings → Environment Variables and add it.' 
+      }), { status: 500, headers });
+    }
 
     let systemPrompt = '';
     let userMessage = '';
 
     if (action === 'chat') {
-      systemPrompt = `You are a helpful PDF document assistant. The user has uploaded a PDF and wants to ask questions about it. Answer based on the document context provided. Be concise and helpful.`;
-      const historyText = (history || []).slice(-6).map(h => `${h.role}: ${h.content}`).join('\n');
-      userMessage = `Document content:\n${text || context || 'No content available'}\n\n${historyText ? 'Previous conversation:\n' + historyText + '\n\n' : ''}Question: ${question}`;
+      systemPrompt = 'You are a helpful PDF assistant. Answer questions about the document context provided. Be concise.';
+      const ctx = text || context || '';
+      const historyText = (history || []).slice(-4).map(h => `${h.role}: ${h.content}`).join('\n');
+      userMessage = ctx ? `Document:\n${ctx.substring(0, 8000)}\n\n${historyText ? historyText + '\n\n' : ''}Question: ${question}` : `Question: ${question}`;
 
     } else if (action === 'summarise') {
-      const styleInstructions = {
-        structured: 'Provide a well-structured summary with sections: Overview, Key Points, Main Arguments, and Conclusion.',
-        brief: 'Provide a brief 2-3 paragraph summary.',
-        bullets: 'Provide a bullet-point summary of the main points.',
-        executive: 'Provide an executive summary suitable for senior management.'
+      const styles = {
+        structured: 'Summarise with: Overview, Key Points, Main Arguments, Conclusion.',
+        brief: 'Write a brief 2-3 paragraph summary.',
+        bullets: 'Summarise as bullet points.',
+        executive: 'Write an executive summary.'
       };
-      const focusInstructions = {
-        legal: 'Pay special attention to legal terms, obligations, rights, and clauses.',
-        financial: 'Pay special attention to financial figures, costs, revenue, and monetary terms.',
-        technical: 'Pay special attention to technical specifications, processes, and requirements.',
-        general: ''
-      };
-      systemPrompt = `You are a professional document summariser. ${styleInstructions[style] || styleInstructions.structured} ${focusInstructions[focus] || ''}`;
-      userMessage = `Please summarise this document:\n\n${text || 'No content provided'}`;
+      systemPrompt = `You are a document summariser. ${styles[style] || styles.structured}${focus && focus !== 'general' ? ' Focus on ' + focus + ' aspects.' : ''}`;
+      userMessage = `Summarise:\n\n${(text || '').substring(0, 10000)}`;
 
     } else if (action === 'translate') {
-      systemPrompt = `You are a professional translator. Translate the provided text to ${language || 'Spanish'}. Preserve the structure and formatting as much as possible. Only provide the translation, no explanations.`;
-      userMessage = `Translate this text to ${language || 'Spanish'}:\n\n${text || 'No content provided'}`;
+      systemPrompt = `Translate the text to ${language || 'Spanish'}. Only provide the translation, no explanations or preamble.`;
+      userMessage = (text || '').substring(0, 8000);
 
     } else if (action === 'command') {
-      systemPrompt = `You are a PDF editing assistant for RightPDFKit. The user wants to perform operations on their PDF. 
-Available tools: delete pages, rotate, extract, watermark, compress, add header/footer, add page numbers, protect, split, grayscale, resize, metadata.
-Parse their command and respond with:
-1. A clear plan of what actions to take
-2. Which RightPDFKit tools to use
-3. Any settings needed
-Be concise and helpful. If the command is unclear, ask for clarification.`;
-      userMessage = `PDF context: ${context || 'PDF loaded'}\n\nUser command: ${command}`;
+      systemPrompt = `You are a PDF editing assistant for RightPDFKit. Parse the user's natural language command and describe:
+1. What PDF operations to perform
+2. Which RightPDFKit tools to use (merge, split, compress, rotate, watermark, annotate, etc.)
+3. Step by step instructions
+
+Be specific and actionable.`;
+      userMessage = `PDF context: ${(context || 'PDF loaded').substring(0, 2000)}\n\nCommand: ${command}`;
 
     } else if (action === 'create-form') {
-      systemPrompt = `You are a PDF form designer. When given a description, list the form fields needed with their types (text, checkbox, radio, date, signature). Be concise.`;
-      userMessage = `Create a form for: ${description || 'generic form'}`;
+      systemPrompt = 'You are a form designer. List the fields needed for the described form with their types.';
+      userMessage = `Create form fields for: ${description}`;
 
     } else {
       return new Response(JSON.stringify({ error: 'Unknown action: ' + action }), { status: 400, headers });
@@ -71,45 +78,31 @@ Be concise and helpful. If the command is unclear, ask for clarification.`;
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1500,
+        max_tokens: 2000,
         system: systemPrompt,
         messages: [{ role: 'user', content: userMessage }],
       }),
     });
 
     if (!response.ok) {
-      const err = await response.text();
-      return new Response(JSON.stringify({ error: 'API error: ' + err }), { status: 500, headers });
+      const errText = await response.text();
+      return new Response(JSON.stringify({ 
+        error: 'Anthropic API error ' + response.status + ': ' + errText.substring(0, 200) 
+      }), { status: 500, headers });
     }
 
     const data = await response.json();
     const result = data.content?.[0]?.text || 'No response';
 
-    // Return appropriate field based on action
-    const responseData = {
+    return new Response(JSON.stringify({
       text: result,
-      answer: result,      // for chat
-      summary: result,     // for summarise
-      translation: result, // for translate
-      result: result,      // for command/form
-    };
-
-    return new Response(JSON.stringify(responseData), { status: 200, headers });
+      answer: result,
+      summary: result,
+      translation: result,
+      result: result,
+    }), { status: 200, headers });
 
   } catch (e) {
     return new Response(JSON.stringify({ error: e.message }), { status: 500, headers });
   }
 }
-
-export async function onRequestOptions() {
-  return new Response(null, {
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    },
-  });
-}
-
-// Note: This is a Cloudflare Pages Function
-// Make sure ANTHROPIC_API_KEY is set in Cloudflare Pages Settings → Environment Variables
