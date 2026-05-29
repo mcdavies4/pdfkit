@@ -33026,6 +33026,30 @@ async function runFormCreate() {
 // ── Open Pro modal ──
 function openProModal() { goToPro(); }
 
+
+
+// ── Magic Pro activation link ──
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('activate');
+  if (token) {
+    try {
+      const data = JSON.parse(atob(token));
+      if (data.expires > Date.now()) {
+        localStorage.setItem('rpk-pro-token-v1', token);
+        // Clean URL
+        const url = new URL(window.location);
+        url.searchParams.delete('activate');
+        window.history.replaceState({}, '', url);
+        // Show success toast after page loads
+        window.addEventListener('DOMContentLoaded', () => {
+          setTimeout(() => toast && toast('✦ Pro activated! Welcome to RightPDFKit Pro.'), 1000);
+        });
+      }
+    } catch(e) {}
+  }
+})();
+
 </script>
 
 
