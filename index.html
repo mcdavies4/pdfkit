@@ -1837,114 +1837,74 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 <nav class="sidebar" id="main-sidebar">
   <!-- Favourites section -->
-  
-  
-  
-</div>
-  <div style="margin-bottom:10px">
-  <div style="background:linear-gradient(135deg,rgba(46,204,113,.08),rgba(46,204,113,.03));border:1.5px solid rgba(46,204,113,.2);border-radius:12px;padding:14px 16px;margin-bottom:8px">
-    <div style="font-size:11px;font-weight:700;color:#2ECC71;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">📊 Data Entry Tools</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      <div onclick="nav('receipt')" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px;cursor:pointer"><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px">🧾 Receipt Scanner</div><div style="font-size:11px;color:var(--muted)">Scan → expenses CSV</div></div>
-      <div onclick="nav('scan2data')" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px;cursor:pointer"><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px">📋 Scan to Data</div><div style="font-size:11px;color:var(--muted)">Camera → structured table</div></div>
-      <div onclick="nav('smartfill')" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px;cursor:pointer"><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px">✦ Smart Form Fill</div><div style="font-size:11px;color:var(--muted)">AI fills form fields</div></div>
-      <div onclick="nav('bulkextract')" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px;cursor:pointer"><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px">⊞ Bulk Extractor</div><div style="font-size:11px;color:var(--muted)">Many PDFs → one sheet</div></div>
-      <div onclick="nav('formcreate')" style="background:rgba(255,255,255,.04);border:1px solid rgba(232,69,10,.15);border-radius:8px;padding:10px;cursor:pointer;grid-column:1/-1"><div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:2px">⊟ Form Creator <span class="badge badge-new">NEW</span></div><div style="font-size:11px;color:var(--muted)">Describe it → AI builds a PDF form</div></div>
+  <div class="sb-sec sb-favs" id="sb-favs-section">⭐ Favourites</div>
+  <div id="sb-favs-list"></div>
+  <!-- Search -->
+  <div class="search-wrap"><div class="search-box"><span class="search-icon">🔍</span><input type="text" class="search-input" id="tool-search" placeholder="Search 42 tools…" oninput="filterTools(this.value)" autocomplete="off"><button class="search-clear" onclick="clearSearch()" tabindex="-1">✕</button></div></div>
+  <div class="nav-no-results" id="nav-no-results">No tools found</div>
+  <div class="nav" data-t="merge"><span class="nav-label" onclick="nav('merge')"><span class="ni">⊕</span>Merge PDFs</span></div>
+  <div class="nav" data-t="split"><span class="nav-label" onclick="nav('split')"><span class="ni">⊘</span>Split PDF</span></div>
+  <div class="nav" data-t="reorder"><span class="nav-label" onclick="nav('reorder')"><span class="ni">⇅</span>Reorder Pages</span></div>
+  <div class="nav" data-t="extract"><span class="nav-label" onclick="nav('extract')"><span class="ni">⬡</span>Extract Pages</span></div>
+  <div class="nav" data-t="delete"><span class="nav-label" onclick="nav('delete')"><span class="ni">✕</span>Delete Pages</span></div>
+  <div class="nav" data-t="rotate"><span class="nav-label" onclick="nav('rotate')"><span class="ni">↻</span>Rotate Pages</span></div>
+  <div class="nav" data-t="crop"><span class="nav-label" onclick="nav('crop')"><span class="ni">⊡</span>Crop Pages</span></div>
+  <div class="nav" data-t="addimage"><span class="nav-label" onclick="nav('addimage')"><span class="ni">🖼</span>Add Image</span></div>
+  <div class="nav" data-t="annotate"><span class="nav-label" onclick="nav('annotate')"><span class="ni">✏️</span>Annotate</span></div>
+  <div class="nav" data-t="redact"><span class="nav-label" onclick="nav('redact')"><span class="ni">⬛</span>Redact</span></div>
+  <div class="nav" data-t="headfoot"><span class="nav-label" onclick="nav('headfoot')"><span class="ni">≡</span>Header / Footer</span></div>
+  <div class="nav" data-t="watermark"><span class="nav-label" onclick="nav('watermark')"><span class="ni">◈</span>Watermark</span></div>
+  <div class="nav" data-t="pagenums"><span class="nav-label" onclick="nav('pagenums')"><span class="ni">#</span>Page Numbers</span></div>
+  <div class="nav" data-t="compress"><span class="nav-label" onclick="nav('compress')"><span class="ni">◎</span>Compress</span></div>
+  <div class="nav" data-t="protect"><span class="nav-label" onclick="nav('protect')"><span class="ni">🔒</span>Protect PDF</span></div>
+  <div class="nav" data-t="unlock"><span class="nav-label" onclick="nav('unlock')"><span class="ni">🔓</span>Unlock PDF</span></div>
+  <div class="nav" data-t="ocr"><span class="nav-label" onclick="nav('ocr')"><span class="ni">🔍</span>OCR</span></div>
+  <div class="nav" data-t="pdftext"><span class="nav-label" onclick="nav('pdftext')"><span class="ni">📝</span>PDF to Text</span></div>
+  <div class="nav" data-t="pdftoword"><span class="nav-label" onclick="nav('pdftoword')"><span class="ni">📄</span>PDF to Word</span></div>
+  <div class="nav" data-t="images"><span class="nav-label" onclick="nav('images')"><span class="ni">📷</span>PDF to Images</span></div>
+  <div class="nav" data-t="pdftocsv"><span class="nav-label" onclick="nav('pdftocsv')"><span class="ni">⊟</span>PDF to CSV</span></div>
+  <div class="nav" data-t="preview"><span class="nav-label" onclick="nav('preview')"><span class="ni">◻</span>Preview</span></div>
+  <div class="nav" data-t="info"><span class="nav-label" onclick="nav('info')"><span class="ni">◉</span>PDF Info</span></div>
+  <div class="nav" data-t="blankpage"><span class="nav-label" onclick="nav('blankpage')"><span class="ni">□</span>Blank Page</span></div>
+  <div class="nav" data-t="resize"><span class="nav-label" onclick="nav('resize')"><span class="ni">⊟</span>Resize</span></div>
+  <div class="nav" data-t="flatten"><span class="nav-label" onclick="nav('flatten')"><span class="ni">⊠</span>Flatten</span></div>
+  <div class="nav" data-t="grayscale"><span class="nav-label" onclick="nav('grayscale')"><span class="ni">◑</span>Grayscale</span></div>
+  <div class="nav" data-t="metadata"><span class="nav-label" onclick="nav('metadata')"><span class="ni">🏷</span>Metadata</span></div>
+  <div class="nav" data-t="sign"><span class="nav-label" onclick="nav('sign')"><span class="ni">✍️</span>Sign PDF</span></div>
+  <div class="nav" data-t="esign"><span class="nav-label" onclick="nav('esign')"><span class="ni">✦</span>eSign + Certificate</span></div>
+  <div class="nav" data-t="dupepage"><span class="nav-label" onclick="nav('dupepage')"><span class="ni">⧉</span>Duplicate Page</span></div>
+  <div class="nav" data-t="nup"><span class="nav-label" onclick="nav('nup')"><span class="ni">⊞</span>N-up</span></div>
+  <div class="nav" data-t="repair"><span class="nav-label" onclick="nav('repair')"><span class="ni">⚕</span>Repair PDF</span></div>
+  <div class="nav" data-t="compare-pdf"><span class="nav-label" onclick="nav('compare-pdf')"><span class="ni">⊟</span>Compare PDFs</span></div>
+  <div class="nav" data-t="fillform"><span class="nav-label" onclick="nav('fillform')"><span class="ni">✎</span>Fill Form</span></div>
+  <div class="nav" data-t="qrstamp"><span class="nav-label" onclick="nav('qrstamp')"><span class="ni">⊟</span>QR Stamp</span></div>
+  <div class="nav" data-t="bates"><span class="nav-label" onclick="nav('bates')"><span class="ni">⊞</span>Bates Numbers</span></div>
+  <div class="nav" data-t="redline"><span class="nav-label" onclick="nav('redline')"><span class="ni">✎</span>Redline</span></div>
+  <div class="nav" data-t="pwcheck"><span class="nav-label" onclick="nav('pwcheck')"><span class="ni">⊛</span>Password Check</span></div>
+  <div class="nav" data-t="img2pdf"><span class="nav-label" onclick="nav('img2pdf')"><span class="ni">🖼</span>Image to PDF</span></div>
+  <div class="nav" data-t="word2pdf"><span class="nav-label" onclick="nav('word2pdf')"><span class="ni">📝</span>Word to PDF</span></div>
+  <div class="nav" data-t="scan"><span class="nav-label" onclick="nav('scan')"><span class="ni">📷</span>Scan to PDF</span></div>
+  <div class="nav" data-t="bulkextract"><span class="nav-label" onclick="nav('bulkextract')"><span class="ni">⊞</span>Bulk Extractor</span></div>
+  <div class="nav" data-t="compare"><span class="nav-label" onclick="nav('compare')"><span class="ni">⚖</span>Why RightPDFKit?</span></div>
+  <div class="nav" data-t="pricing"><span class="nav-label" onclick="nav('pricing')"><span class="ni">✦</span>Pricing</span></div>
+  <div class="nav" data-t="privacy"><span class="nav-label" onclick="nav('privacy')"><span class="ni">🔒</span>Privacy Policy</span></div>
+  <button id="sidebar-close-btn" onclick="closeSidebar()" style="display:none;position:absolute;top:10px;right:10px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px">✕</button>
+</nav>
+<div class="main" id="main-content">
+<div class="home active" id="panel-home">
+  <div class="hero">
+    <div class="hero-headline">42 free PDF tools.<br>Zero uploads. Your files never leave.</div>
+    <div class="hero-sub">All processing happens in your browser using WebAssembly. No server. No account. No limits.</div>
+    <div class="pill-row">
+      <span class="sp-pill">✓ 100% local</span>
+      <span class="sp-pill">✓ No uploads</span>
+      <span class="sp-pill">✓ Works offline</span>
+      <span class="sp-pill">✓ No account</span>
     </div>
   </div>
+  <div class="pill-filter" id="pill-filter"></div>
+  <div class="tool-grid" id="tool-grid"></div>
 </div>
-<div style="margin-bottom:10px">
-  <div style="background:linear-gradient(135deg,rgba(155,89,182,.1),rgba(155,89,182,.03));border:1.5px solid rgba(155,89,182,.25);border-radius:12px;padding:14px 16px;margin-bottom:8px">
-    <div style="font-size:11px;font-weight:700;color:#9b59b6;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">✦ AI-Powered</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      <div onclick="nav('pdfchat')" style="background:rgba(255,255,255,.04);border:1px solid rgba(155,89,182,.2);border-radius:8px;padding:10px;cursor:pointer"><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px">💬 PDF Chat</div><div style="font-size:11px;color:var(--muted)">Ask questions about your PDF</div></div>
-      <div onclick="nav('pdftranslate')" style="background:rgba(255,255,255,.04);border:1px solid rgba(155,89,182,.2);border-radius:8px;padding:10px;cursor:pointer"><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px">🌍 PDF Translate</div><div style="font-size:11px;color:var(--muted)">Translate to any language</div></div>
-      <div onclick="nav('pdfsummary')" style="background:rgba(255,255,255,.04);border:1px solid rgba(155,89,182,.2);border-radius:8px;padding:10px;cursor:pointer"><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px">✦ PDF Summariser <span class="badge badge-new">NEW</span></div><div style="font-size:11px;color:var(--muted)">AI summary in one click</div></div>
-      <div onclick="nav('word2pdf')" style="background:rgba(255,255,255,.04);border:1px solid rgba(52,152,219,.2);border-radius:8px;padding:10px;cursor:pointer;grid-column:1/-1"><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px">📝 Word to PDF <span class="badge badge-new">NEW</span></div><div style="font-size:11px;color:var(--muted)">Convert .docx files to PDF — locally, no upload</div></div>
-    </div>
-  </div>
-</div>
-<div style="margin-bottom:10px">
-  <div onclick="nav('img2pdf')" style="background:linear-gradient(135deg,rgba(52,152,219,.1),rgba(52,152,219,.03));border:1.5px solid rgba(52,152,219,.25);border-radius:12px;padding:16px 18px;cursor:pointer;transition:all .16s;display:flex;align-items:center;justify-content:space-between;gap:16px" onmouseover="this.style.borderColor='#3498db'" onmouseout="this.style.borderColor='rgba(52,152,219,.25)'">
-    <div>
-      <div style="font-size:13px;font-weight:800;color:var(--text);margin-bottom:3px;display:flex;align-items:center;gap:7px"><span style="color:#3498db">🖼</span> Image to PDF <span class="badge badge-new">NEW</span></div>
-      <div style="font-size:12px;color:var(--muted)">JPG, PNG, WebP, HEIC → PDF. Single or multiple images. Drag to reorder.</div>
-    </div>
-    <div style="color:#3498db;font-size:20px;flex-shrink:0">→</div>
-  </div>
-</div>
-<div style="margin-bottom:10px">
-  <div onclick="nav('scan')" style="background:linear-gradient(135deg,rgba(46,204,113,.1),rgba(46,204,113,.03));border:1.5px solid rgba(46,204,113,.25);border-radius:12px;padding:16px 18px;cursor:pointer;transition:all .16s;display:flex;align-items:center;justify-content:space-between;gap:16px" onmouseover="this.style.borderColor='#2ECC71'" onmouseout="this.style.borderColor='rgba(46,204,113,.25)'">
-    <div>
-      <div style="font-size:13px;font-weight:800;color:var(--text);margin-bottom:3px;display:flex;align-items:center;gap:7px"><span style="color:#2ECC71">📷</span> Scan to PDF <span class="badge badge-new" style="background:#2ECC71;color:#000">NEW</span></div>
-      <div style="font-size:12px;color:var(--muted)">Camera → document — auto edge detection, perspective fix, multi-page</div>
-    </div>
-    <div style="color:#2ECC71;font-size:20px;flex-shrink:0">→</div>
-  </div>
-</div>
-<div style="margin-bottom:16px">
-  <div onclick="nav('ai')" style="background:linear-gradient(135deg,rgba(232,69,10,.12),rgba(232,69,10,.04));border:1.5px solid rgba(232,69,10,.25);border-radius:12px;padding:16px 18px;cursor:pointer;transition:all .16s;display:flex;align-items:center;justify-content:space-between;gap:16px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='rgba(232,69,10,.25)'">
-    <div>
-      <div style="font-size:13px;font-weight:800;color:var(--text);margin-bottom:3px;display:flex;align-items:center;gap:7px"><span style="color:var(--accent)">✦</span> AI PDF Assistant <span class="badge badge-new">LIVE</span></div>
-      <div style="font-size:12px;color:var(--muted)">"compress this, watermark CONFIDENTIAL, add page numbers" — done in one go</div>
-    </div>
-    <div style="color:var(--accent);font-size:20px;flex-shrink:0">→</div>
-  </div>
-</div>
-<div class="tg"><div class="tg-section">Organise</div>
-    <div class="tc" onclick="nav('merge')"><div class="tci">⊕</div><div class="tcn">Merge PDFs</div><div class="tcd">Combine multiple PDFs</div></div>
-    <div class="tc" onclick="nav('split')"><div class="tci">⊘</div><div class="tcn">Split PDF</div><div class="tcd">Extract pages to new file</div></div>
-    <div class="tc" onclick="nav('reorder')"><div class="tci">⇅</div><div class="tcn">Reorder Pages</div><div class="tcd">Drag &amp; drop to rearrange</div></div>
-    <div class="tc" onclick="nav('extract')"><div class="tci">⬡</div><div class="tcn">Extract Pages</div><div class="tcd">Pick specific pages</div></div>
-    <div class="tc" onclick="nav('delete')"><div class="tci">✕</div><div class="tcn">Delete Pages</div><div class="tcd">Remove pages visually</div></div>
-    <div class="tg-section">Edit</div>
-    <div class="tc" onclick="nav('rotate')"><div class="tci">↻</div><div class="tcn">Rotate Pages</div><div class="tcd">Rotate any pages</div></div>
-    <div class="tc" onclick="nav('crop')"><div class="tci">⊡</div><div class="tcn">Crop Pages <span class="badge badge-new">NEW</span></div><div class="tcd">Trim page margins</div></div>
-    <div class="tc" onclick="nav('addimage')"><div class="tci">🖼</div><div class="tcn">Add Image <span class="badge badge-new">NEW</span></div><div class="tcd">Embed images into PDF</div></div>
-    <div class="tc" onclick="nav('annotate')"><div class="tci">✏️</div><div class="tcn">Annotate <span class="badge badge-new">NEW</span></div><div class="tcd">Text &amp; highlight overlays</div></div>
-    <div class="tc" onclick="nav('redact')"><div class="tci">⬛</div><div class="tcn">Redact <span class="badge badge-new">NEW</span></div><div class="tcd">Permanently black out text</div></div>
-    <div class="tc" onclick="nav('headfoot')"><div class="tci">≡</div><div class="tcn">Header/Footer <span class="badge badge-new">NEW</span></div><div class="tcd">Stamp custom text</div></div>
-    <div class="tg-section">Enhance</div>
-    <div class="tc" onclick="nav('watermark')"><div class="tci">◈</div><div class="tcn">Watermark</div><div class="tcd">Stamp text on every page</div></div>
-    <div class="tc" onclick="nav('pagenums')"><div class="tci">#</div><div class="tcn">Page Numbers</div><div class="tcd">Add numbered footers</div></div>
-    <div class="tc" onclick="nav('compress')"><div class="tci">◎</div><div class="tcn">Compress</div><div class="tcd">Reduce file size</div></div>
-    <div class="tc" onclick="nav('esign')"><div class="tci">✦</div><div class="tcn">eSign + Certificate <span class="badge badge-new">NEW</span></div><div class="tcd">Legally-binding signature with timestamp</div></div>
-    <div class="tg-section">Security</div>
-    <div class="tc" onclick="nav('protect')"><div class="tci">🔒</div><div class="tcn">Protect PDF</div><div class="tcd">Password encrypt</div></div>
-    <div class="tc" onclick="nav('unlock')"><div class="tci">🔓</div><div class="tcn">Unlock PDF</div><div class="tcd">Remove password</div></div>
-    <div class="tg-section">Convert & Analyse</div>
-    <div class="tc" onclick="nav('ocr')"><div class="tci">🔍</div><div class="tcn">OCR <span class="badge badge-new">NEW</span></div><div class="tcd">Extract text from scans</div></div>
-    <div class="tc" onclick="nav('pdftext')"><div class="tci">📝</div><div class="tcn">PDF to Text</div><div class="tcd">Extract embedded text instantly</div></div>
-    <div class="tc" onclick="nav('info')"><div class="tci">◉</div><div class="tcn">PDF Info</div><div class="tcd">Metadata &amp; properties</div></div>
-    <div class="tc" onclick="nav('preview')"><div class="tci">◻</div><div class="tcn">Preview</div><div class="tcd">Browse pages</div></div>
-    <div class="tc" onclick="nav('images')"><div class="tci">📷</div><div class="tcn">PDF to Images</div><div class="tcd">Export pages as PNG</div></div>
-    <div class="tc" onclick="nav('fillform')"><div class="tci">✎</div><div class="tcn">Fill PDF Form <span class="badge badge-new">NEW</span></div><div class="tcd">Type into existing form fields</div></div>
-    <div class="tc" onclick="nav('compare-pdf')"><div class="tci">⊟</div><div class="tcn">Compare PDFs <span class="badge badge-new">NEW</span></div><div class="tcd">See what changed between two PDFs</div></div>
-    
-    <div class="tc" onclick="nav('bates')"><div class="tci">⊞</div><div class="tcn">Bates Numbers <span class="badge badge-new">NEW</span></div><div class="tcd">Sequential legal reference stamps</div></div>
-    <div class="tc" onclick="nav('pdftocsv')"><div class="tci">⊟</div><div class="tcn">PDF to Excel/CSV <span class="badge badge-new">NEW</span></div><div class="tcd">Extract tables to spreadsheet</div></div>
-    <div class="tc" onclick="nav('redline')"><div class="tci">✎</div><div class="tcn">PDF Redline <span class="badge badge-new">NEW</span></div><div class="tcd">Export tracked changes as PDF</div></div>
-    <div class="tc" onclick="nav('pwcheck')"><div class="tci">⊛</div><div class="tcn">Password Strength <span class="badge badge-new">NEW</span></div><div class="tcd">Check password strength before setting</div></div>
-    <div class="tg-section">Transform</div>
-    <div class="tc" onclick="nav('blankpage')"><div class="tci">□</div><div class="tcn">Insert Blank Page <span class="badge badge-new">NEW</span></div><div class="tcd">Add blank pages anywhere</div></div>
-    <div class="tc" onclick="nav('resize')"><div class="tci">⊟</div><div class="tcn">Resize Pages <span class="badge badge-new">NEW</span></div><div class="tcd">Standardise to A4/Letter</div></div>
-    <div class="tc" onclick="nav('flatten')"><div class="tci">⊠</div><div class="tcn">Flatten Forms <span class="badge badge-new">NEW</span></div><div class="tcd">Lock form fields permanently</div></div>
-    <div class="tc" onclick="nav('grayscale')"><div class="tci">◑</div><div class="tcn">Grayscale <span class="badge badge-new">NEW</span></div><div class="tcd">Convert to black & white</div></div>
-    <div class="tc" onclick="nav('metadata')"><div class="tci">🏷</div><div class="tcn">Edit Metadata <span class="badge badge-new">NEW</span></div><div class="tcd">Title, author, keywords</div></div>
-    <div class="tc" onclick="nav('pdftoword')"><div class="tci">📄</div><div class="tcn">PDF to Word <span class="badge badge-new">NEW</span></div><div class="tcd">Export as .docx file</div></div>
-    <div class="tc" onclick="nav('sign')"><div class="tci">✍️</div><div class="tcn">Sign PDF <span class="badge badge-new">NEW</span></div><div class="tcd">Draw, type or upload signature</div></div>
-    <div class="tc" onclick="nav('dupepage')"><div class="tci">⧉</div><div class="tcn">Duplicate Page <span class="badge badge-new">NEW</span></div><div class="tcd">Copy a page within your PDF</div></div>
-    <div class="tc" onclick="nav('nup')"><div class="tci">⊞</div><div class="tcn">N-up Print <span class="badge badge-new">NEW</span></div><div class="tcd">2 or 4 pages per sheet</div></div>
-    <div class="tc" onclick="nav('repair')"><div class="tci">⚕</div><div class="tcn">Repair PDF <span class="badge badge-new">NEW</span></div><div class="tcd">Fix broken or corrupt PDFs</div></div>
-    <div class="tc" onclick="nav('qrstamp')"><div class="tci">⊟</div><div class="tcn">QR Stamp <span class="badge badge-new">NEW</span></div><div class="tcd">Stamp a QR code on every page</div></div>
-    <div class="tc" onclick="nav('compare')" style="border-color:rgba(232,69,10,.25);background:rgba(232,69,10,.04)"><div class="tci">⚖</div><div class="tcn" style="color:var(--accent)">Why RightPDFKit?</div><div class="tcd">vs iLovePDF, Smallpdf & Adobe</div></div>
-  </div>
-  <div class="card frow" style="gap:13px"><div style="font-size:24px;opacity:.35">🔒</div><div style="flex:1"><div style="font-size:13px;font-weight:600;margin-bottom:3px">Your files never leave your device</div><div style="font-size:12px;color:var(--muted)">All 42 tools use pdf-lib and PDF.js — zero server uploads, works offline once loaded.</div><a href="#" onclick="nav('compare');return false;" style="font-size:11px;color:var(--hint);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--hint)'">Why RightPDFKit?</a>
-    <a href="#" onclick="nav('privacy');return false;" style="font-size:11px;color:var(--accent);text-decoration:none;display:inline-block;margin-top:5px">Read our privacy policy →</a></div></div>
-
-</div>
-
-<!-- MERGE -->
 <div class="panel" id="panel-merge">
   <div class="ph"><h2>⊕ Merge PDFs</h2><p>Combine multiple PDFs into one document.</p></div>
   <div class="dz" id="merge-drop" onclick="document.getElementById('merge-in').click()"><input type="file" id="merge-in" multiple accept=".pdf" onchange="mergeAdd(this.files)"><div class="di">⬆</div><h3>Drop PDFs here</h3><p>Click to browse — add as many as you like</p></div>
