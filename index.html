@@ -1735,6 +1735,33 @@ html,body{overflow-x:hidden;max-width:100vw}
   .pill{ display:none; }
 }
 
+
+/* Mobile sidebar — slides in from left */
+@media(max-width:768px){
+  .sidebar{
+    position:fixed;
+    top:0;left:-260px;
+    width:260px;height:100vh;
+    z-index:1500;
+    transition:left .25s ease;
+    background:var(--surface);
+    box-shadow:4px 0 20px rgba(0,0,0,.4);
+    padding-top:60px;
+  }
+  .sidebar.open{
+    left:0;
+  }
+  .sidebar-overlay{
+    display:none;
+    position:fixed;inset:0;
+    background:rgba(0,0,0,.5);
+    z-index:1400;
+  }
+  .sidebar-overlay.show{
+    display:block;
+  }
+}
+
 </style>
 
 <!-- Anti-flash: runs synchronously before first paint to set correct theme -->
