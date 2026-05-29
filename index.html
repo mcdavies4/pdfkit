@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+  try {
+    var t = localStorage.getItem('pdfkit-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+  } catch(e) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+</script>
 
 
 
@@ -1827,6 +1835,19 @@ html,body{overflow-x:hidden;max-width:100vw}
   .main { padding-bottom: 120px !important; }
 }
 
+
+[data-theme="light"] .tool-card {
+  border-color: rgba(0,0,0,0.12);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+[data-theme="light"] .tool-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 3px 12px rgba(232,69,10,0.12);
+}
+[data-theme="light"] .tool-section-label {
+  border-bottom-color: rgba(0,0,0,0.1);
+}
+
 </style>
 
 <!-- Anti-flash: runs synchronously before first paint to set correct theme -->
@@ -1905,6 +1926,16 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="RightPDFKit">
+<script>
+  (function(){
+    try {
+      var t = localStorage.getItem('pdfkit-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+    } catch(e) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+</script>
 </head>
 <body>
 <h1 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">PDFKit — Free Online PDF Editor, No Uploads Required</h1>
