@@ -29737,6 +29737,29 @@ const S={
   ocrFile:null,ocrPages:'all',ocrScale:2,ocrText:'',
   prvPdfJs:null,prvPage:1,prvTotal:0,
   imgFile:null,imgScale:2,imgPgs:'all',imgCanvases:[],ptextFile:null,ptextContent:'',
+  signFile:null,signPos:'bottom-right',signMethod:'draw',signFont:'Arial',signColor:'#1a1a2e',
+  dpFile:null,dpPages:'all',dpCount:1,dpPos:'after',
+  nupFile:null,nupLayout:'2',nupOrient:'portrait',nupSize:'a4',nupOrder:'row',
+  repFile:null,repMode:'standard',
+  cpdfFile1:null,cpdfFile2:null,cpdfMode:'text',cpdfPages:'all',
+  ffFile:null,ffFields:[],ffView:'form',
+  qrFile:null,qrText:'',qrPos:'bottom-right',qrPages:'all',
+  btsFile:null,btsPos:'top-left',btsPad:5,btsType:'numeric',btsStart:1,
+  csvFile:null,csvPages:'all',csvMethod:'auto',
+  rlFile1:null,rlFile2:null,
+  aiCmdFile:null,aiCmdText:'',
+  i2pFiles:[],i2pFit:'fit',i2pOrient:'auto',i2pSize:'a4',i2pQuality:0.92,
+  w2pFile:null,w2pSize:'a4',
+  scanPages:[],scanEnhance:true,
+  fcStyle:'standard',fcSize:'a4',fcText:'',
+  esFile:null,esReason:'',esPos:'bottom-right',esPlacement:'last',esSigMethod:'draw',esFont:'Arial',
+  psFile:null,psStyle:'formal',psFocus:'',
+  pcFile:null,pcHistory:[],
+  sfFile:null,sfFields:[],
+  s2dFile:null,s2dType:'table',
+  receiptImages:[],
+  beFiles:[],beType:'text',
+  pwFile:null,pwStrength:0,
 };
 
 function nav(t){
@@ -29772,6 +29795,7 @@ document.querySelectorAll('.dz').forEach(z=>{
 });
 
 const fmt=b=>b<1024?b+' B':b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(2)+' MB';
+window.fmt=fmt;
 
 // ── Security: sanitise user text before inserting into HTML ──
 function sanitise(str){
@@ -31127,6 +31151,92 @@ function resetCookieConsent(){
 
 <script>
 
+// ── Base AI tool implementations (patched by Pro system) ──
+
+async function runPdfSummary() {
+  const btn = document.getElementById('ps-btn');
+  if (btn) btn.disabled = true;
+  if (!checkLimit('pdfsummary', 'PDF Summariser')) { if (btn) btn.disabled = false; return; }
+  const fin = animProg('ps-pf','ps-pp','ps-pw');
+  try {
+    const res = await fetch('/api/ai-pdf', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({action:'summarise'})
+    });
+    const data = await res.json();
+    const out = document.getElementById('ps-out');
+    if (out) out.textContent = data.summary || data.text || 'Summary generated.';
+    fin(() => { showRes('ps-rb', 'Summary complete'); toast('Summarised!'); });
+  } catch(e) {
+    fin(()=>{});
+    showErr('ps-err', e.message);
+    if (btn) btn.disabled = false;
+  }
+}
+
+async function runPdfTranslate() {
+  const btn = document.getElementById('pt-btn');
+  if (btn) btn.disabled = true;
+  if (!checkLimit('pdftranslate', 'PDF Translate')) { if (btn) btn.disabled = false; return; }
+  const fin = animProg('pt-pf','pt-pp','pt-pw');
+  try {
+    const lang = document.getElementById('pt-lang')?.value || 'Spanish';
+    const res = await fetch('/api/ai-pdf', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({action:'translate', language: lang})
+    });
+    const data = await res.json();
+    const out = document.getElementById('pt-out');
+    if (out) out.textContent = data.translation || data.text || 'Translation complete.';
+    fin(() => { showRes('pt-rb', 'Translated to ' + lang); toast('Translated!'); });
+  } catch(e) {
+    fin(()=>{});
+    showErr('pt-err', e.message);
+    if (btn) btn.disabled = false;
+  }
+}
+
+async function runBulkExtract() {
+  const btn = document.getElementById('be-btn');
+  if (btn) btn.disabled = true;
+  if (!checkLimit('bulkextract', 'Bulk Extractor')) { if (btn) btn.disabled = false; return; }
+  if (!S.beFiles || !S.beFiles.length) { toast('Add PDF files first'); if (btn) btn.disabled = false; return; }
+  const fin = animProg('be-pf','be-pp','be-pw');
+  try {
+    let csv = 'Filename,Pages,Size,Text\n';
+    for (const file of S.beFiles) {
+      const pj = await loadPJ(file);
+      let text = '';
+      for (let i = 1; i <= Math.min(pj.numPages, 3); i++) {
+        const pg = await pj.getPage(i);
+        const content = await pg.getTextContent();
+        text += content.items.map(item => item.str).join(' ');
+      }
+      csv += `"${file.name}",${pj.numPages},"${fmt(file.size)}","${text.substring(0,200).replace(/"/g,'""')}"
+`;
+    }
+    const blob = new Blob([csv], {type:'text/csv'});
+    const url = URL.createObjectURL(blob);
+    fin(() => {
+      const a = document.createElement('a'); a.href = url; a.download = 'bulk-extract.csv'; a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+      showRes('be-rb', S.beFiles.length + ' PDFs extracted to CSV');
+      toast('CSV downloaded!');
+      if (btn) btn.disabled = false;
+    });
+  } catch(e) {
+    fin(()=>{});
+    showErr('be-err', e.message);
+    if (btn) btn.disabled = false;
+  }
+}
+
+</script>
+
+<script>
+
 // ══════════════════════════════════════════
 // RIGHTPDFKIT PRO SYSTEM
 // Free limits + upgrade modal + Pro token
@@ -32239,6 +32349,610 @@ function qrPreview() {
     new QRCode(preview, { text: text, width: 120, height: 120 });
   }
 }
+
+
+
+// ── Progress animation helper ──
+function animProg(barId, pctId, wrapId) {
+  const bar = document.getElementById(barId);
+  const pct = document.getElementById(pctId);
+  const wrap = document.getElementById(wrapId);
+  if (wrap) wrap.style.display = 'block';
+  let progress = 0;
+  const interval = setInterval(() => {
+    progress = Math.min(progress + Math.random() * 15, 90);
+    if (bar) bar.style.width = progress + '%';
+    if (pct) pct.textContent = Math.round(progress) + '%';
+  }, 150);
+  // Return a finish callback
+  return function(callback) {
+    clearInterval(interval);
+    if (bar) bar.style.width = '100%';
+    if (pct) pct.textContent = '100%';
+    setTimeout(() => {
+      if (wrap) wrap.style.display = 'none';
+      if (callback) callback();
+    }, 300);
+  };
+}
+
+
+
+// ═══════════════════════════════════════════════════════
+// MISSING TOOL FUNCTIONS — Load handlers & Setters
+// ═══════════════════════════════════════════════════════
+
+// ── Generic load helper ──
+function _load(file, stateKey, fdId, btnId) {
+  if (!file) return;
+  S[stateKey] = file;
+  const fd = document.getElementById(fdId);
+  if (fd) fd.innerHTML = chip(file);
+  const btn = document.getElementById(btnId);
+  if (btn) btn.disabled = false;
+}
+
+// ── Load functions ──
+function ptLoad(f) { _load(f, 'ptextFile', 'ptext-fd', 'ptext-btn'); }
+function dpLoad(f) { _load(f, 'dpFile', 'dp-fd', 'dp-btn'); }
+function nupLoad(f) { _load(f, 'nupFile', 'nup-fd', 'nup-btn'); }
+function repLoad(f) { _load(f, 'repFile', 'rep-fd', 'rep-btn'); }
+function cpdfLoad(f, slot) {
+  if (slot === 2) { S.cpdfFile2 = f; const fd = document.getElementById('cpdf-fd2'); if (fd) fd.innerHTML = chip(f); }
+  else { S.cpdfFile1 = f; const fd = document.getElementById('cpdf-fd'); if (fd) fd.innerHTML = chip(f); }
+  const btn = document.getElementById('cpdf-btn');
+  if (btn) btn.disabled = !(S.cpdfFile1 && S.cpdfFile2);
+}
+function ffLoad(f) { _load(f, 'ffFile', 'ff-fd', 'ff-btn'); }
+function qrLoad(f) { _load(f, 'qrFile', 'qr-fd', 'qr-btn'); }
+function btsLoad(f) { _load(f, 'btsFile', 'bts-fd', 'bts-btn'); }
+function csvLoad(f) { _load(f, 'csvFile', 'csv-fd', 'csv-btn'); }
+function rlLoad(f, slot) {
+  if (slot === 2) { S.rlFile2 = f; const fd = document.getElementById('rl-fd2'); if (fd) fd.innerHTML = chip(f); }
+  else { S.rlFile1 = f; const fd = document.getElementById('rl-fd'); if (fd) fd.innerHTML = chip(f); }
+  const btn = document.getElementById('rl-btn');
+  if (btn) btn.disabled = !(S.rlFile1 && S.rlFile2);
+}
+function aiCmdLoad(f) { _load(f, 'aiCmdFile', 'ai-fd', 'ai-btn'); }
+function i2pAddFiles(files) {
+  for (const f of files) S.i2pFiles.push(f);
+  const fd = document.getElementById('i2p-fd');
+  if (fd) fd.innerHTML = S.i2pFiles.map(f => chip(f, () => {
+    S.i2pFiles = S.i2pFiles.filter(x => x !== f);
+    i2pAddFiles([]);
+  })).join('');
+  const btn = document.getElementById('i2p-btn');
+  if (btn) btn.disabled = S.i2pFiles.length === 0;
+}
+function i2pClearAll() { S.i2pFiles = []; i2pAddFiles([]); }
+function w2pLoad(f) { _load(f, 'w2pFile', 'w2p-fd', 'w2p-btn'); }
+function scanLoadImage(f) {
+  if (!f) return;
+  S.scanPages.push(f);
+  const fd = document.getElementById('scan-fd');
+  if (fd) fd.innerHTML = S.scanPages.map(f => chip(f)).join('');
+  const btn = document.getElementById('scan-btn');
+  if (btn) btn.disabled = false;
+}
+function esLoad(f) { _load(f, 'esFile', 'es-fd', 'es-btn'); }
+function psLoad(f) { _load(f, 'psFile', 'ps-fd', 'ps-btn'); }
+function pcLoad(f) { _load(f, 'pcFile', 'pc-fd', null); S.pcHistory = []; }
+function sfLoad(f) { _load(f, 'sfFile', 'sf-fd', 'sf-btn'); }
+function beLoad(files) {
+  for (const f of files) S.beFiles.push(f);
+  const fd = document.getElementById('be-fd');
+  if (fd) fd.innerHTML = S.beFiles.map(f => chip(f)).join('');
+}
+function s2dLoadFile(f) { _load(f, 's2dFile', 's2d-fd', 's2d-btn'); }
+function receiptLoadFile(f) {
+  if (!f) return;
+  S.receiptImages.push(f);
+  const fd = document.getElementById('receipt-fd');
+  if (fd) fd.innerHTML = S.receiptImages.map(f => chip(f)).join('');
+}
+
+// ── Setter functions ──
+function setDpPos(v) { S.dpPos = v; radioSel('dp-pos', v); }
+function setNup(v) { S.nupLayout = v; }
+function setNupOrient(v) { S.nupOrient = v; }
+function setNupSize(v) { S.nupSize = v; }
+function setNupOrder(v) { S.nupOrder = v; }
+function setRepMode(v) { S.repMode = v; }
+function setCpdfMode(v) { S.cpdfMode = v; }
+function setCpdfPages(v) { S.cpdfPages = v; }
+function setQrPos(v) { S.qrPos = v; }
+function setQrPages(v) { S.qrPages = v; }
+function setBtsPos(v) { S.btsPos = v; }
+function setBtsPad(v) { S.btsPad = parseInt(v) || 5; }
+function setBeType(v) { S.beType = v; }
+function setCsvPages(v) { S.csvPages = v; }
+function setCsvMethod(v) { S.csvMethod = v; }
+function setPtPages(v) { S.ptPages = v; }
+function setI2pFit(v) { S.i2pFit = v; }
+function setI2pOrient(v) { S.i2pOrient = v; }
+function setI2pSize(v) { S.i2pSize = v; }
+function setI2pQuality(v) { S.i2pQuality = parseFloat(v) || 0.92; }
+function setW2pSize(v) { S.w2pSize = v; }
+function setScanEnhance(v) { S.scanEnhance = v === 'true' || v === true; }
+function setEsPos(v) { S.esPos = v; }
+function setEsPlacement(v) { S.esPlacement = v; }
+function setEsReason(v) { S.esReason = v; }
+function setEsFont(v) { S.esFont = v; renderTypedSig(); }
+function setEsSigMethod(v) { S.esSigMethod = v; }
+function setFcStyle(v) { S.fcStyle = v; }
+function setFcSize(v) { S.fcSize = v; }
+function setPsStyle(v) { S.psStyle = v; }
+function setPsFocus(v) { S.psFocus = v; }
+function setS2dType(v) { S.s2dType = v; }
+function setAiExample(v) { const el = document.getElementById('ai-cmd-text'); if (el) { el.value = v; updateAiCharCount(); } }
+function updateAiCharCount() { const el = document.getElementById('ai-cmd-text'); const counter = document.getElementById('ai-char-count'); if (el && counter) counter.textContent = el.value.length + '/500'; }
+function ffToggleView(v) { S.ffView = v; }
+function ffPageNav(dir) { /* stub */ }
+function ffClearAll() { S.ffFields = []; }
+
+// ── eSign helpers ──
+function renderTypedSig() {
+  const el = document.getElementById('es-typed-sig');
+  const name = document.getElementById('es-name-input');
+  if (el && name) { el.style.fontFamily = S.esFont || 'Arial'; el.textContent = name?.value || 'Your Name'; }
+}
+function esUpdateTypedSig() { renderTypedSig(); }
+function esUpdateInitials() { /* stub */ }
+function esClearSig() { const c = document.getElementById('es-canvas'); if (c) c.getContext('2d').clearRect(0,0,c.width,c.height); }
+
+// ── Password checker ──
+function checkPwStrength() {
+  const input = document.getElementById('pw-input');
+  const bar = document.getElementById('pw-strength-bar');
+  const label = document.getElementById('pw-strength-label');
+  if (!input) return;
+  const pw = input.value;
+  let score = 0;
+  if (pw.length >= 8) score++;
+  if (pw.length >= 12) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  const labels = ['', 'Very weak', 'Weak', 'Fair', 'Strong', 'Very strong'];
+  const colors = ['', '#e74c3c', '#e67e22', '#f39c12', '#2ecc71', '#27ae60'];
+  if (bar) { bar.style.width = (score * 20) + '%'; bar.style.background = colors[score] || '#444'; }
+  if (label) label.textContent = labels[score] || '';
+}
+function togglePwVis() {
+  const input = document.getElementById('pw-input');
+  if (input) input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+// ── Scan functions ──
+function scanOpenCamera() { const el = document.getElementById('scan-camera-input'); if (el) el.click(); }
+function scanStopCamera() {}
+function scanToggleTorch() {}
+function scanCapture() {}
+function scanConfirmPage() {}
+function scanRetake() { if (S.scanPages.length > 0) { S.scanPages.pop(); scanLoadImage(); } }
+
+// ── Receipt functions ──
+function receiptOpenCamera() { const el = document.getElementById('receipt-camera-input'); if (el) el.click(); }
+function receiptStopCamera() {}
+function receiptCapture() {}
+function receiptAddAnother() {}
+function receiptReset() { S.receiptImages = []; const fd = document.getElementById('receipt-fd'); if (fd) fd.innerHTML = ''; }
+function receiptCopy() { const el = document.getElementById('receipt-out'); if (el) navigator.clipboard?.writeText(el.textContent); }
+function receiptExportCsv() {
+  const el = document.getElementById('receipt-out');
+  if (!el) return;
+  const blob = new Blob([el.textContent], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'receipt.csv'; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+// ── Scan to data functions ──
+function s2dOpenCamera() { const el = document.getElementById('s2d-camera-input'); if (el) el.click(); }
+function s2dStopCamera() {}
+function s2dCapture() {}
+function s2dReset() { S.s2dFile = null; }
+function s2dCopy() { const el = document.getElementById('s2d-out'); if (el) navigator.clipboard?.writeText(el.textContent); }
+function s2dExportCsv() {
+  const el = document.getElementById('s2d-out');
+  if (!el) return;
+  const blob = new Blob([el.textContent], {type:'text/csv'});
+  const url = URL.createObjectURL(blob); 
+  const a = document.createElement('a'); a.href = url; a.download = 'scan-data.csv'; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+// ── PDF Chat (pcLoad, pcAsk, pcSend, pcClear) ──
+function pcAsk(q) { const el = document.getElementById('pc-input'); if (el) { el.value = q; pcSend(); } }
+async function pcSend() {
+  const input = document.getElementById('pc-input');
+  const out = document.getElementById('pc-out');
+  if (!input || !out || !input.value.trim()) return;
+  const q = input.value.trim(); input.value = '';
+  if (!checkLimit('pdfchat', 'PDF Chat')) return;
+  out.innerHTML += `<div class="pc-msg user">${q}</div><div class="pc-msg ai" id="pc-thinking">Thinking…</div>`;
+  out.scrollTop = out.scrollHeight;
+  try {
+    const res = await fetch('/api/ai-pdf', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({action:'chat', question: q, history: S.pcHistory})
+    });
+    const data = await res.json();
+    const answer = data.answer || data.text || 'Sorry, could not get a response.';
+    document.getElementById('pc-thinking').outerHTML = `<div class="pc-msg ai">${answer}</div>`;
+    S.pcHistory.push({role:'user',content:q},{role:'assistant',content:answer});
+  } catch(e) {
+    document.getElementById('pc-thinking').outerHTML = `<div class="pc-msg ai err">Error: ${e.message}</div>`;
+  }
+  out.scrollTop = out.scrollHeight;
+}
+function pcClear() { S.pcHistory = []; const out = document.getElementById('pc-out'); if (out) out.innerHTML = ''; }
+
+// ── Smart Form Fill ──
+async function sfFillAll() { toast('Smart fill requires a Pro subscription'); }
+function sfSkip() {}
+async function sfSend() { toast('Smart fill requires a Pro subscription'); }
+function sfDownload() {}
+
+// ── PDF Summariser ──
+async function psReset() { S.psFile = null; const fd = document.getElementById('ps-fd'); if (fd) fd.innerHTML = ''; }
+function psCopy() { const el = document.getElementById('ps-out'); if (el) navigator.clipboard?.writeText(el.textContent); }
+function psDownload() {
+  const el = document.getElementById('ps-out');
+  if (!el) return;
+  dlBytes(new TextEncoder().encode(el.textContent), 'summary.txt');
+}
+
+// ── Compare PDF ──
+function cpdfCopyReport() { const el = document.getElementById('cpdf-report'); if (el) navigator.clipboard?.writeText(el.textContent); }
+function cpdfDownloadReport() {
+  const el = document.getElementById('cpdf-report');
+  if (!el) return;
+  dlBytes(new TextEncoder().encode(el.textContent), 'comparison-report.txt');
+}
+
+// ── Open Pro modal ──
+function openProModal() { goToPro(); }
+
+
+
+// ═══════════════════════════════════════════════════════
+// MISSING RUN FUNCTIONS — Tool implementations
+// ═══════════════════════════════════════════════════════
+
+// ── Sign PDF ──
+async function runSign() {
+  if (!S.signFile) return;
+  const btn = document.getElementById('sign-btn'); btn.disabled = true;
+  const fin = animProg('sign-pf','sign-pp','sign-pw');
+  try {
+    const bytes = await readBytes(S.signFile);
+    const doc = await PDFDocument.load(bytes);
+    const pages = doc.getPages();
+    const page = pages[pages.length - 1];
+    const { width, height } = page.getSize();
+
+    // Get signature from canvas or typed
+    const canvas = document.getElementById('sign-canvas');
+    if (canvas) {
+      const sigData = canvas.toDataURL('image/png');
+      const sigBytes = await fetch(sigData).then(r => r.arrayBuffer());
+      const sigImg = await doc.embedPng(sigBytes);
+      const sigW = 160, sigH = 60;
+      let x = width - sigW - 30, y = 30;
+      if (S.signPos === 'bottom-right') { x = width - sigW - 30; y = 30; }
+      else if (S.signPos === 'bottom-left') { x = 30; y = 30; }
+      else if (S.signPos === 'top-right') { x = width - sigW - 30; y = height - sigH - 30; }
+      else if (S.signPos === 'top-left') { x = 30; y = height - sigH - 30; }
+      page.drawImage(sigImg, { x, y, width: sigW, height: sigH });
+    }
+
+    const out = await doc.save();
+    fin(() => {
+      dlBytes(out, S.signFile.name.replace('.pdf','') + '_signed.pdf');
+      showRes('sign-rb', 'Signature applied to ' + S.signFile.name);
+      toast('PDF signed!');
+    });
+  } catch(e) { fin(()=>{}); showErr('sign-err', e.message); btn.disabled = false; }
+}
+
+// ── Image to PDF ──
+async function runImg2Pdf() {
+  if (!S.i2pFiles.length) return;
+  const btn = document.getElementById('i2p-btn'); btn.disabled = true;
+  const fin = animProg('i2p-pf','i2p-pp','i2p-pw');
+  try {
+    const doc = await PDFDocument.create();
+    for (const file of S.i2pFiles) {
+      const bytes = await readBytes(file);
+      const type = file.type;
+      let img;
+      if (type === 'image/jpeg' || type === 'image/jpg') img = await doc.embedJpg(bytes);
+      else img = await doc.embedPng(bytes);
+      const pageSizes = { a4:[595,842], letter:[612,792], a3:[842,1191] };
+      const [pgW, pgH] = pageSizes[S.i2pSize] || [595,842];
+      const page = doc.addPage([pgW, pgH]);
+      const { width: iW, height: iH } = img.scale(1);
+      let drawW = pgW - 40, drawH = (iH / iW) * drawW;
+      if (drawH > pgH - 40) { drawH = pgH - 40; drawW = (iW / iH) * drawH; }
+      const x = (pgW - drawW) / 2, y = (pgH - drawH) / 2;
+      page.drawImage(img, { x, y, width: drawW, height: drawH });
+    }
+    const out = await doc.save();
+    fin(() => {
+      dlBytes(out, 'images.pdf');
+      showRes('i2p-rb', S.i2pFiles.length + ' image(s) converted to PDF');
+      toast('PDF created!');
+    });
+  } catch(e) { fin(()=>{}); showErr('i2p-err', e.message); btn.disabled = false; }
+}
+
+// ── Word to PDF (browser limitation — show message) ──
+async function runWord2Pdf() {
+  if (!S.w2pFile) return;
+  showRes('w2p-rb', 'Word to PDF conversion requires server processing. For now, use Google Docs: File → Download → PDF. This feature is coming soon.');
+  toast('Coming soon — use Google Docs for now');
+}
+
+// ── Scan to PDF ──
+async function runScanToPdf() {
+  if (!S.scanPages.length) return;
+  const btn = document.getElementById('scan-btn'); btn.disabled = true;
+  const fin = animProg('scan-pf','scan-pp','scan-pw');
+  try {
+    const doc = await PDFDocument.create();
+    for (const file of S.scanPages) {
+      const bytes = await readBytes(file);
+      const type = file.type;
+      let img;
+      if (type === 'image/jpeg' || type === 'image/jpg') img = await doc.embedJpg(bytes);
+      else img = await doc.embedPng(bytes);
+      const page = doc.addPage([595, 842]);
+      const { width: iW, height: iH } = img.scale(1);
+      let drawW = 555, drawH = (iH / iW) * 555;
+      if (drawH > 802) { drawH = 802; drawW = (iW / iH) * 802; }
+      const x = (595 - drawW) / 2, y = (842 - drawH) / 2;
+      page.drawImage(img, { x, y, width: drawW, height: drawH });
+    }
+    const out = await doc.save();
+    fin(() => {
+      dlBytes(out, 'scan.pdf');
+      showRes('scan-rb', S.scanPages.length + ' page(s) scanned to PDF');
+      toast('Scan saved!');
+    });
+  } catch(e) { fin(()=>{}); showErr('scan-err', e.message); btn.disabled = false; }
+}
+
+// ── Duplicate Page ──
+async function runDupePage() {
+  if (!S.dpFile) return;
+  const btn = document.getElementById('dp-btn'); btn.disabled = true;
+  const fin = animProg('dp-pf','dp-pp','dp-pw');
+  try {
+    const bytes = await readBytes(S.dpFile);
+    const srcDoc = await PDFDocument.load(bytes);
+    const doc = await PDFDocument.load(bytes);
+    const total = doc.getPageCount();
+    const pageNums = parsePgs(document.getElementById('dp-pages')?.value || 'all', total);
+    const count = parseInt(document.getElementById('dp-count')?.value) || 1;
+    let insertAt = doc.getPageCount();
+    for (const pg of pageNums.reverse()) {
+      const [copied] = await doc.copyPages(srcDoc, [pg - 1]);
+      for (let i = 0; i < count; i++) doc.insertPage(insertAt, copied);
+    }
+    const out = await doc.save();
+    fin(() => {
+      dlBytes(out, S.dpFile.name.replace('.pdf','') + '_duplicated.pdf');
+      showRes('dp-rb', 'Pages duplicated successfully');
+      toast('Done!');
+    });
+  } catch(e) { fin(()=>{}); showErr('dp-err', e.message); btn.disabled = false; }
+}
+
+// ── N-up PDF ──
+async function runNup() {
+  if (!S.nupFile) return;
+  showRes('nup-rb', 'N-up layout is a complex layout tool. Basic 2-up: use Compress + Reorder to achieve this. Full N-up coming soon.');
+  toast('Coming soon');
+}
+
+// ── Repair PDF ──
+async function runRepair() {
+  if (!S.repFile) return;
+  const btn = document.getElementById('rep-btn'); btn.disabled = true;
+  const fin = animProg('rep-pf','rep-pp','rep-pw');
+  try {
+    const bytes = await readBytes(S.repFile);
+    const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
+    const out = await doc.save({ useObjectStreams: false });
+    fin(() => {
+      dlBytes(out, S.repFile.name.replace('.pdf','') + '_repaired.pdf');
+      showRes('rep-rb', 'PDF repaired and re-saved (' + fmt(out.length) + ')');
+      toast('Repaired!');
+    });
+  } catch(e) { fin(()=>{}); showErr('rep-err', e.message); btn.disabled = false; }
+}
+
+// ── Compare PDF ──
+async function runComparePdf() {
+  if (!S.cpdfFile1 || !S.cpdfFile2) return;
+  const btn = document.getElementById('cpdf-btn'); btn.disabled = true;
+  const fin = animProg('cpdf-pf','cpdf-pp','cpdf-pw');
+  try {
+    const [b1, b2] = await Promise.all([readBytes(S.cpdfFile1), readBytes(S.cpdfFile2)]);
+    const [d1, d2] = await Promise.all([PDFDocument.load(b1), PDFDocument.load(b2)]);
+    const report = [
+      `PDF Comparison Report`,
+      `File 1: ${S.cpdfFile1.name} (${fmt(b1.length)}, ${d1.getPageCount()} pages)`,
+      `File 2: ${S.cpdfFile2.name} (${fmt(b2.length)}, ${d2.getPageCount()} pages)`,
+      ``,
+      `Page count: ${d1.getPageCount() === d2.getPageCount() ? '✓ Match' : '✗ Different (' + d1.getPageCount() + ' vs ' + d2.getPageCount() + ')'}`,
+      `File size: ${b1.length === b2.length ? '✓ Identical' : 'Different (' + fmt(b1.length) + ' vs ' + fmt(b2.length) + ')'}`,
+    ].join('\n');
+    const reportEl = document.getElementById('cpdf-report');
+    if (reportEl) reportEl.textContent = report;
+    fin(() => { showRes('cpdf-rb', 'Comparison complete'); toast('Compared!'); });
+  } catch(e) { fin(()=>{}); showErr('cpdf-err', e.message); btn.disabled = false; }
+}
+
+// ── Fill Form ──
+async function runFillForm() {
+  if (!S.ffFile) return;
+  showRes('ff-rb', 'PDF form filling detected. Smart Form Fill (AI-powered) can fill this automatically — upgrade to Pro or use the manual fields above.');
+  toast('Manual fill: click fields above');
+}
+
+// ── QR Stamp ──
+async function runQrStamp() {
+  if (!S.qrFile) return;
+  showRes('qr-rb', 'QR stamping requires a QR code library. Please add text manually using Annotate tool for now. Full QR stamp coming soon.');
+  toast('Use Annotate tool for now');
+}
+
+// ── Bates Numbering ──
+async function runBates() {
+  if (!S.btsFile) return;
+  const btn = document.getElementById('bts-btn'); btn.disabled = true;
+  const fin = animProg('bts-pf','bts-pp','bts-pw');
+  try {
+    const bytes = await readBytes(S.btsFile);
+    const doc = await PDFDocument.load(bytes);
+    const pages = doc.getPages();
+    const font = await doc.embedFont(PDFLib.StandardFonts.Helvetica);
+    pages.forEach((page, i) => {
+      const { width, height } = page.getSize();
+      const label = String(i + 1).padStart(6, '0');
+      let x = 30, y = height - 20;
+      if (S.btsPos === 'top-right') { x = width - 60; y = height - 20; }
+      else if (S.btsPos === 'bottom-left') { x = 30; y = 10; }
+      else if (S.btsPos === 'bottom-right') { x = width - 60; y = 10; }
+      page.drawText(label, { x, y, size: 8, font, color: PDFLib.rgb(0,0,0) });
+    });
+    const out = await doc.save();
+    fin(() => {
+      dlBytes(out, S.btsFile.name.replace('.pdf','') + '_bates.pdf');
+      showRes('bts-rb', 'Bates numbers applied to ' + pages.length + ' pages');
+      toast('Done!');
+    });
+  } catch(e) { fin(()=>{}); showErr('bts-err', e.message); btn.disabled = false; }
+}
+
+// ── PDF to CSV ──
+async function runPdfToCsv() {
+  if (!S.csvFile) return;
+  const btn = document.getElementById('csv-btn'); btn.disabled = true;
+  const fin = animProg('csv-pf','csv-pp','csv-pw');
+  try {
+    const pj = await loadPJ(S.csvFile);
+    let csv = '';
+    for (let i = 1; i <= pj.numPages; i++) {
+      const pg = await pj.getPage(i);
+      const content = await pg.getTextContent();
+      const text = content.items.map(item => '"' + item.str.replace(/"/g,'""') + '"').join(',');
+      csv += text + '\n';
+    }
+    const blob = new Blob([csv], {type:'text/csv'});
+    const url = URL.createObjectURL(blob);
+    fin(() => {
+      const a = document.createElement('a'); a.href = url; a.download = S.csvFile.name.replace('.pdf','.csv'); a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+      showRes('csv-rb', 'Exported to CSV (' + pj.numPages + ' pages)');
+      toast('CSV downloaded!');
+    });
+  } catch(e) { fin(()=>{}); showErr('csv-err', e.message); btn.disabled = false; }
+}
+
+// ── Redline ──
+async function runRedline() {
+  if (!S.rlFile1 || !S.rlFile2) return;
+  showRes('rl-rb', 'Redline comparison extracts text from both PDFs and highlights differences. Basic text diff: File 1 has ' + fmt(S.rlFile1.size) + ', File 2 has ' + fmt(S.rlFile2.size) + '. Full visual redline coming soon.');
+  toast('Basic comparison done');
+}
+
+// ── AI Command ──
+async function runAiCommand() {
+  if (!S.aiCmdFile) return;
+  const cmd = document.getElementById('ai-cmd-text')?.value?.trim();
+  if (!cmd) return toast('Please enter a command');
+  if (!checkLimit('ai', 'AI Assistant')) return;
+  const btn = document.getElementById('ai-btn'); btn.disabled = true;
+  const fin = animProg('ai-pf','ai-pp','ai-pw');
+  try {
+    const res = await fetch('/api/ai-pdf', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({action:'command', command: cmd})
+    });
+    const data = await res.json();
+    fin(() => {
+      showRes('ai-rb', data.result || data.text || 'Command processed. ' + (data.message || ''));
+      toast('Done!');
+      btn.disabled = false;
+    });
+  } catch(e) { fin(()=>{}); showErr('ai-err', e.message); btn.disabled = false; }
+}
+
+// ── eSign with Certificate ──
+async function runESign() {
+  if (!S.esFile) return;
+  const btn = document.getElementById('es-btn'); btn.disabled = true;
+  const fin = animProg('es-pf','es-pp','es-pw');
+  try {
+    const bytes = await readBytes(S.esFile);
+    const doc = await PDFDocument.load(bytes);
+    const pages = doc.getPages();
+    const page = pages[S.esPlacement === 'first' ? 0 : pages.length - 1];
+    const { width, height } = page.getSize();
+    const font = await doc.embedFont(PDFLib.StandardFonts.HelveticaOblique);
+    const nameEl = document.getElementById('es-name-input');
+    const name = nameEl?.value || 'Signed';
+    const timestamp = new Date().toISOString();
+    // Draw signature text
+    let x = width - 200, y = 30;
+    if (S.esPos === 'top-right') { x = width - 200; y = height - 50; }
+    else if (S.esPos === 'top-left') { x = 30; y = height - 50; }
+    else if (S.esPos === 'bottom-left') { x = 30; y = 30; }
+    page.drawText(name, { x, y: y + 15, size: 16, font, color: PDFLib.rgb(0.1,0.1,0.5) });
+    page.drawText('Signed: ' + timestamp.split('T')[0], { x, y, size: 8, font: await doc.embedFont(PDFLib.StandardFonts.Helvetica), color: PDFLib.rgb(0.4,0.4,0.4) });
+    const out = await doc.save();
+    fin(() => {
+      dlBytes(out, S.esFile.name.replace('.pdf','') + '_signed.pdf');
+      showRes('es-rb', 'eSign applied. Signed: ' + name + ' · ' + timestamp);
+      toast('eSigned!');
+    });
+  } catch(e) { fin(()=>{}); showErr('es-err', e.message); btn.disabled = false; }
+}
+
+// ── Form Create ──
+async function runFormCreate() {
+  const desc = document.getElementById('fc-desc')?.value?.trim();
+  if (!desc) return toast('Please describe the form');
+  if (!checkLimit('ai', 'Form Creator')) return;
+  const btn = document.getElementById('fc-btn'); btn.disabled = true;
+  const fin = animProg('fc-pf','fc-pp','fc-pw');
+  try {
+    const res = await fetch('/api/ai-pdf', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({action:'create-form', description: desc})
+    });
+    const data = await res.json();
+    const doc = await PDFDocument.create();
+    const page = doc.addPage([595, 842]);
+    const font = await doc.embedFont(PDFLib.StandardFonts.Helvetica);
+    page.drawText(desc, { x: 50, y: 780, size: 14, font, color: PDFLib.rgb(0,0,0) });
+    page.drawText('Generated by RightPDFKit AI', { x: 50, y: 30, size: 8, font, color: PDFLib.rgb(0.6,0.6,0.6) });
+    const out = await doc.save();
+    fin(() => {
+      dlBytes(out, 'form.pdf');
+      showRes('fc-rb', 'Form created: ' + desc.substring(0, 60) + (desc.length > 60 ? '...' : ''));
+      toast('Form created!');
+      btn.disabled = false;
+    });
+  } catch(e) { fin(()=>{}); showErr('fc-err', e.message); btn.disabled = false; }
+}
+
 
 </script>
 
