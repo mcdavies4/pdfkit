@@ -257,8 +257,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:14p
 .drop-zone .drop-icon{font-size:28px;margin-bottom:10px;opacity:.4}
 .drop-zone h3{font-size:14px;font-weight:600;margin-bottom:4px}
 .drop-zone p{font-size:12px;color:var(--muted)}
-input[type=file]:not(.dz input){display:none}
-.dz input[type=file]{display:block;position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;z-index:2}
+input[type=file]{display:none}
 .file-list{display:flex;flex-direction:column;gap:6px}
 .file-chip{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 12px}
 .file-chip .fc-icon{font-size:18px}
@@ -2307,7 +2306,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 </div>
 <div class="panel" id="panel-merge">
   <div class="ph"><h2>⊕ Merge PDFs</h2><p>Combine multiple PDFs into one document.</p></div>
-  <div class="dz" id="merge-drop" onclick="document.getElementById('merge-in').click()"><input type="file" id="merge-in" multiple accept=".pdf" onchange="mergeAdd(this.files)"><div class="di">⬆</div><h3>Drop PDFs here</h3><p>Click to browse — add as many as you like</p></div>
+  <div class="dz" id="merge-drop" onclick=\"dzClick('merge-in')\" ><input type="file" id="merge-in" multiple accept=".pdf" onchange="mergeAdd(this.files)" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop PDFs here</h3><p>Click to browse — add as many as you like</p></div>
   <div id="merge-list" class="fl"></div>
   <div class="size-warn" id="merge-size-warn">⚠ One or more files is large (&gt;30MB). Processing may be slow on older devices.</div>
   <div class="eb" id="merge-err"></div>
@@ -2320,7 +2319,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- SPLIT -->
 <div class="panel" id="panel-split">
   <div class="ph"><h2>⊘ Split PDF</h2><p>Extract pages as separate files or a range into a new PDF.</p></div>
-  <div class="dz" onclick="document.getElementById('split-in').click()"><input type="file" id="split-in" accept=".pdf" onchange="splitLoad(this.files[0])"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
+  <div class="dz" onclick=\"dzClick('split-in')\" ><input type="file" id="split-in" accept=".pdf" onchange="splitLoad(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
   <div class="fl" id="split-fd"></div>
   <div class="card" id="split-opts" style="display:none"><h3>Split mode</h3>
     <div class="rg">
@@ -2340,7 +2339,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- REORDER -->
 <div class="panel" id="panel-reorder">
   <div class="ph"><h2>⇅ Reorder Pages</h2><p>Drag thumbnails into your desired order, then save.</p></div>
-  <div class="dz" onclick="document.getElementById('reo-in').click()"><input type="file" id="reo-in" accept=".pdf" onchange="reoLoad(this.files[0])"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
+  <div class="dz" onclick=\"dzClick('reo-in')\" ><input type="file" id="reo-in" accept=".pdf" onchange="reoLoad(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
   <div class="fl" id="reo-fd"></div>
   <div id="reo-hint" style="display:none;font-size:12px;color:var(--muted)">Drag thumbnails to rearrange, then click Save.</div>
   <div class="reo-grid" id="reo-grid"></div>
@@ -2353,7 +2352,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- EXTRACT -->
 <div class="panel" id="panel-extract">
   <div class="ph"><h2>⬡ Extract Pages</h2><p>Pick specific pages or ranges to export as a new PDF.</p></div>
-  <div class="dz" onclick="document.getElementById('ext-in').click()"><input type="file" id="ext-in" accept=".pdf" onchange="extLoad(this.files[0])"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
+  <div class="dz" onclick=\"dzClick('ext-in')\" ><input type="file" id="ext-in" accept=".pdf" onchange="extLoad(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
   <div class="fl" id="ext-fd"></div>
   <div class="card" id="ext-opts" style="display:none"><h3>Select pages</h3>
     <div class="fcol">
@@ -2370,7 +2369,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- DELETE -->
 <div class="panel" id="panel-delete">
   <div class="ph"><h2>✕ Delete Pages</h2><p>Click pages to mark for deletion, then save the rest.</p></div>
-  <div class="dz" onclick="document.getElementById('del-in').click()"><input type="file" id="del-in" accept=".pdf" onchange="delLoad(this.files[0])"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
+  <div class="dz" onclick=\"dzClick('del-in')\" ><input type="file" id="del-in" accept=".pdf" onchange="delLoad(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
   <div class="fl" id="del-fd"></div>
   <div id="del-hint" style="display:none;font-size:12px;color:var(--muted)">Click a thumbnail to mark for deletion (red). Click again to unmark.</div>
   <div class="del-grid" id="del-grid"></div>
@@ -2384,7 +2383,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- ROTATE -->
 <div class="panel" id="panel-rotate">
   <div class="ph"><h2>↻ Rotate Pages</h2><p>Rotate all or specific pages.</p></div>
-  <div class="dz" onclick="document.getElementById('rot-in').click()"><input type="file" id="rot-in" accept=".pdf" onchange="rotLoad(this.files[0])"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
+  <div class="dz" onclick=\"dzClick('rot-in')\" ><input type="file" id="rot-in" accept=".pdf" onchange="rotLoad(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
   <div class="fl" id="rot-fd"></div>
   <div class="card" id="rot-opts" style="display:none"><h3>Rotation settings</h3>
     <div class="fcol">
@@ -2402,7 +2401,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- CROP -->
 <div class="panel" id="panel-crop">
   <div class="ph"><h2>⊡ Crop Pages</h2><p>Trim page margins by setting a crop box.</p></div>
-  <div class="dz" onclick="document.getElementById('crop-in').click()"><input type="file" id="crop-in" accept=".pdf" onchange="cropLoad(this.files[0])"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
+  <div class="dz" onclick=\"dzClick('crop-in')\" ><input type="file" id="crop-in" accept=".pdf" onchange="cropLoad(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
   <div class="fl" id="crop-fd"></div>
   <div class="card" id="crop-opts" style="display:none"><h3>Crop margins (points — 72pt = 1 inch)</h3>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
@@ -2425,8 +2424,8 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <div class="panel" id="panel-addimage">
   <div class="ph"><h2>🖼 Add Image to PDF</h2><p>Embed a JPG or PNG onto a page of your PDF.</p></div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-    <div class="dz" onclick="document.getElementById('ai-pdf-in').click()" style="padding:20px 12px"><input type="file" id="ai-pdf-in" accept=".pdf" onchange="aiLoadPdf(this.files[0])"><div class="di" style="font-size:20px">📄</div><h3 style="font-size:12px">Drop PDF</h3><p style="font-size:11px">Click to browse</p></div>
-    <div class="dz" onclick="document.getElementById('ai-img-in').click()" style="padding:20px 12px"><input type="file" id="ai-img-in" accept="image/jpeg,image/png" onchange="aiLoadImg(this.files[0])"><div class="di" style="font-size:20px">🖼</div><h3 style="font-size:12px">Drop Image</h3><p style="font-size:11px">JPG or PNG</p></div>
+    <div class="dz" onclick=\"dzClick('ai-pdf-in')\"  style="padding:20px 12px"><input type="file" id="ai-pdf-in" accept=".pdf" onchange="aiLoadPdf(this.files[0])" onclick="event.stopPropagation()"><div class="di" style="font-size:20px">📄</div><h3 style="font-size:12px">Drop PDF</h3><p style="font-size:11px">Click to browse</p></div>
+    <div class="dz" onclick=\"dzClick('ai-img-in')\"  style="padding:20px 12px"><input type="file" id="ai-img-in" accept="image/jpeg,image/png" onchange="aiLoadImg(this.files[0])" onclick="event.stopPropagation()"><div class="di" style="font-size:20px">🖼</div><h3 style="font-size:12px">Drop Image</h3><p style="font-size:11px">JPG or PNG</p></div>
   </div>
   <div class="fl" id="ai-fd"></div>
   <div class="card" id="ai-opts" style="display:none"><h3>Image placement</h3>
@@ -2450,7 +2449,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- ANNOTATE -->
 <div class="panel" id="panel-annotate">
   <div class="ph"><h2>✏️ Annotate PDF</h2><p>Add text labels or highlight boxes to pages.</p></div>
-  <div class="dz" onclick="document.getElementById('ann-in').click()"><input type="file" id="ann-in" accept=".pdf" onchange="annLoad(this.files[0])"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
+  <div class="dz" onclick=\"dzClick('ann-in')\" ><input type="file" id="ann-in" accept=".pdf" onchange="annLoad(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
   <div class="fl" id="ann-fd"></div>
   <div class="card" id="ann-opts" style="display:none"><h3>Annotations</h3>
     <div class="fcol">
@@ -2488,7 +2487,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- REDACT -->
 <div class="panel" id="panel-redact">
   <div class="ph"><h2>⬛ Redact PDF</h2><p>Permanently black out sensitive areas.</p></div>
-  <div class="dz" onclick="document.getElementById('red-in').click()"><input type="file" id="red-in" accept=".pdf" onchange="redLoad(this.files[0])"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
+  <div class="dz" onclick=\"dzClick('red-in')\" ><input type="file" id="red-in" accept=".pdf" onchange="redLoad(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
   <div class="fl" id="red-fd"></div>
   <div class="card" id="red-opts" style="display:none"><h3>Redaction areas</h3>
     <div class="fcol">
@@ -2514,7 +2513,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- HEADER/FOOTER -->
 <div class="panel" id="panel-headfoot">
   <div class="ph"><h2>≡ Header / Footer</h2><p>Stamp custom text at the top and bottom of every page.</p></div>
-  <div class="dz" onclick="document.getElementById('hf-in').click()"><input type="file" id="hf-in" accept=".pdf" onchange="hfLoad(this.files[0])"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
+  <div class="dz" onclick=\"dzClick('hf-in')\" ><input type="file" id="hf-in" accept=".pdf" onchange="hfLoad(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
   <div class="fl" id="hf-fd"></div>
   <div class="card" id="hf-opts" style="display:none"><h3>Header &amp; Footer</h3>
     <div class="fcol">
@@ -2550,7 +2549,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- WATERMARK -->
 <div class="panel" id="panel-watermark">
   <div class="ph"><h2>◈ Watermark</h2><p>Add a text watermark to every page.</p></div>
-  <div class="dz" onclick="document.getElementById('wm-in').click()"><input type="file" id="wm-in" accept=".pdf" onchange="wmLoad(this.files[0])"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
+  <div class="dz" onclick=\"dzClick('wm-in')\" ><input type="file" id="wm-in" accept=".pdf" onchange="wmLoad(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
   <div class="fl" id="wm-fd"></div>
   <div class="card" id="wm-opts" style="display:none"><h3>Watermark settings</h3>
     <div class="fcol">
@@ -2572,7 +2571,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- PAGE NUMBERS -->
 <div class="panel" id="panel-pagenums">
   <div class="ph"><h2># Page Numbers</h2><p>Stamp sequential page numbers onto every page.</p></div>
-  <div class="dz" onclick="document.getElementById('pn-in').click()"><input type="file" id="pn-in" accept=".pdf" onchange="pnLoad(this.files[0])"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
+  <div class="dz" onclick=\"dzClick('pn-in')\" ><input type="file" id="pn-in" accept=".pdf" onchange="pnLoad(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
   <div class="fl" id="pn-fd"></div>
   <div class="card" id="pn-opts" style="display:none"><h3>Page number settings</h3>
     <div class="fcol">
@@ -2591,7 +2590,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- COMPRESS -->
 <div class="panel" id="panel-compress">
   <div class="ph"><h2>◎ Compress</h2><p>Re-save with optimisations to reduce file size.</p></div>
-  <div class="dz" onclick="document.getElementById('cmp-in').click()"><input type="file" id="cmp-in" accept=".pdf" onchange="cmpLoad(this.files[0])"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
+  <div class="dz" onclick=\"dzClick('cmp-in')\" ><input type="file" id="cmp-in" accept=".pdf" onchange="cmpLoad(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
   <div class="fl" id="cmp-fd"></div>
   <div class="card" id="cmp-opts" style="display:none"><h3>Compression level</h3>
     <div class="rg">
@@ -2608,7 +2607,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- PROTECT -->
 <div class="panel" id="panel-protect">
   <div class="ph"><h2>🔒 Protect PDF</h2><p>Encrypt with AES-128. The password never leaves your device.</p></div>
-  <div class="dz" onclick="document.getElementById('prt-in').click()"><input type="file" id="prt-in" accept=".pdf" onchange="prtLoad(this.files[0])"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
+  <div class="dz" onclick=\"dzClick('prt-in')\" ><input type="file" id="prt-in" accept=".pdf" onchange="prtLoad(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
   <div class="fl" id="prt-fd"></div>
   <div class="card" id="prt-opts" style="display:none"><h3>Encryption settings</h3>
     <div class="fcol">
@@ -2632,7 +2631,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- UNLOCK -->
 <div class="panel" id="panel-unlock">
   <div class="ph"><h2>🔓 Unlock PDF</h2><p>Remove password protection from a PDF you own.</p></div>
-  <div class="dz" onclick="document.getElementById('ulk-in').click()"><input type="file" id="ulk-in" accept=".pdf" onchange="ulkLoad(this.files[0])"><div class="di">⬆</div><h3>Drop a protected PDF</h3><p>Click to browse</p></div>
+  <div class="dz" onclick=\"dzClick('ulk-in')\" ><input type="file" id="ulk-in" accept=".pdf" onchange="ulkLoad(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a protected PDF</h3><p>Click to browse</p></div>
   <div class="fl" id="ulk-fd"></div>
   <div class="card" id="ulk-opts" style="display:none">
     <div><label class="lbl">PDF password</label><input type="password" id="ulk-pw" placeholder="Enter the PDF password…"></div>
@@ -2647,7 +2646,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- OCR -->
 <div class="panel" id="panel-ocr">
   <div class="ph"><h2>🔍 OCR — Extract Text from Scans</h2><p>Reads text from scanned PDFs using Tesseract.js (WASM — loads on demand).</p></div>
-  <div class="dz" onclick="document.getElementById('ocr-in').click()"><input type="file" id="ocr-in" accept=".pdf" onchange="ocrLoad(this.files[0])"><div class="di">⬆</div><h3>Drop a scanned PDF</h3><p>Click to browse</p></div>
+  <div class="dz" onclick=\"dzClick('ocr-in')\" ><input type="file" id="ocr-in" accept=".pdf" onchange="ocrLoad(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a scanned PDF</h3><p>Click to browse</p></div>
   <div class="fl" id="ocr-fd"></div>
   <div class="card" id="ocr-opts" style="display:none"><div class="fcol">
     <div><label class="lbl">Pages to scan</label><div class="segs" id="ocr-pages"><button class="seg on" data-p="all" onclick="setOcrPages('all',this)">All pages</button><button class="seg" data-p="first" onclick="setOcrPages('first',this)">First only</button><button class="seg" data-p="custom" onclick="setOcrPages('custom',this)">Custom</button></div></div>
@@ -2672,8 +2671,8 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- PDF TO TEXT -->
 <div class="panel" id="panel-pdftext">
   <div class="ph"><h2>📝 PDF to Text</h2><p>Instantly extract embedded text from any PDF — no OCR needed for digital PDFs.</p></div>
-  <div class="dz" onclick="document.getElementById('ptext-in').click()">
-    <input type="file" id="ptext-in" accept=".pdf" onchange="ptextLoad(this.files[0])">
+  <div class="dz" onclick=\"dzClick('ptext-in')\" >
+    <input type="file" id="ptext-in" accept=".pdf" onchange="ptextLoad(this.files[0])" onclick="event.stopPropagation()">
     <div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p>
   </div>
   <div class="fl" id="ptext-fd"></div>
@@ -2699,7 +2698,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- INFO -->
 <div class="panel" id="panel-info">
   <div class="ph"><h2>◉ PDF Info</h2><p>Inspect metadata, properties, and structure.</p></div>
-  <div class="dz" onclick="document.getElementById('inf-in').click()"><input type="file" id="inf-in" accept=".pdf" onchange="infLoad(this.files[0])"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
+  <div class="dz" onclick=\"dzClick('inf-in')\" ><input type="file" id="inf-in" accept=".pdf" onchange="infLoad(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
   <div class="fl" id="inf-fd"></div>
   <div class="card" id="inf-card" style="display:none">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:13px"><h3 style="margin:0">Properties</h3><span style="background:rgba(46,204,113,.14);color:var(--green);padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700">analysed</span></div>
@@ -2710,7 +2709,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- PREVIEW -->
 <div class="panel" id="panel-preview">
   <div class="ph"><h2>◻ Preview</h2><p>Render and browse PDF pages.</p></div>
-  <div class="dz" onclick="document.getElementById('prv-in').click()"><input type="file" id="prv-in" accept=".pdf" onchange="prvLoad(this.files[0])"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse and render pages</p></div>
+  <div class="dz" onclick=\"dzClick('prv-in')\" ><input type="file" id="prv-in" accept=".pdf" onchange="prvLoad(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse and render pages</p></div>
   <div class="fl" id="prv-fd"></div>
   <div id="prv-ctrl" style="display:none">
     <div class="frow" style="margin-bottom:10px"><button class="btn btn-g btn-sm" onclick="prvGo(-1)">← Prev</button><span id="prv-lbl" style="font-size:13px;color:var(--muted);flex:1;text-align:center"></span><button class="btn btn-g btn-sm" onclick="prvGo(1)">Next →</button></div>
@@ -2722,7 +2721,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- PDF TO IMAGES -->
 <div class="panel" id="panel-images">
   <div class="ph"><h2>📷 PDF to Images</h2><p>Export every page as a PNG image.</p></div>
-  <div class="dz" onclick="document.getElementById('img-in').click()"><input type="file" id="img-in" accept=".pdf" onchange="imgLoad(this.files[0])"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
+  <div class="dz" onclick=\"dzClick('img-in')\" ><input type="file" id="img-in" accept=".pdf" onchange="imgLoad(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
   <div class="fl" id="img-fd"></div>
   <div class="card" id="img-opts" style="display:none"><div class="fcol">
     <div><label class="lbl">Resolution scale</label><div class="segs" id="img-scale"><button class="seg" data-s="1" onclick="setImgScale(1,this)">1× screen</button><button class="seg on" data-s="2" onclick="setImgScale(2,this)">2× sharp</button><button class="seg" data-s="3" onclick="setImgScale(3,this)">3× high-res</button></div></div>
@@ -2742,7 +2741,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- BLANK PAGE INSERT -->
 <div class="panel" id="panel-blankpage">
   <div class="ph"><h2>□ Insert Blank Page</h2><p>Add a blank page at any position in your PDF.</p></div>
-  <div class="dz" onclick="document.getElementById('bp-in').click()"><input type="file" id="bp-in" accept=".pdf" onchange="bpLoad(this.files[0])"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
+  <div class="dz" onclick=\"dzClick('bp-in')\" ><input type="file" id="bp-in" accept=".pdf" onchange="bpLoad(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
   <div class="fl" id="bp-fd"></div>
   <div class="card" id="bp-opts" style="display:none"><h3>Blank page settings</h3>
     <div class="fcol">
@@ -2774,7 +2773,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- RESIZE PAGES -->
 <div class="panel" id="panel-resize">
   <div class="ph"><h2>⊟ Resize Pages</h2><p>Standardise all pages to A4, Letter or a custom size.</p></div>
-  <div class="dz" onclick="document.getElementById('rsz-in').click()"><input type="file" id="rsz-in" accept=".pdf" onchange="rszLoad(this.files[0])"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
+  <div class="dz" onclick=\"dzClick('rsz-in')\" ><input type="file" id="rsz-in" accept=".pdf" onchange="rszLoad(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
   <div class="fl" id="rsz-fd"></div>
   <div class="card" id="rsz-opts" style="display:none"><h3>Target size</h3>
     <div class="fcol">
@@ -2819,7 +2818,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- FLATTEN FORMS -->
 <div class="panel" id="panel-flatten">
   <div class="ph"><h2>⊠ Flatten Form Fields</h2><p>Permanently bake form field values into the PDF — locking them so they can't be edited.</p></div>
-  <div class="dz" onclick="document.getElementById('flt-in').click()"><input type="file" id="flt-in" accept=".pdf" onchange="fltLoad(this.files[0])"><div class="di">⬆</div><h3>Drop a PDF with form fields</h3><p>Click to browse</p></div>
+  <div class="dz" onclick=\"dzClick('flt-in')\" ><input type="file" id="flt-in" accept=".pdf" onchange="fltLoad(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a PDF with form fields</h3><p>Click to browse</p></div>
   <div class="fl" id="flt-fd"></div>
   <div class="card" id="flt-opts" style="display:none">
     <div class="fcol">
@@ -2841,7 +2840,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- GRAYSCALE -->
 <div class="panel" id="panel-grayscale">
   <div class="ph"><h2>◑ Convert to Grayscale</h2><p>Strip all colour from a PDF — great for reducing print costs.</p></div>
-  <div class="dz" onclick="document.getElementById('gs-in').click()"><input type="file" id="gs-in" accept=".pdf" onchange="gsLoad(this.files[0])"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
+  <div class="dz" onclick=\"dzClick('gs-in')\" ><input type="file" id="gs-in" accept=".pdf" onchange="gsLoad(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
   <div class="fl" id="gs-fd"></div>
   <div class="card" id="gs-opts" style="display:none">
     <div class="fcol">
@@ -2871,7 +2870,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- EDIT METADATA -->
 <div class="panel" id="panel-metadata">
   <div class="ph"><h2>🏷 Edit Metadata</h2><p>Update or scrub the document title, author, subject and keywords.</p></div>
-  <div class="dz" onclick="document.getElementById('meta-in').click()"><input type="file" id="meta-in" accept=".pdf" onchange="metaLoad(this.files[0])"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
+  <div class="dz" onclick=\"dzClick('meta-in')\" ><input type="file" id="meta-in" accept=".pdf" onchange="metaLoad(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
   <div class="fl" id="meta-fd"></div>
   <div class="card" id="meta-opts" style="display:none"><h3>Document metadata</h3>
     <div class="fcol">
@@ -2895,8 +2894,8 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- PDF TO WORD -->
 <div class="panel" id="panel-pdftoword">
   <div class="ph"><h2>📄 PDF to Word</h2><p>Convert a PDF to an editable .docx file. Works best on text-heavy PDFs like reports, contracts and articles.</p></div>
-  <div class="dz" onclick="document.getElementById('ptw-in').click()">
-    <input type="file" id="ptw-in" accept=".pdf" onchange="ptwLoad(this.files[0])">
+  <div class="dz" onclick=\"dzClick('ptw-in')\" >
+    <input type="file" id="ptw-in" accept=".pdf" onchange="ptwLoad(this.files[0])" onclick="event.stopPropagation()">
     <div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p>
   </div>
   <div class="fl" id="ptw-fd"></div>
@@ -2970,8 +2969,8 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- SIGN PDF -->
 <div class="panel" id="panel-sign">
   <div class="ph"><h2>&#x270D;&#xFE0F; Sign PDF</h2><p>Draw, type or upload your signature and place it on any page.</p></div>
-  <div class="dz" onclick="document.getElementById('sign-in').click()">
-    <input type="file" id="sign-in" accept=".pdf" onchange="signLoad(this.files[0])">
+  <div class="dz" onclick=\"dzClick('sign-in')\" >
+    <input type="file" id="sign-in" accept=".pdf" onchange="signLoad(this.files[0])" onclick="event.stopPropagation()">
     <div class="di">&#x2B06;</div><h3>Drop a PDF here</h3><p>Click to browse</p>
   </div>
   <div class="fl" id="sign-fd"></div>
@@ -3016,8 +3015,8 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
       </div>
       <div id="sign-upload-wrap" style="display:none">
         <label class="lbl">Upload signature image (transparent PNG recommended)</label>
-        <div class="dz" onclick="document.getElementById('sign-img-in').click()" style="padding:14px">
-          <input type="file" id="sign-img-in" accept="image/*" onchange="signImgLoad(this.files[0])">
+        <div class="dz" onclick=\"dzClick('sign-img-in')\"  style="padding:14px">
+          <input type="file" id="sign-img-in" accept="image/*" onchange="signImgLoad(this.files[0])" onclick="event.stopPropagation()">
           <p style="font-size:11px;color:var(--muted)">PNG or JPG</p>
         </div>
         <canvas id="sign-upload-canvas" style="display:none;max-width:100%;border:1px solid var(--border);border-radius:8px;background:#fff;margin-top:8px"></canvas>
@@ -3054,8 +3053,8 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- DUPLICATE PAGE -->
 <div class="panel" id="panel-dupepage">
   <div class="ph"><h2>⧉ Duplicate Page</h2><p>Copy one or more pages and insert the duplicate within the same document.</p></div>
-  <div class="dz" onclick="document.getElementById('dp-in').click()">
-    <input type="file" id="dp-in" accept=".pdf" onchange="dpLoad(this.files[0])">
+  <div class="dz" onclick=\"dzClick('dp-in')\" >
+    <input type="file" id="dp-in" accept=".pdf" onchange="dpLoad(this.files[0])" onclick="event.stopPropagation()">
     <div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p>
   </div>
   <div class="fl" id="dp-fd"></div>
@@ -3088,8 +3087,8 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- N-UP PRINTING -->
 <div class="panel" id="panel-nup">
   <div class="ph"><h2>⊞ N-up Print</h2><p>Arrange multiple PDF pages on a single sheet — ideal for handouts, notes and saving paper.</p></div>
-  <div class="dz" onclick="document.getElementById('nup-in').click()">
-    <input type="file" id="nup-in" accept=".pdf" onchange="nupLoad(this.files[0])">
+  <div class="dz" onclick=\"dzClick('nup-in')\" >
+    <input type="file" id="nup-in" accept=".pdf" onchange="nupLoad(this.files[0])" onclick="event.stopPropagation()">
     <div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p>
   </div>
   <div class="fl" id="nup-fd"></div>
@@ -3135,8 +3134,8 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- REPAIR PDF -->
 <div class="panel" id="panel-repair">
   <div class="ph"><h2>⚕ Repair PDF</h2><p>Attempt to recover and fix broken, corrupt or partially damaged PDF files.</p></div>
-  <div class="dz" onclick="document.getElementById('rep-in').click()">
-    <input type="file" id="rep-in" accept=".pdf" onchange="repLoad(this.files[0])">
+  <div class="dz" onclick=\"dzClick('rep-in')\" >
+    <input type="file" id="rep-in" accept=".pdf" onchange="repLoad(this.files[0])" onclick="event.stopPropagation()">
     <div class="di">⬆</div><h3>Drop your broken PDF here</h3><p>Click to browse</p>
   </div>
   <div class="fl" id="rep-fd"></div>
@@ -3163,8 +3162,8 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- QR STAMP -->
 <div class="panel" id="panel-qrstamp">
   <div class="ph"><h2>⊟ QR Code Stamp</h2><p>Generate a QR code from any URL or text and stamp it on every page of your PDF.</p></div>
-  <div class="dz" onclick="document.getElementById('qr-in').click()">
-    <input type="file" id="qr-in" accept=".pdf" onchange="qrLoad(this.files[0])">
+  <div class="dz" onclick=\"dzClick('qr-in')\" >
+    <input type="file" id="qr-in" accept=".pdf" onchange="qrLoad(this.files[0])" onclick="event.stopPropagation()">
     <div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p>
   </div>
   <div class="fl" id="qr-fd"></div>
@@ -3420,8 +3419,8 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
     <h2>✎ Fill PDF Form</h2>
     <p>Type into existing form fields — text boxes, checkboxes, dropdowns and radio buttons. Download the filled PDF when done.</p>
   </div>
-  <div class="dz" id="ff-dz" onclick="document.getElementById('ff-in').click()">
-    <input type="file" id="ff-in" accept=".pdf" onchange="ffLoad(this.files[0])">
+  <div class="dz" id="ff-dz" onclick=\"dzClick('ff-in')\" >
+    <input type="file" id="ff-in" accept=".pdf" onchange="ffLoad(this.files[0])" onclick="event.stopPropagation()">
     <div class="di">⬆</div>
     <h3>Drop a PDF with form fields</h3>
     <p>Click to browse — works with any fillable PDF form</p>
@@ -3482,8 +3481,8 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px" id="cpdf-upload-row">
     <div>
       <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">Original (Version 1)</div>
-      <div class="dz" onclick="document.getElementById('cpdf-a').click()" style="padding:16px 12px" id="cpdf-dz-a">
-        <input type="file" id="cpdf-a" accept=".pdf" onchange="cpdfLoad('a',this.files[0])">
+      <div class="dz" onclick=\"dzClick('cpdf-a')\"  style="padding:16px 12px" id="cpdf-dz-a">
+        <input type="file" id="cpdf-a" accept=".pdf" onchange="cpdfLoad('a',this.files[0])" onclick="event.stopPropagation()">
         <div class="di" style="font-size:18px">⬆</div>
         <p style="font-size:11px;color:var(--muted)">Drop original PDF</p>
       </div>
@@ -3491,8 +3490,8 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
     </div>
     <div>
       <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">Modified (Version 2)</div>
-      <div class="dz" onclick="document.getElementById('cpdf-b').click()" style="padding:16px 12px" id="cpdf-dz-b">
-        <input type="file" id="cpdf-b" accept=".pdf" onchange="cpdfLoad('b',this.files[0])">
+      <div class="dz" onclick=\"dzClick('cpdf-b')\"  style="padding:16px 12px" id="cpdf-dz-b">
+        <input type="file" id="cpdf-b" accept=".pdf" onchange="cpdfLoad('b',this.files[0])" onclick="event.stopPropagation()">
         <div class="di" style="font-size:18px">⬆</div>
         <p style="font-size:11px;color:var(--muted)">Drop modified PDF</p>
       </div>
@@ -3550,8 +3549,8 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- BATES NUMBERING -->
 <div class="panel" id="panel-bates">
   <div class="ph"><h2>⊞ Bates Numbering</h2><p>Stamp sequential reference numbers on every page — standard for legal discovery, court filings and contract review.</p></div>
-  <div class="dz" onclick="document.getElementById('bts-in').click()">
-    <input type="file" id="bts-in" accept=".pdf" onchange="btsLoad(this.files[0])">
+  <div class="dz" onclick=\"dzClick('bts-in')\" >
+    <input type="file" id="bts-in" accept=".pdf" onchange="btsLoad(this.files[0])" onclick="event.stopPropagation()">
     <div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p>
   </div>
   <div class="fl" id="bts-fd"></div>
@@ -3590,8 +3589,8 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- PDF TO CSV -->
 <div class="panel" id="panel-pdftocsv">
   <div class="ph"><h2>⊟ PDF to Excel / CSV</h2><p>Extract tables and structured data from PDFs into a spreadsheet-ready CSV file.</p></div>
-  <div class="dz" onclick="document.getElementById('csv-in').click()">
-    <input type="file" id="csv-in" accept=".pdf" onchange="csvLoad(this.files[0])">
+  <div class="dz" onclick=\"dzClick('csv-in')\" >
+    <input type="file" id="csv-in" accept=".pdf" onchange="csvLoad(this.files[0])" onclick="event.stopPropagation()">
     <div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p>
   </div>
   <div class="fl" id="csv-fd"></div>
@@ -3625,16 +3624,16 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
     <div>
       <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">Original</div>
-      <div class="dz" onclick="document.getElementById('rl-a').click()" style="padding:16px 12px" id="rl-dz-a">
-        <input type="file" id="rl-a" accept=".pdf" onchange="rlLoad('a',this.files[0])">
+      <div class="dz" onclick=\"dzClick('rl-a')\"  style="padding:16px 12px" id="rl-dz-a">
+        <input type="file" id="rl-a" accept=".pdf" onchange="rlLoad('a',this.files[0])" onclick="event.stopPropagation()">
         <div class="di" style="font-size:18px">⬆</div><p style="font-size:11px;color:var(--muted)">Original PDF</p>
       </div>
       <div class="fl" id="rl-fd-a"></div>
     </div>
     <div>
       <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">Revised</div>
-      <div class="dz" onclick="document.getElementById('rl-b').click()" style="padding:16px 12px" id="rl-dz-b">
-        <input type="file" id="rl-b" accept=".pdf" onchange="rlLoad('b',this.files[0])">
+      <div class="dz" onclick=\"dzClick('rl-b')\"  style="padding:16px 12px" id="rl-dz-b">
+        <input type="file" id="rl-b" accept=".pdf" onchange="rlLoad('b',this.files[0])" onclick="event.stopPropagation()">
         <div class="di" style="font-size:18px">⬆</div><p style="font-size:11px;color:var(--muted)">Revised PDF</p>
       </div>
       <div class="fl" id="rl-fd-b"></div>
@@ -3711,7 +3710,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
           <div style="font-size:10px;opacity:.7">Best on mobile</div>
         </div>
       </button>
-      <button class="btn btn-g" onclick="document.getElementById('scan-file-in').click()" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px">
+      <button class="btn btn-g" onclick=\"dzClick('scan-file-in')\"  style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px">
         <span style="font-size:20px">🖼</span>
         <div style="text-align:left">
           <div style="font-size:13px;font-weight:700">Upload Image</div>
@@ -3719,7 +3718,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
         </div>
       </button>
     </div>
-    <input type="file" id="scan-file-in" accept="image/*" style="display:none" onchange="scanLoadImage(this.files[0])">
+    <input type="file" id="scan-file-in" accept="image/*" style="display:none" onchange="scanLoadImage(this.files[0])" onclick="event.stopPropagation()">
 
     <!-- Pages preview -->
     <div id="scan-pages-wrap" style="display:none">
@@ -3790,8 +3789,8 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- BULK EXTRACTOR -->
 <div class="panel" id="panel-bulkextract">
   <div class="ph"><h2>⊞ Bulk Extractor</h2><p>Upload multiple PDFs — invoices, contracts, payslips. AI extracts key fields from each one into a single spreadsheet.</p></div>
-  <div class="dz" id="be-dz" onclick="document.getElementById('be-in').click()">
-    <input type="file" id="be-in" accept=".pdf" multiple onchange="beLoad(this.files)">
+  <div class="dz" id="be-dz" onclick=\"dzClick('be-in')\" >
+    <input type="file" id="be-in" accept=".pdf" multiple onchange="beLoad(this.files)" onclick="event.stopPropagation()">
     <div class="di">⬆</div><h3>Drop multiple PDFs here</h3><p>Click to browse — select up to 20 files</p>
   </div>
   <div class="fl" id="be-fd"></div>
@@ -3832,11 +3831,11 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
   </div>
 
   <!-- Drop zone -->
-  <div class="dz" id="i2p-dz" onclick="document.getElementById('i2p-in').click()"
+  <div class="dz" id="i2p-dz" onclick=\"dzClick('i2p-in')\" 
     ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
     ondragleave="this.style.borderColor=''"
     ondrop="event.preventDefault();this.style.borderColor='';i2pAddFiles(event.dataTransfer.files)">
-    <input type="file" id="i2p-in" accept="image/*" multiple onchange="i2pAddFiles(this.files)">
+    <input type="file" id="i2p-in" accept="image/*" multiple onchange="i2pAddFiles(this.files)" onclick="event.stopPropagation()">
     <div class="di">🖼</div>
     <h3>Drop images here</h3>
     <p>JPG, PNG, WebP, GIF — click to browse or drop multiple files</p>
@@ -3847,7 +3846,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
       <div style="font-size:12px;font-weight:700;color:var(--text)" id="i2p-count">0 images</div>
       <div class="frow" style="gap:8px">
-        <button class="btn btn-g btn-sm" onclick="document.getElementById('i2p-in').click()">+ Add more</button>
+        <button class="btn btn-g btn-sm" onclick=\"dzClick('i2p-in')\" >+ Add more</button>
         <button class="btn btn-g btn-sm" onclick="i2pClearAll()">Clear all</button>
       </div>
     </div>
@@ -3924,11 +3923,11 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
     <h2>📝 Word to PDF</h2>
     <p>Convert Word documents (.docx) to PDF locally in your browser. No upload, no server, no account.</p>
   </div>
-  <div class="dz" id="w2p-dz" onclick="document.getElementById('w2p-in').click()"
+  <div class="dz" id="w2p-dz" onclick=\"dzClick('w2p-in')\" 
     ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
     ondragleave="this.style.borderColor=''"
     ondrop="event.preventDefault();this.style.borderColor='';w2pLoad(event.dataTransfer.files[0])">
-    <input type="file" id="w2p-in" accept=".docx,.doc" onchange="w2pLoad(this.files[0])">
+    <input type="file" id="w2p-in" accept=".docx,.doc" onchange="w2pLoad(this.files[0])" onclick="event.stopPropagation()">
     <div class="di">📝</div>
     <h3>Drop a Word document here</h3>
     <p>Supports .docx files</p>
@@ -3968,8 +3967,8 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
   </div>
 
   <!-- Step 1: Upload PDF -->
-  <div class="dz" id="es-dz" onclick="document.getElementById('es-in').click()">
-    <input type="file" id="es-in" accept=".pdf" onchange="esLoad(this.files[0])">
+  <div class="dz" id="es-dz" onclick=\"dzClick('es-in')\" >
+    <input type="file" id="es-in" accept=".pdf" onchange="esLoad(this.files[0])" onclick="event.stopPropagation()">
     <div class="di">✦</div>
     <h3>Drop PDF to sign</h3><p>Click to browse</p>
   </div>
@@ -4084,33 +4083,29 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <div class="panel" id="panel-pricing">
   <div class="ph">
     <h2>✦ Pricing</h2>
-    <p>Simple, honest pricing. Start free — upgrade when you need more.</p>
+    <p>Simple, honest pricing. All 42 tools work for free — no account, no uploads, ever.</p>
   </div>
 
   <div id="pricing-nigeria-note" style="display:none;margin-bottom:16px;padding:12px 16px;background:rgba(46,204,113,.07);border:1px solid rgba(46,204,113,.2);border-radius:10px;font-size:12px;color:#2ECC71;line-height:1.6">
     🇳🇬 <strong>Nigerian pricing active</strong> — ₦5,000/month<br>
-    <span style="opacity:.8;font-size:11px">Less than a phone top-up · Built by a Nigerian founder in London · Support in Yoruba, Igbo &amp; English</span>
+    <span style="opacity:.8;font-size:11px">Built by a Nigerian founder in London · Support in Yoruba, Igbo &amp; English</span>
   </div>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;max-width:700px">
+
     <!-- Free -->
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;display:flex;flex-direction:column">
       <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px">Free</div>
       <div style="font-size:40px;font-weight:800;color:var(--text);letter-spacing:-.04em;line-height:1;margin-bottom:4px">$0</div>
       <div style="font-size:12px;color:var(--hint);margin-bottom:20px">Forever. No credit card.</div>
-      <div style="display:flex;flex-direction:column;gap:7px;flex:1;margin-bottom:20px">
-        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px">Includes</div>
+      <div style="display:flex;flex-direction:column;gap:8px;flex:1;margin-bottom:20px">
         <div style="font-size:12px;color:var(--muted);display:flex;gap:7px"><span style="color:#2ECC71;flex-shrink:0">✓</span>All 42 PDF tools</div>
-        <div style="font-size:12px;color:var(--muted);display:flex;gap:7px"><span style="color:#2ECC71;flex-shrink:0">✓</span>Zero file uploads — ever</div>
+        <div style="font-size:12px;color:var(--muted);display:flex;gap:7px"><span style="color:#2ECC71;flex-shrink:0">✓</span>100% local — files never leave your device</div>
         <div style="font-size:12px;color:var(--muted);display:flex;gap:7px"><span style="color:#2ECC71;flex-shrink:0">✓</span>Works offline</div>
         <div style="font-size:12px;color:var(--muted);display:flex;gap:7px"><span style="color:#2ECC71;flex-shrink:0">✓</span>No account needed</div>
-        <div style="height:1px;background:var(--border);margin:6px 0"></div>
-        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px">all tools (with limits)</div>
-        <div style="font-size:12px;color:var(--muted);display:flex;gap:7px"><span style="color:var(--hint);flex-shrink:0">~</span>PDF Chat — 3 questions/session</div>
-        <div style="font-size:12px;color:var(--muted);display:flex;gap:7px"><span style="color:var(--hint);flex-shrink:0">~</span>PDF Translate — 3 pages/day</div>
-        <div style="font-size:12px;color:var(--muted);display:flex;gap:7px"><span style="color:var(--hint);flex-shrink:0">~</span>AI Assistant — 3 commands/day</div>
-        <div style="font-size:12px;color:var(--muted);display:flex;gap:7px"><span style="color:var(--hint);flex-shrink:0">~</span>Summariser — 2/day</div>
-        <div style="font-size:12px;color:var(--muted);display:flex;gap:7px"><span style="color:var(--hint);flex-shrink:0">~</span>Files up to 20MB</div>
+        <div style="font-size:12px;color:var(--muted);display:flex;gap:7px"><span style="color:#2ECC71;flex-shrink:0">✓</span>No ads</div>
+        <div style="height:1px;background:var(--border);margin:4px 0"></div>
+        <div style="font-size:11px;color:var(--hint)">Files up to 20MB per tool</div>
       </div>
       <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;font-size:12px;color:var(--muted);font-weight:600">Your current plan</div>
     </div>
@@ -4124,35 +4119,47 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
       </div>
       <div style="font-size:40px;font-weight:800;color:var(--text);letter-spacing:-.04em;line-height:1;margin-bottom:4px" id="pricing-pro-price">$4.99</div>
       <div style="font-size:12px;color:var(--hint);margin-bottom:20px">per month · cancel anytime</div>
-      <div style="display:flex;flex-direction:column;gap:7px;flex:1;margin-bottom:20px">
+      <div style="display:flex;flex-direction:column;gap:8px;flex:1;margin-bottom:20px">
         <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px">Everything in Free, plus</div>
-        <div style="font-size:12px;color:var(--text);display:flex;gap:7px;font-weight:500"><span style="color:var(--accent);flex-shrink:0">✦</span>All tools unlimited — Chat, Translate, Summarise, Assistant</div>
         <div style="font-size:12px;color:var(--text);display:flex;gap:7px;font-weight:500"><span style="color:var(--accent);flex-shrink:0">✦</span>Files up to 100MB</div>
-        <div style="font-size:12px;color:var(--text);display:flex;gap:7px;font-weight:500"><span style="color:var(--accent);flex-shrink:0">✦</span>Bulk extract — up to 20 PDFs</div>
-        <div style="font-size:12px;color:var(--text);display:flex;gap:7px;font-weight:500"><span style="color:var(--accent);flex-shrink:0">✦</span>No ads (when ads go live)</div>
+        <div style="font-size:12px;color:var(--text);display:flex;gap:7px;font-weight:500"><span style="color:var(--accent);flex-shrink:0">✦</span>Priority processing</div>
+        <div style="font-size:12px;color:var(--text);display:flex;gap:7px;font-weight:500"><span style="color:var(--accent);flex-shrink:0">✦</span>Batch operations on all tools</div>
+        <div style="font-size:12px;color:var(--text);display:flex;gap:7px;font-weight:500"><span style="color:var(--accent);flex-shrink:0">✦</span>No usage limits — unlimited runs per day</div>
         <div style="font-size:12px;color:var(--text);display:flex;gap:7px;font-weight:500"><span style="color:var(--accent);flex-shrink:0">✦</span>Early access to new tools</div>
         <div style="font-size:12px;color:var(--text);display:flex;gap:7px;font-weight:500"><span style="color:var(--accent);flex-shrink:0">✦</span>Priority support</div>
       </div>
-      <button onclick="goToPro()" id="pricing-cta-btn"
-        style="background:var(--accent);color:#fff;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;transition:background .15s"
-        onmouseover="this.style.background='#d63d09'" onmouseout="this.style.background='var(--accent)'">
-        Upgrade to Pro — $4.99/month
-      </button>
-      <div style="font-size:10px;color:var(--hint);text-align:center;margin-top:8px">Secure payment via Stripe · Cancel anytime</div>
+      <button onclick="goToPro()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;width:100%">Upgrade to Pro ✦</button>
     </div>
   </div>
 
   <!-- FAQ -->
-  <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px">
+  <div style="max-width:700px">
     <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px">Common questions</div>
-    <div style="display:flex;flex-direction:column;gap:14px">
-      <div><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px">Do my files stay private on Pro?</div><div style="font-size:12px;color:var(--muted);line-height:1.6">Yes — always. Pro doesn't change the architecture. Your files never leave your device on any plan. Only PDF text sent to all tools touches a server.</div></div>
-      <div><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px">How do I cancel?</div><div style="font-size:12px;color:var(--muted);line-height:1.6">Cancel anytime from your Stripe billing portal. You keep Pro access until the end of the billing period.</div></div>
-      <div><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px">Will the free version always exist?</div><div style="font-size:12px;color:var(--muted);line-height:1.6">Yes. All 42 tools remain free forever. We will never remove features from the free plan.</div></div>
-      <div><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px">I'm in Nigeria — do I get local pricing?</div><div style="font-size:12px;color:var(--muted);line-height:1.6">Yes. Nigerian users automatically see ₦5,000/month pricing. The upgrade button shows your local price automatically.</div></div>
-      <div><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px">Questions or issues?</div><div style="font-size:12px;color:var(--muted);line-height:1.6">Email <a href="mailto:support@odogwu.online" style="color:var(--accent)">support@odogwu.online</a> — we respond within 24 hours.</div></div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+
+      <details style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px">
+        <summary style="font-size:13px;font-weight:600;color:var(--text);cursor:pointer;list-style:none">Do my files ever leave my device?</summary>
+        <p style="font-size:12px;color:var(--muted);margin:10px 0 0;line-height:1.7">Never. All 42 tools run entirely in your browser using WebAssembly and JavaScript. No file is ever sent to a server. This is true for both Free and Pro.</p>
+      </details>
+
+      <details style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px">
+        <summary style="font-size:13px;font-weight:600;color:var(--text);cursor:pointer;list-style:none">What's the difference between Free and Pro?</summary>
+        <p style="font-size:12px;color:var(--muted);margin:10px 0 0;line-height:1.7">Free gives you full access to all 42 tools with a 20MB file size limit and daily usage caps on some tools. Pro removes all limits — 100MB files, unlimited runs, batch operations and priority support.</p>
+      </details>
+
+      <details style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px">
+        <summary style="font-size:13px;font-weight:600;color:var(--text);cursor:pointer;list-style:none">Can I cancel anytime?</summary>
+        <p style="font-size:12px;color:var(--muted);margin:10px 0 0;line-height:1.7">Yes, cancel anytime from your Stripe billing portal. No questions asked. You keep Pro access until the end of your billing period.</p>
+      </details>
+
+      <details style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px">
+        <summary style="font-size:13px;font-weight:600;color:var(--text);cursor:pointer;list-style:none">Is there a Nigerian / local pricing option?</summary>
+        <p style="font-size:12px;color:var(--muted);margin:10px 0 0;line-height:1.7">Yes — if you're in Nigeria, pricing is ₦5,000/month (less than a phone top-up). Built by a Nigerian founder in London. Support available in Yoruba, Igbo and English.</p>
+      </details>
+
     </div>
   </div>
+
 </div>
 
 </main>
@@ -29698,7 +29705,7 @@ const colMap={yellow:rgb(1,0.9,0),red:rgb(0.9,0.2,0.2),blue:rgb(0.2,0.4,0.9),gre
 // MERGE
 function mergeAdd(files){Array.from(files).filter(f=>f.name.toLowerCase().endsWith('.pdf')).forEach(f=>S.mergeFiles.push(f));renderMerge();}
 (function(){ const _baseAdd = mergeAdd; mergeAdd = function(files) {
-  const limit = proSizeLimit ? proSizeLimit() : 25*1024*1024;
+  const limit = (typeof isPro === "function" && isPro()) ? 100*1024*1024 : 25*1024*1024;
   const oversized = Array.from(files).filter(f => f.size > limit);
   if (oversized.length) {
     const el = document.getElementById('merge-err');
@@ -32906,6 +32913,18 @@ function showUploadHint(panelId) {
     if (fd && fd.children.length > 0) { hint.remove(); observer.disconnect(); }
   });
   if (fd) observer.observe(fd, { childList: true });
+}
+
+
+
+// ── File input click lock (prevent double-open) ──
+let _dzLock = false;
+function dzClick(id) {
+  if (_dzLock) return;
+  _dzLock = true;
+  const inp = document.getElementById(id);
+  if (inp) inp.click();
+  setTimeout(() => { _dzLock = false; }, 1000);
 }
 
 </script>
