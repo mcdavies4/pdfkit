@@ -29659,6 +29659,9 @@ function nav(t){
   // Scroll to top every time a tool opens
   const main=document.getElementById('main-content')||document.querySelector('.main');
   if(main){ main.scrollTop=0; }
+  window.scrollTo({top:0, behavior:'instant'});
+  document.documentElement.scrollTop=0;
+  document.body.scrollTop=0;
   // Init canvases
   if(t==='sign') setTimeout(initSignCanvas,50);
   if(t==='esign') setTimeout(initEsCanvas,50);
