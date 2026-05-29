@@ -32113,7 +32113,134 @@ else initScrollTop();
 
 <!-- SCROLL TO TOP -->
 <button class="scroll-top" id="scroll-top-btn" onclick="scrollToTop()" aria-label="Scroll to top" title="Back to top">↑</button>
-<script>if(document.readyState!=="loading"){initScrollTop();}else{document.addEventListener("DOMContentLoaded",initScrollTop);}</script>
+<script>if(document.readyState!=="loading"){initScrollTop();}else{document.addEventListener("DOMContentLoaded",initScrollTop);}
+
+// ── Sign tool canvas init ──
+function initSignCanvas() {
+  const canvas = document.getElementById('sign-canvas');
+  if (!canvas || canvas._initialized) return;
+  canvas._initialized = true;
+  const ctx = canvas.getContext('2d');
+  let drawing = false;
+  let lastX = 0, lastY = 0;
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    if (e.touches) {
+      return {
+        x: (e.touches[0].clientX - rect.left) * scaleX,
+        y: (e.touches[0].clientY - rect.top) * scaleY
+      };
+    }
+    return {
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY
+    };
+  }
+
+  function start(e) {
+    e.preventDefault();
+    drawing = true;
+    const pos = getPos(e);
+    lastX = pos.x; lastY = pos.y;
+    ctx.beginPath();
+    ctx.arc(lastX, lastY, 1, 0, Math.PI * 2);
+    ctx.fillStyle = window._signColor || '#1a1a2e';
+    ctx.fill();
+  }
+
+  function draw(e) {
+    if (!drawing) return;
+    e.preventDefault();
+    const pos = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.strokeStyle = window._signColor || '#1a1a2e';
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+    lastX = pos.x; lastY = pos.y;
+  }
+
+  function stop() { drawing = false; }
+
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', stop);
+  canvas.addEventListener('mouseleave', stop);
+  canvas.addEventListener('touchstart', start, {passive: false});
+  canvas.addEventListener('touchmove', draw, {passive: false});
+  canvas.addEventListener('touchend', stop);
+}
+
+function setSignMethod(method) {
+  document.querySelectorAll('.sign-method-btn').forEach(b => b.classList.toggle('active', b.dataset.method === method));
+  document.querySelectorAll('.sign-method-panel').forEach(p => p.style.display = p.dataset.method === method ? 'block' : 'none');
+  if (method === 'draw') setTimeout(initSignCanvas, 50);
+}
+
+function setSignPos(pos) {
+  document.querySelectorAll('[data-signpos]').forEach(b => b.classList.toggle('active', b.dataset.signpos === pos));
+  window._signPos = pos;
+}
+
+function setSignFont(font) {
+  window._signFont = font;
+  const typed = document.getElementById('sign-typed-preview');
+  if (typed) typed.style.fontFamily = font;
+}
+
+function setSignColor(color) {
+  window._signColor = color;
+  document.querySelectorAll('.sign-color-btn').forEach(b => b.classList.toggle('active', b.dataset.color === color));
+}
+
+function signClear() {
+  const canvas = document.getElementById('sign-canvas');
+  if (canvas) {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+}
+
+function signLoad(file) {
+  if (!file) return;
+  window._signFile = file;
+  const label = document.getElementById('sign-file-label');
+  if (label) label.textContent = file.name;
+}
+
+function signImgLoad(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById('sign-img-preview');
+    if (img) { img.src = e.target.result; img.style.display = 'block'; }
+    window._signImgData = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+
+
+// ── QR Stamp preview ──
+function qrPreview() {
+  const input = document.getElementById('qr-text');
+  const preview = document.getElementById('qr-preview-img');
+  if (!input || !preview) return;
+  const text = input.value || 'https://rightpdfkit.com';
+  // Use QR code library if available
+  if (typeof QRCode !== 'undefined') {
+    preview.innerHTML = '';
+    new QRCode(preview, { text: text, width: 120, height: 120 });
+  }
+}
+
+</script>
 
 
 
