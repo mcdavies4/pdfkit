@@ -3746,7 +3746,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
           <div style="font-size:10px;opacity:.7">Best on mobile</div>
         </div>
       </button>
-      <button class="btn btn-g" onclick=\"dzClick('scan-file-in')\"  style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px">
+      <button class="btn btn-g" onclick="document.getElementById('scan-file-in').click()" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px">
         <span style="font-size:20px">🖼</span>
         <div style="text-align:left">
           <div style="font-size:13px;font-weight:700">Upload Image</div>
@@ -3811,6 +3811,13 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
   <div class="eb" id="scan-err"></div>
   <div class="pw" id="scan-pw"><div class="pb"><div class="pf" id="scan-pf"></div></div><div class="pl"><span>Creating PDF…</span><span class="pp" id="scan-pp">0%</span></div></div>
   <div class="rb" id="scan-rb"><h4>✓ Scanned PDF ready</h4><p id="scan-rm"></p></div>
+
+  <div class="eb" id="scan-err"></div>
+  <div class="pw" id="scan-pw" style="display:none">
+    <div class="pb"><div class="pf" id="scan-pf"></div></div>
+    <div class="pl"><span>Creating PDF…</span><span class="pp" id="scan-pp">0%</span></div>
+  </div>
+  <div class="rb" id="scan-rb" style="display:none"><h4>✓ PDF created</h4><p id="scan-rm"></p></div>
 </div>
 
 <!-- RECEIPT SCANNER -->
@@ -32922,7 +32929,122 @@ function togglePwVis() { const i = document.getElementById('prt-upw')||document.
 function prtStrength() { checkPwStrength(); }
 
 // -- Scan & Camera stubs --
-function scanOpenCamera() { const el = document.getElementById('scan-camera-input'); if (el) el.click(); }
+
+// ── Scan to PDF — full working implementation ──
+let _scanStream = null;
+
+function scanOpenCamera() {
+  if(!navigator.mediaDevices?.getUserMedia) {
+    // Fallback: open file picker for images
+    document.getElementById('scan-file-in')?.click();
+    return toast('Camera not available — use Upload Image instead');
+  }
+  const step1 = document.getElementById('scan-step-1');
+  const step2 = document.getElementById('scan-step-2');
+  if(step1) step1.style.display = 'none';
+  if(step2) step2.style.display = 'block';
+  
+  navigator.mediaDevices.getUserMedia({ 
+    video: { facingMode: 'environment', width:{ideal:1920}, height:{ideal:1080} } 
+  })
+  .then(stream => {
+    _scanStream = stream;
+    const video = document.getElementById('scan-video');
+    if(video) { video.srcObject = stream; video.play(); }
+  })
+  .catch(err => {
+    scanStopCamera();
+    // If camera denied, fall back to file picker
+    document.getElementById('scan-file-in')?.click();
+    toast('Camera permission denied — uploading image instead');
+  });
+}
+
+function scanStopCamera() {
+  if(_scanStream) {
+    _scanStream.getTracks().forEach(t => t.stop());
+    _scanStream = null;
+  }
+  const step1 = document.getElementById('scan-step-1');
+  const step2 = document.getElementById('scan-step-2');
+  if(step1) step1.style.display = 'block';
+  if(step2) step2.style.display = 'none';
+  const video = document.getElementById('scan-video');
+  if(video) video.srcObject = null;
+}
+
+function scanCapture() {
+  const video = document.getElementById('scan-video');
+  if(!video || !video.videoWidth) return toast('Camera not ready');
+  
+  const canvas = document.createElement('canvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext('2d').drawImage(video, 0, 0);
+  
+  canvas.toBlob(blob => {
+    if(!blob) return toast('Capture failed');
+    const file = new File([blob], 'scan_' + (S.scanPages.length+1) + '.jpg', {type:'image/jpeg'});
+    scanAddPage(file);
+    scanStopCamera();
+    toast('Page captured! ✓');
+  }, 'image/jpeg', 0.92);
+}
+
+function scanLoadImage(f) {
+  if(!f) return;
+  if(!f.type.startsWith('image/')) return toast('Please select an image file');
+  scanAddPage(f);
+}
+
+function scanAddPage(file) {
+  S.scanPages.push(file);
+  _scanUpdateUI();
+}
+
+function scanRetake() {
+  if(S.scanPages.length > 0) {
+    S.scanPages.pop();
+    _scanUpdateUI();
+  }
+}
+
+function _scanUpdateUI() {
+  const wrap = document.getElementById('scan-pages-wrap');
+  const list = document.getElementById('scan-pages-list');
+  const countEl = document.getElementById('scan-pages-count');
+  const n = S.scanPages.length;
+  
+  if(wrap) wrap.style.display = n > 0 ? 'block' : 'none';
+  if(countEl) countEl.textContent = n + ' page' + (n !== 1 ? 's' : '') + ' ready';
+  
+  if(list) {
+    list.innerHTML = S.scanPages.map((f, idx) => {
+      const url = URL.createObjectURL(f);
+      return '<div style="position:relative;display:inline-block">' +
+        '<img src="' + url + '" style="width:72px;height:90px;object-fit:cover;border-radius:8px;border:1.5px solid var(--border)">' +
+        '<div style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,.6);border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;color:#fff" onclick="scanRemovePage('+idx+')">✕</div>' +
+        '<div style="font-size:9px;color:var(--muted);text-align:center;margin-top:3px">Page '+(idx+1)+'</div>' +
+        '</div>';
+    }).join('');
+  }
+}
+
+function scanRemovePage(idx) {
+  S.scanPages.splice(idx, 1);
+  _scanUpdateUI();
+}
+
+function scanToggleTorch() {
+  if(!_scanStream) return;
+  const track = _scanStream.getVideoTracks()[0];
+  const cap = track.getCapabilities?.();
+  if(cap?.torch) {
+    const current = track.getSettings?.().torch;
+    track.applyConstraints({ advanced: [{ torch: !current }] });
+  } else toast('Torch not available on this device');
+}
+
 function scanStopCamera() {}
 function scanToggleTorch() {}
 function scanCapture() {}
@@ -33039,7 +33161,7 @@ async function runImg2Pdf() {
 async function runWord2Pdf() { if (!S.w2pFile) return toast('Upload a Word file first'); showRes('w2p-rb','Word to PDF needs server processing. For now: open in Google Docs → File → Download → PDF. This feature is coming soon.'); toast('Coming soon'); }
 async function runScanToPdf() {
   if (!S.scanPages.length) return toast('Add scan images first');
-  const btn=document.getElementById('scan-btn'); btn.disabled=true;
+  const btn=document.getElementById('scan-btn'); if(btn) btn.disabled=true;
   const fin=animProg('scan-pf','scan-pp','scan-pw');
   try {
     const doc=await PDFDocument.create();
