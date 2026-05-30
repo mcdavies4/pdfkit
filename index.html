@@ -31505,7 +31505,7 @@ if (typeof window !== 'undefined') {
     if (typeof runBulkExtract === 'function') {
       const __runBulkExtract = runBulkExtract;
       window.runBulkExtract = async function() {
-        const fileCount = BE?.files?.length || 0;
+        const fileCount = S.beFiles?.length || 0;
         if (!checkLimit('bulkextract', fileCount)) return;
         incrementUsage('bulkextract');
         await __runBulkExtract();
@@ -33510,6 +33510,65 @@ nav = function(t) {
   const homeBtn = document.querySelector('.home-btn');
   if (homeBtn) homeBtn.style.display = (t === 'home') ? 'none' : '';
 };
+
+
+
+// ── Missing function fixes ──
+
+// Unlock load
+function ulkLoad(f) {
+  if(!f) return;
+  S.ulkFile = f;
+  const fd = document.getElementById('ulk-fd');
+  if(fd) fd.innerHTML = chip(f);
+  const btn = document.getElementById('ulk-btn');
+  if(btn) btn.disabled = false;
+  // Show password field
+  const pw = document.getElementById('ulk-pw-wrap') || document.getElementById('ulk-opts');
+  if(pw) pw.style.display = 'block';
+}
+
+// runPdfToImages alias
+async function runPdfToImages() { return runImages(); }
+
+// Bulk extractor
+async function runBulkExtract() {
+  if(!S.beFiles || !S.beFiles.length) return toast('Add PDF files first');
+  const btn = document.getElementById('be-btn');
+  if(btn) btn.disabled = true;
+  const fin = animProg('be-pf','be-pp','be-pw');
+  try {
+    let csv = 'Filename,Pages,Size,Text Sample\n';
+    for(const file of S.beFiles) {
+      try {
+        const pj = await loadPJ(file);
+        let text = '';
+        const maxPg = Math.min(pj.numPages, 3);
+        for(let i=1;i<=maxPg;i++){
+          const pg = await pj.getPage(i);
+          const content = await pg.getTextContent();
+          text += content.items.map(item=>item.str).join(' ');
+        }
+        csv += '"'+file.name+'",'+pj.numPages+',"'+fmt(file.size)+'","'+text.substring(0,150).replace(/"/g,'""')+'"\n';
+      } catch(e) {
+        csv += '"'+file.name+'",?,"'+fmt(file.size)+'","Error: '+e.message+'"\n';
+      }
+    }
+    const blob = new Blob([csv], {type:'text/csv'});
+    const url = URL.createObjectURL(blob);
+    fin(() => {
+      const a = document.createElement('a'); a.href=url; a.download='bulk-extract.csv'; a.click();
+      setTimeout(()=>URL.revokeObjectURL(url), 2000);
+      showRes('be-rb', S.beFiles.length+' PDFs extracted to CSV');
+      toast('CSV downloaded!');
+      if(btn) btn.disabled = false;
+    });
+  } catch(e) {
+    fin(()=>{});
+    showErr('be-err', e.message);
+    if(btn) btn.disabled = false;
+  }
+}
 
 </script>
 
