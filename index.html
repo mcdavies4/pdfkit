@@ -4127,7 +4127,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
         <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.08em">Pro</div>
         <div style="font-size:9px;background:var(--accent);color:#fff;border-radius:4px;padding:2px 7px;font-weight:700">BEST VALUE</div>
       </div>
-      <div style="font-size:40px;font-weight:800;color:var(--text);letter-spacing:-.04em;line-height:1;margin-bottom:4px" id="pricing-pro-price">$4.99</div>
+      <div style="font-size:40px;font-weight:800;color:var(--text);letter-spacing:-.04em;line-height:1;margin-bottom:4px" id="pricing-pro-price">£4.99</div>
       <div style="font-size:12px;color:var(--hint);margin-bottom:20px">per month · cancel anytime</div>
       <div style="display:flex;flex-direction:column;gap:8px;flex:1;margin-bottom:20px">
         <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px">Everything in Free, plus</div>
@@ -4138,7 +4138,42 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
         <div style="font-size:12px;color:var(--text);display:flex;gap:7px;font-weight:500"><span style="color:var(--accent);flex-shrink:0">✦</span>Early access to new tools</div>
         <div style="font-size:12px;color:var(--text);display:flex;gap:7px;font-weight:500"><span style="color:var(--accent);flex-shrink:0">✦</span>Priority support</div>
       </div>
-      <button onclick="goToPro()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;width:100%">Upgrade to Pro ✦</button>
+      <button onclick="window.open('https://rightpdfkit.lemonsqueezy.com/checkout/buy/c61ebda4-808a-4021-a82a-0bde8ab0fae9','_blank')" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;width:100%">Upgrade to Pro ✦</button>
+    </div>
+  </div>
+
+
+  <!-- ── License Key Activation ── -->
+  <div style="max-width:700px;margin-bottom:32px">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+        <span style="font-size:20px">🔑</span>
+        <div style="font-size:15px;font-weight:700;color:var(--text)">Already have a license key?</div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6">
+        After purchase you'll receive a key by email. Paste it below to activate Pro instantly — no account needed.
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <input id="ls-key-input" type="text" 
+          placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+          style="flex:1;min-width:220px;background:var(--surface2);border:1.5px solid var(--border2);
+                 border-radius:8px;padding:10px 14px;font-size:13px;color:var(--text);
+                 font-family:monospace;outline:none;box-sizing:border-box"
+          oninput="this.style.borderColor='var(--border2)'"
+          onkeydown="if(event.key==='Enter') activateLicenseKey()">
+        <button onclick="activateLicenseKey()" id="ls-activate-btn"
+          style="background:var(--accent);color:#fff;border:none;border-radius:8px;
+                 padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;
+                 white-space:nowrap;transition:opacity .2s">
+          Activate ✦
+        </button>
+      </div>
+      <div id="ls-status" style="margin-top:10px;font-size:12px;display:none"></div>
+      <div style="margin-top:12px;font-size:11px;color:var(--hint)">
+        Don't have a key? 
+        <a href="#" onclick="document.getElementById('ls-buy-btn')?.click();return false" 
+           style="color:var(--accent);text-decoration:none">Buy Pro →</a>
+      </div>
     </div>
   </div>
 
@@ -4164,7 +4199,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 
       <details style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px">
         <summary style="font-size:13px;font-weight:600;color:var(--text);cursor:pointer;list-style:none">Is there a Nigerian / local pricing option?</summary>
-        <p style="font-size:12px;color:var(--muted);margin:10px 0 0;line-height:1.7">Yes — if you're in Nigeria, pricing is ₦5,000/month (less than a phone top-up). Built by a Nigerian founder in London. Support available in Yoruba, Igbo and English.</p>
+        <p style="font-size:12px;color:var(--muted);margin:10px 0 0;line-height:1.7">Yes — if you're in Nigeria, pricing is ₦5,000/month · equivalent to £4.99. Built by a Nigerian founder in London. Support available in Yoruba, Igbo and English.</p>
       </details>
 
     </div>
@@ -31859,8 +31894,8 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 // PURCHASING POWER PARITY PRICING
 // ==========================================
-const STRIPE_GLOBAL  = 'https://buy.stripe.com/8x200jfuu9vjdv7c3q7Re03';
-const STRIPE_NIGERIA = 'https://buy.stripe.com/aFacN582222RezbffC7Re05';
+const STRIPE_GLOBAL = 'https://rightpdfkit.lemonsqueezy.com/checkout/buy/c61ebda4-808a-4021-a82a-0bde8ab0fae9';
+const STRIPE_NIGERIA = 'https://rightpdfkit.lemonsqueezy.com/checkout/buy/c61ebda4-808a-4021-a82a-0bde8ab0fae9';
 
 let USER_COUNTRY = null;
 let IS_NIGERIA   = false;
@@ -31959,11 +31994,7 @@ function showNigerianNudge() {
 }
 
 function goToPro() {
-  closeUpgrade();
-  const stripeLink = IS_NIGERIA ? STRIPE_NIGERIA : STRIPE_GLOBAL;
-  const successUrl = encodeURIComponent('https://rightpdfkit.com?pro=success');
-  window.open(stripeLink + '?success_url=' + successUrl, '_blank');
-  if (typeof trackEvent === 'function') trackEvent('upgrade_cta_clicked', {country: USER_COUNTRY});
+  window.open('https://rightpdfkit.lemonsqueezy.com/checkout/buy/c61ebda4-808a-4021-a82a-0bde8ab0fae9', '_blank');
 }
 
 detectCountry();
@@ -32931,6 +32962,90 @@ function showUploadHint(panelId) {
 
 
 function dzClick(id){ const inp=document.getElementById(id); if(inp) inp.click(); }
+
+
+
+// ══════════════════════════════════════════
+// LEMON SQUEEZY LICENSE KEY ACTIVATION
+// ══════════════════════════════════════════
+
+async function activateLicenseKey() {
+  const input = document.getElementById('ls-key-input');
+  const btn = document.getElementById('ls-activate-btn');
+  const status = document.getElementById('ls-status');
+  
+  const key = input?.value?.trim();
+  if (!key) {
+    showLsStatus('error', 'Please enter your license key');
+    return;
+  }
+  
+  // Basic format check (Lemon Squeezy keys are UUID format)
+  const uuidPattern = /^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$/i;
+  if (!uuidPattern.test(key)) {
+    showLsStatus('error', 'Invalid key format. Should be: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX');
+    return;
+  }
+  
+  btn.disabled = true;
+  btn.textContent = 'Verifying…';
+  showLsStatus('loading', '🔄 Verifying your license key…');
+  
+  try {
+    const res = await fetch('/api/activate-license', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ license_key: key })
+    });
+    
+    const raw = await res.text();
+    if (!raw || !raw.trim()) throw new Error('Empty response from server');
+    const data = JSON.parse(raw);
+    
+    if (data.activated) {
+      // Store Pro token in localStorage
+      const token = data.token || btoa(JSON.stringify({
+        expires: Date.now() + (data.days_remaining || 30) * 86400000,
+        plan: 'pro',
+        email: data.email || 'pro',
+        license: key.substring(0, 8) + '…'
+      }));
+      localStorage.setItem('rpk-pro-token-v1', token);
+      
+      showLsStatus('success', '✅ License activated! Pro features unlocked.');
+      btn.textContent = '✅ Activated!';
+      input.value = '';
+      input.style.borderColor = '#2ECC71';
+      
+      // Reload after 1.5s to show Pro badge
+      setTimeout(() => location.reload(), 1500);
+      
+    } else {
+      showLsStatus('error', '❌ ' + (data.error || 'Invalid or expired license key'));
+      btn.disabled = false;
+      btn.textContent = 'Activate ✦';
+      input.style.borderColor = '#e74c3c';
+    }
+    
+  } catch(e) {
+    showLsStatus('error', '❌ Could not verify key. Check your connection and try again.');
+    btn.disabled = false;
+    btn.textContent = 'Activate ✦';
+  }
+}
+
+function showLsStatus(type, msg) {
+  const el = document.getElementById('ls-status');
+  if (!el) return;
+  el.style.display = 'block';
+  const colors = {
+    loading: 'var(--muted)',
+    success: '#2ECC71',
+    error: '#e74c3c'
+  };
+  el.style.color = colors[type] || 'var(--muted)';
+  el.textContent = msg;
+}
 
 </script>
 
