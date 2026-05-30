@@ -3742,8 +3742,8 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
       <button class="btn btn-p" onclick="scanOpenCamera()" id="scan-camera-btn" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px">
         <span style="font-size:20px">📷</span>
         <div style="text-align:left">
-          <div style="font-size:13px;font-weight:700">Use Camera</div>
-          <div style="font-size:10px;opacity:.7">Best on mobile</div>
+          <div style="font-size:13px;font-weight:700">Take Photo</div>
+          <div style="font-size:10px;opacity:.7">Opens camera</div>
         </div>
       </button>
       <button class="btn btn-g" onclick="document.getElementById('scan-file-in').click()" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px">
@@ -3755,6 +3755,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
       </button>
     </div>
     <input type="file" id="scan-file-in" accept="image/*" style="display:none" onchange="scanLoadImage(this.files[0])" onclick="event.stopPropagation()">
+    <input type="file" id="scan-camera-in" accept="image/*" capture="environment" style="display:none" onchange="scanLoadImage(this.files[0])">
 
     <!-- Pages preview -->
     <div id="scan-pages-wrap" style="display:none">
@@ -32929,50 +32930,17 @@ function prtStrength() { checkPwStrength(); }
 let _scanStream = null;
 
 function scanOpenCamera() {
-  if(!navigator.mediaDevices?.getUserMedia) {
-    document.getElementById('scan-file-in')?.click();
-    return toast('Camera not available — use Upload Image instead');
+  // Use native camera input — works perfectly on all iOS/Android devices
+  // This is the correct approach for mobile web camera scanning
+  const camInput = document.getElementById('scan-camera-in');
+  if(camInput) {
+    camInput.value = '';
+    camInput.click();
   }
-
-  // Show fullscreen overlay
-  const overlay = document.getElementById('scan-camera-overlay');
-  if(overlay) {
-    overlay.style.display = 'flex';
-    // Lock body scroll
-    document.body.style.overflow = 'hidden';
-  }
-
-  // Update page count hint
-  const hint = document.getElementById('scan-cam-page-count');
-  if(hint) hint.textContent = S.scanPages.length > 0 ? S.scanPages.length + ' page' + (S.scanPages.length>1?'s':'') + ' captured' : '';
-
-  navigator.mediaDevices.getUserMedia({
-    video: { facingMode: {ideal:'environment'}, width:{ideal:1920}, height:{ideal:1080} }
-  })
-  .then(stream => {
-    _scanStream = stream;
-    const video = document.getElementById('scan-video');
-    if(video) {
-      video.srcObject = stream;
-      video.play().catch(()=>{});
-    }
-  })
-  .catch(() => {
-    scanStopCamera();
-    document.getElementById('scan-file-in')?.click();
-    toast('Camera permission denied — select an image instead');
-  });
 }
 
 function scanStopCamera() {
-  if(_scanStream) {
-    _scanStream.getTracks().forEach(t => t.stop());
-    _scanStream = null;
-  }
-  const video = document.getElementById('scan-video');
-  if(video) { video.srcObject = null; video.load(); }
-
-  // Hide overlay, restore scroll
+  if(_scanStream) { _scanStream.getTracks().forEach(t=>t.stop()); _scanStream = null; }
   const overlay = document.getElementById('scan-camera-overlay');
   if(overlay) overlay.style.display = 'none';
   document.body.style.overflow = '';
@@ -33034,7 +33002,31 @@ function scanCapture() {
 function scanLoadImage(f) {
   if(!f) return;
   if(!f.type.startsWith('image/')) return toast('Please select an image file');
-  scanAddPage(f);
+  
+  // Show preview (step 3) so user can confirm before adding
+  window._scanCapturedBlob = f;
+  window._scanCapturedName = f.name || ('scan_'+(S.scanPages.length+1)+'.jpg');
+  
+  const step1 = document.getElementById('scan-step-1');
+  const step3 = document.getElementById('scan-step-3');
+  if(step1) step1.style.display = 'none';
+  if(step3) step3.style.display = 'block';
+  
+  // Draw in crop canvas
+  const cropCanvas = document.getElementById('scan-crop-canvas');
+  if(cropCanvas) {
+    const img = new Image();
+    img.onload = () => {
+      cropCanvas.width = img.width;
+      cropCanvas.height = img.height;
+      cropCanvas.style.width = '100%';
+      cropCanvas.style.height = 'auto';
+      cropCanvas.getContext('2d').drawImage(img, 0, 0);
+    };
+    img.src = URL.createObjectURL(f);
+  }
+  window.scrollTo(0,0);
+  document.getElementById('main-content')?.scrollTo(0,0);
 }
 
 function scanAddPage(file) {
@@ -33048,7 +33040,6 @@ function scanRetake() {
   const step1 = document.getElementById('scan-step-1');
   if(step3) step3.style.display = 'none';
   if(step1) step1.style.display = 'block';
-  // Reopen camera fullscreen
   scanOpenCamera();
 }
 
