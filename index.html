@@ -30111,23 +30111,60 @@ async function runProtect(){
 // ── PDF Password Protection using PDF.js + pdf-lib ──
 // Uses standard PDF 1.4 encryption (RC4-128) via proper stream encryption
 async function applyPDFPassword(pdfBytes, userPwd, ownerPwd) {
-  // PDF 1.4 Standard Security Handler (RC4-40)
-  // Adds password protection that works in all PDF readers
-  
-  const PAD = new Uint8Array([0x28,0xBF,0x4E,0x5E,0x4E,0x75,0x8A,0x41,
-    0x64,0x00,0x4E,0x56,0xFF,0xFA,0x01,0x08,0x2E,0x2E,0x00,0xB6,
-    0xD0,0x68,0x3E,0x80,0x2F,0x0C,0xA9,0xFE,0x64,0x53,0x69,0x7A]);
+  // PDF 1.4 Standard Security Handler, V=1 R=2, 40-bit RC4
+  // Follows PDF spec section 3.5.2 exactly
+
+  const KEY_LEN = 5; // 40-bit
+
+  const PAD = new Uint8Array([
+    0x28,0xBF,0x4E,0x5E,0x4E,0x75,0x8A,0x41,0x64,0x00,0x4E,0x56,
+    0xFF,0xFA,0x01,0x08,0x2E,0x2E,0x00,0xB6,0xD0,0x68,0x3E,0x80,
+    0x2F,0x0C,0xA9,0xFE,0x64,0x53,0x69,0x7A
+  ]);
 
   function padPw(pw) {
-    const enc = new TextEncoder().encode((pw||'').substring(0,32));
+    const b = new TextEncoder().encode((pw||'').substring(0,32));
     const out = new Uint8Array(32);
-    for(let i=0;i<32;i++) out[i] = i<enc.length ? enc[i] : PAD[i-enc.length>31?31:i-enc.length];
+    for(let i=0;i<32;i++) out[i] = i < b.length ? b[i] : PAD[i - b.length];
+    return out;
+  }
+
+  function md5(data) {
+    const d = data instanceof Uint8Array ? data : new Uint8Array(data);
+    const len = d.length;
+    const extra = ((64-(len+9)%64)%64)+9;
+    const buf = new Uint8Array(len + extra);
+    buf.set(d); buf[len] = 0x80;
+    const dv = new DataView(buf.buffer);
+    dv.setUint32(buf.length-8, (len*8)>>>0, true);
+    let [a,b,cc,dd] = [0x67452301,0xefcdab89,0x98badcfe,0x10325476];
+    const T=[0xd76aa478,0xe8c7b756,0x242070db,0xc1bdceee,0xf57c0faf,0x4787c62a,0xa8304613,0xfd469501,0x698098d8,0x8b44f7af,0xffff5bb1,0x895cd7be,0x6b901122,0xfd987193,0xa679438e,0x49b40821,0xf61e2562,0xc040b340,0x265e5a51,0xe9b6c7aa,0xd62f105d,0x02441453,0xd8a1e681,0xe7d3fbc8,0x21e1cde6,0xc33707d6,0xf4d50d87,0x455a14ed,0xa9e3e905,0xfcefa3f8,0x676f02d9,0x8d2a4c8a,0xfffa3942,0x8771f681,0x6d9d6122,0xfde5380c,0xa4beea44,0x4bdecfa9,0xf6bb4b60,0xbebfbc70,0x289b7ec6,0xeaa127fa,0xd4ef3085,0x04881d05,0xd9d4d039,0xe6db99e5,0x1fa27cf8,0xc4ac5665,0xf4292244,0x432aff97,0xab9423a7,0xfc93a039,0x655b59c3,0x8f0ccc92,0xffeff47d,0x85845dd1,0x6fa87e4f,0xfe2ce6e0,0xa3014314,0x4e0811a1,0xf7537e82,0xbd3af235,0x2ad7d2bb,0xeb86d391];
+    const add = (x,y) => (x+y)|0;
+    const rol = (n,c) => (n<<c)|(n>>>(32-c));
+    for(let i=0;i<buf.length;i+=64){
+      const M=[];
+      for(let j=0;j<16;j++) M[j]=new DataView(buf.buffer,i+j*4,4).getUint32(0,true);
+      let [A,B,C,D]=[a,b,cc,dd];
+      for(let j=0;j<64;j++){
+        let f,g;
+        if(j<16){f=(B&C)|((~B)&D);g=j;}
+        else if(j<32){f=(B&D)|(C&(~D));g=(5*j+1)%16;}
+        else if(j<48){f=B^C^D;g=(3*j+5)%16;}
+        else{f=C^(B|(~D));g=(7*j)%16;}
+        const tmp=D;D=C;C=B;
+        B=add(B,rol(add(add(A,f),add(M[g],T[j])),[7,12,17,22,5,9,14,20,4,11,16,23,6,10,15,21][Math.floor(j/16)*4+(j%4)]));
+        A=tmp;
+      }
+      a=add(a,A);b=add(b,B);cc=add(cc,C);dd=add(dd,D);
+    }
+    const out=new Uint8Array(16);
+    [a,b,cc,dd].forEach((v,i)=>new DataView(out.buffer).setUint32(i*4,v,true));
     return out;
   }
 
   function rc4(key, data) {
+    const k = key instanceof Uint8Array ? key : new Uint8Array(key);
     const s = Array.from({length:256},(_,i)=>i);
-    const k = key instanceof Uint8Array ? key : new TextEncoder().encode(key);
     for(let i=0,j=0;i<256;i++){j=(j+s[i]+k[i%k.length])&255;[s[i],s[j]]=[s[j],s[i]];}
     const out = new Uint8Array(data.length);
     for(let i=0,j=0,n=0;n<data.length;n++){
@@ -30137,125 +30174,108 @@ async function applyPDFPassword(pdfBytes, userPwd, ownerPwd) {
     return out;
   }
 
-  function md5(data) {
-    const d = data instanceof Uint8Array ? data : new TextEncoder().encode(data);
-    const len = d.length;
-    const extra = ((64-(len+9)%64)%64)+9;
-    const padded = new Uint8Array(len+extra);
-    padded.set(d); padded[len]=0x80;
-    new DataView(padded.buffer).setUint32(padded.length-8,(len*8)>>>0,true);
-    let a=0x67452301,b=0xefcdab89,cc=0x98badcfe,dv=0x10325476;
-    const T=[0xd76aa478,0xe8c7b756,0x242070db,0xc1bdceee,0xf57c0faf,0x4787c62a,0xa8304613,0xfd469501,0x698098d8,0x8b44f7af,0xffff5bb1,0x895cd7be,0x6b901122,0xfd987193,0xa679438e,0x49b40821,0xf61e2562,0xc040b340,0x265e5a51,0xe9b6c7aa,0xd62f105d,0x02441453,0xd8a1e681,0xe7d3fbc8,0x21e1cde6,0xc33707d6,0xf4d50d87,0x455a14ed,0xa9e3e905,0xfcefa3f8,0x676f02d9,0x8d2a4c8a,0xfffa3942,0x8771f681,0x6d9d6122,0xfde5380c,0xa4beea44,0x4bdecfa9,0xf6bb4b60,0xbebfbc70,0x289b7ec6,0xeaa127fa,0xd4ef3085,0x04881d05,0xd9d4d039,0xe6db99e5,0x1fa27cf8,0xc4ac5665,0xf4292244,0x432aff97,0xab9423a7,0xfc93a039,0x655b59c3,0x8f0ccc92,0xffeff47d,0x85845dd1,0x6fa87e4f,0xfe2ce6e0,0xa3014314,0x4e0811a1,0xf7537e82,0xbd3af235,0x2ad7d2bb,0xeb86d391];
-    function R(n,c){return(n<<c)|(n>>>(32-c));}
-    function A(x,y){return(x+y)|0;}
-    function F(a2,b2,c2,d2,x,s,t,op){
-      let q;
-      if(op===0) q=(b2&c2)|((~b2)&d2);
-      else if(op===1) q=(b2&d2)|(c2&(~d2));
-      else if(op===2) q=b2^c2^d2;
-      else q=c2^(b2|(~d2));
-      return A(R(A(A(a2,q),A(x,t)),s),b2);
-    }
-    for(let i=0;i<padded.length;i+=64){
-      const M=[];
-      for(let j=0;j<16;j++) M[j]=new DataView(padded.buffer,i+j*4,4).getUint32(0,true);
-      let [A2,B2,C2,D2]=[a,b,cc,dv];
-      for(let j=0;j<64;j++){
-        const [g,s2,op]=j<16?[j,[7,12,17,22][j%4],0]:j<32?[(5*j+1)%16,[5,9,14,20][j%4],1]:j<48?[(3*j+5)%16,[4,11,16,23][j%4],2]:[(7*j)%16,[6,10,15,21][j%4],3];
-        const tmp=D2; D2=C2; C2=B2; B2=F(A2,B2,C2,D2,M[g],s2,T[j],op); A2=tmp;
-      }
-      a=A(a,A2);b=A(b,B2);cc=A(cc,C2);dv=A(dv,D2);
-    }
-    const out=new Uint8Array(16);
-    [a,b,cc,dv].forEach((v,i)=>new DataView(out.buffer).setUint32(i*4,v,true));
-    return out;
-  }
-
-  const userPadded = padPw(userPwd);
+  const userPadded  = padPw(userPwd);
   const ownerPadded = padPw(ownerPwd || userPwd);
   const fileId = crypto.getRandomValues(new Uint8Array(16));
-  const permissions = 0xFFFFFFFC | 0; // allow all
+  const P = -4; // permissions (allow printing)
 
-  // Owner key: MD5(ownerPadded) x50, RC4 encrypt userPadded
-  let oKey = md5(ownerPadded);
-  for(let i=0;i<50;i++) oKey = md5(oKey);
-  oKey = oKey.slice(0,5); // 40-bit
-  let O = rc4(oKey, userPadded);
-  for(let i=1;i<=19;i++) O = rc4(O.map((b,j)=>b^(oKey[j%5]^i)), O);
-  
-  // Actually simpler 40-bit O computation
-  O = rc4(oKey, userPadded);
+  // ── Step 1: Compute O entry ──
+  // O = RC4(MD5(ownerPadded)[:5], userPadded)
+  const oKey = md5(ownerPadded).slice(0, KEY_LEN);
+  const O = rc4(oKey, userPadded);
 
-  // Encryption key: MD5(userPadded + O + permissions + fileId) x50
-  const keyInput = new Uint8Array([...userPadded, ...O,
-    permissions&255, (permissions>>8)&255, (permissions>>16)&255, (permissions>>24)&255,
-    ...fileId]);
-  let encKey = md5(keyInput).slice(0,5);
-  for(let i=0;i<50;i++) encKey = md5(encKey).slice(0,5);
+  // ── Step 2: Compute encryption key ──
+  // key = MD5(userPadded + O + P(4LE) + fileId[:8])[:5]
+  const keyInput = new Uint8Array(32 + 32 + 4 + 8);
+  keyInput.set(userPadded, 0);
+  keyInput.set(O, 32);
+  keyInput[64] = P & 0xFF; keyInput[65] = (P>>8)&0xFF; keyInput[66] = (P>>16)&0xFF; keyInput[67] = (P>>24)&0xFF;
+  keyInput.set(fileId.slice(0,8), 68);
+  const encKey = md5(keyInput).slice(0, KEY_LEN);
 
-  // User key: RC4(encKey, padding) x20
-  let U = rc4(encKey, PAD);
-  for(let i=1;i<=19;i++){
-    const newKey = encKey.map((b,j)=>b^i);
-    U = rc4(newKey, U);
-  }
-  const Ufull = new Uint8Array(32); Ufull.set(U);
+  // ── Step 3: Compute U entry ──
+  // U = RC4(encKey, PAD) padded to 32 bytes
+  const Ushort = rc4(encKey, PAD);
+  const U = new Uint8Array(32); U.set(Ushort);
 
-  const toHex = arr => '<' + Array.from(arr).map(b=>b.toString(16).padStart(2,'0')).join('') + '>';
+  // ── Step 4: Parse and encrypt streams ──
+  const latin1 = new TextDecoder('latin1');
+  const pdfText = latin1.decode(pdfBytes);
 
-  // Parse the PDF
-  let pdfText = new TextDecoder('latin1').decode(pdfBytes);
+  // Encrypt each stream with per-object key
+  // Per-object key = MD5(encKey + obj_num(3LE) + gen_num(2LE))[:min(16, KEY_LEN+5)]
+  const PER_OBJ_LEN = Math.min(16, KEY_LEN + 5); // = 10
 
-  // Encrypt each stream object using per-object keys
-  let objNum = 0;
-  pdfText = pdfText.replace(/(\d+) 0 obj/g, (m, n) => { objNum = parseInt(n); return m; });
-  
-  // Encrypt streams - each with object-specific key
-  const encryptedStreams = new Map();
-  pdfText.replace(/(\d+) 0 obj[\s\S]*?stream\r?\n([\s\S]*?)\r?\nendstream/g, (m, n, content) => {
-    encryptedStreams.set(parseInt(n), content);
-    return m;
-  });
-
-  let result = pdfText;
-  let curObj = 1;
-  result = result.replace(/(\d+) (\d+) obj([\s\S]*?stream\r?\n)([\s\S]*?)(\r?\nendstream)/g, 
-    (m, n, gen, pre, content, post) => {
-      const on = parseInt(n), gn = parseInt(gen);
-      const objKeyData = new Uint8Array([...encKey, on&255, (on>>8)&255, (on>>16)&255, gn&255, (gn>>8)&255]);
-      const objKey = md5(objKeyData).slice(0,5+3);
-      const contentBytes = Uint8Array.from(content, c=>c.charCodeAt(0)&0xff);
-      const encrypted = rc4(objKey, contentBytes);
-      const encStr = Array.from(encrypted).map(b=>String.fromCharCode(b)).join('');
-      return n + ' ' + gen + ' obj' + pre + encStr + post;
+  let result = pdfText.replace(
+    /(\d+) (\d+) obj([\s\S]*?stream\r?\n)([\s\S]*?)(\r?\nendstream)/g,
+    (match, objN, genN, pre, content, post) => {
+      const on = parseInt(objN), gn = parseInt(genN);
+      const kd = new Uint8Array(KEY_LEN + 5);
+      kd.set(encKey);
+      kd[KEY_LEN]   = on & 0xFF;
+      kd[KEY_LEN+1] = (on>>8) & 0xFF;
+      kd[KEY_LEN+2] = (on>>16) & 0xFF;
+      kd[KEY_LEN+3] = gn & 0xFF;
+      kd[KEY_LEN+4] = (gn>>8) & 0xFF;
+      const objKey = md5(kd).slice(0, PER_OBJ_LEN);
+      const plain = Uint8Array.from(content, ch => ch.charCodeAt(0) & 0xFF);
+      const enc = rc4(objKey, plain);
+      const encStr = Array.from(enc, b => String.fromCharCode(b)).join('');
+      return objN + ' ' + genN + ' obj' + pre + encStr + post;
     }
   );
 
-  // Add Encrypt object and update trailer
-  const encObjN = 9999;
-  const encryptObj = [
-    encObjN + ' 0 obj',
+  // ── Step 5: Add /Encrypt object + update trailer ──
+  const toHex = a => '<' + Array.from(a, b=>b.toString(16).padStart(2,'0')).join('') + '>';
+  const encObjNum = 9999;
+
+  const encObj = [
+    encObjNum + ' 0 obj',
     '<<',
     '  /Filter /Standard',
     '  /V 1',
-    '  /R 2', 
+    '  /R 2',
     '  /O ' + toHex(O),
-    '  /U ' + toHex(Ufull),
-    '  /P ' + permissions,
+    '  /U ' + toHex(U),
+    '  /P ' + P,
     '>>',
     'endobj',
     ''
   ].join('\n');
 
-  const xrefPos = result.lastIndexOf('xref');
-  result = result.slice(0, xrefPos) + encryptObj + result.slice(xrefPos);
-  result = result.replace('trailer\n<<', 
-    'trailer\n<<\n/Encrypt ' + encObjN + ' 0 R\n/ID [' + toHex(fileId) + toHex(fileId) + ']');
-  result = result.replace('trailer\r\n<<',
-    'trailer\r\n<<\r\n/Encrypt ' + encObjN + ' 0 R\r\n/ID [' + toHex(fileId) + toHex(fileId) + ']');
+  // Inject encrypt obj before xref
+  // Find xref - supports both \nxref and xref at start of line
+  let xrefIdx = result.lastIndexOf('\nxref');
+  if(xrefIdx < 0) xrefIdx = result.lastIndexOf('\r\nxref');
+  if(xrefIdx < 0 && result.startsWith('xref')) xrefIdx = -1;
+  if(xrefIdx < 0) {
+    // pdf-lib may use cross-reference streams - inject before %%EOF
+    const eofIdx = result.lastIndexOf('%%EOF');
+    if(eofIdx < 0) throw new Error('Invalid PDF structure');
+    result = result.slice(0, eofIdx) + encObj + result.slice(eofIdx);
+  } else {
+    result = result.slice(0, xrefIdx+1) + encObj + result.slice(xrefIdx+1);
+  }
+
+  // Update trailer
+  const idStr = '/ID [' + toHex(fileId) + toHex(fileId) + ']';
+  const encStr2 = '/Encrypt ' + encObjNum + ' 0 R';
+  // Update trailer - try different formats
+  if(result.includes('trailer\n<<')) {
+    result = result.replace('trailer\n<<', 'trailer\n<<\n' + encStr2 + '\n' + idStr);
+  } else if(result.includes('trailer\r\n<<')) {
+    result = result.replace('trailer\r\n<<', 'trailer\r\n<<\r\n' + encStr2 + '\r\n' + idStr);
+  } else if(result.includes('trailer <<')) {
+    result = result.replace('trailer <<', 'trailer\n<<\n' + encStr2 + '\n' + idStr + '\n');
+  } else {
+    // Inject near startxref
+    const sxIdx = result.lastIndexOf('startxref');
+    if(sxIdx > 0) result = result.slice(0, sxIdx) + '\ntrailer\n<<\n' + encStr2 + '\n' + idStr + '\n>>\n' + result.slice(sxIdx);
+  }
 
   return new TextEncoder().encode(result);
 }
+
 
 
 async function runUnlock(){
