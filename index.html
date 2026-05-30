@@ -33903,142 +33903,75 @@ function setScanEnhance(mode, btn) {
 
 
 <!-- ── Fullscreen Camera Overlay ── -->
-<div id="scan-camera-overlay" style="
-  display:none;
-  position:fixed;
-  inset:0;
-  background:#000;
-  z-index:9999;
-  flex-direction:column;
-">
-  <!-- Video fills entire screen -->
-  <video id="scan-video" autoplay playsinline muted style="
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:block;
-  "></video>
+<div id="scan-camera-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:#000;flex-direction:column;">
 
-  <!-- Top bar: close button -->
+  <!-- VIDEO: pointer-events:none so it NEVER steals touches -->
+  <video id="scan-video" autoplay playsinline webkit-playsinline muted
+    style="flex:1;width:100%;object-fit:cover;display:block;pointer-events:none;">
+  </video>
+
+  <!-- GUIDE FRAME overlay (pointer-events:none) -->
+  <div style="position:absolute;top:0;left:0;right:0;bottom:80px;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:10000;">
+    <div style="width:78%;max-width:320px;aspect-ratio:3/4;position:relative;">
+      <div style="position:absolute;inset:0;border:2px solid rgba(255,255,255,.25);border-radius:10px;"></div>
+      <div style="position:absolute;top:-3px;left:-3px;width:28px;height:28px;border-top:4px solid #E8450A;border-left:4px solid #E8450A;border-radius:4px 0 0 0;"></div>
+      <div style="position:absolute;top:-3px;right:-3px;width:28px;height:28px;border-top:4px solid #E8450A;border-right:4px solid #E8450A;border-radius:0 4px 0 0;"></div>
+      <div style="position:absolute;bottom:-3px;left:-3px;width:28px;height:28px;border-bottom:4px solid #E8450A;border-left:4px solid #E8450A;border-radius:0 0 0 4px;"></div>
+      <div style="position:absolute;bottom:-3px;right:-3px;width:28px;height:28px;border-bottom:4px solid #E8450A;border-right:4px solid #E8450A;border-radius:0 0 4px 0;"></div>
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:rgba(255,255,255,.5);font-size:12px;white-space:nowrap;">Align document here</div>
+    </div>
+  </div>
+
+  <!-- BUTTON BAR: completely separate from video, sits below it, NOT overlapping -->
+  <!-- This is the key fix - buttons are NOT on top of the video element -->
   <div style="
-    position:absolute;
-    top:0; left:0; right:0;
-    padding:16px;
-    padding-top:max(16px, env(safe-area-inset-top));
+    background:#111;
+    padding:16px 24px;
+    padding-bottom:max(20px, env(safe-area-inset-bottom));
     display:flex;
     align-items:center;
     justify-content:space-between;
-    background:linear-gradient(rgba(0,0,0,.5), transparent);
+    pointer-events:auto;
+    position:relative;
     z-index:10001;
+    flex-shrink:0;
   ">
-    <button 
-      onclick="scanStopCamera()" 
-      style="
-        background:rgba(0,0,0,.5);
-        border:2px solid rgba(255,255,255,.6);
-        border-radius:50%;
-        width:44px; height:44px;
-        color:#fff;
-        font-size:20px;
-        cursor:pointer;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        -webkit-tap-highlight-color:rgba(255,255,255,.3);
-        touch-action:manipulation;
-      "
-    >✕</button>
-    <div style="color:#fff;font-size:12px;opacity:.8" id="scan-cam-page-count"></div>
-    <button 
-      id="scan-torch-btn"
-      onclick="scanToggleTorch()" 
-      style="
-        background:rgba(0,0,0,.5);
-        border:2px solid rgba(255,255,255,.6);
-        border-radius:50%;
-        width:44px; height:44px;
-        color:#fff;
-        font-size:20px;
-        cursor:pointer;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        -webkit-tap-highlight-color:rgba(255,255,255,.3);
-        touch-action:manipulation;
-      "
-    >🔦</button>
-  </div>
+    <!-- Close -->
+    <button onclick="scanStopCamera()" style="
+      background:rgba(255,255,255,.15);
+      border:2px solid rgba(255,255,255,.4);
+      border-radius:50%;width:52px;height:52px;
+      color:#fff;font-size:22px;cursor:pointer;
+      -webkit-tap-highlight-color:transparent;
+      touch-action:manipulation;
+      display:flex;align-items:center;justify-content:center;
+    ">✕</button>
 
-  <!-- Centre guide frame -->
-  <div style="
-    position:absolute;
-    top:50%; left:50%;
-    transform:translate(-50%,-50%);
-    width:75%; max-width:340px;
-    aspect-ratio:3/4;
-    border:2px solid rgba(255,255,255,.4);
-    border-radius:12px;
-    pointer-events:none;
-    z-index:10000;
-  ">
-    <!-- Corner marks -->
-    <div style="position:absolute;top:-2px;left:-2px;width:24px;height:24px;border-top:3px solid #E8450A;border-left:3px solid #E8450A;border-radius:3px 0 0 0"></div>
-    <div style="position:absolute;top:-2px;right:-2px;width:24px;height:24px;border-top:3px solid #E8450A;border-right:3px solid #E8450A;border-radius:0 3px 0 0"></div>
-    <div style="position:absolute;bottom:-2px;left:-2px;width:24px;height:24px;border-bottom:3px solid #E8450A;border-left:3px solid #E8450A;border-radius:0 0 0 3px"></div>
-    <div style="position:absolute;bottom:-2px;right:-2px;width:24px;height:24px;border-bottom:3px solid #E8450A;border-right:3px solid #E8450A;border-radius:0 0 3px 0"></div>
-  </div>
-
-  <!-- Bottom bar: capture button -->
-  <div style="
-    position:absolute;
-    bottom:0; left:0; right:0;
-    padding:24px 32px;
-    padding-bottom:max(24px, env(safe-area-inset-bottom));
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:linear-gradient(transparent, rgba(0,0,0,.6));
-    z-index:10001;
-  ">
-    <!-- Capture button — big, easy to tap -->
-    <button
-      id="scan-capture-btn"
-      onclick="scanCapture()"
-      style="
-        background:#fff;
-        border:4px solid rgba(255,255,255,.4);
-        border-radius:50%;
-        width:80px; height:80px;
-        cursor:pointer;
-        box-shadow:0 4px 20px rgba(0,0,0,.5);
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        -webkit-tap-highlight-color:rgba(255,255,255,.3);
-        touch-action:manipulation;
-        transition:transform .1s;
-      "
-      ontouchstart="this.style.transform='scale(0.92)'"
-      ontouchend="this.style.transform='scale(1)'"
-    >
-      <div style="
-        width:56px; height:56px;
-        background:#1a1a2e;
-        border-radius:50%;
-      "></div>
+    <!-- Capture — the main button -->
+    <button id="scan-capture-btn" onclick="scanCapture()" style="
+      background:#fff;
+      border:5px solid rgba(255,255,255,.5);
+      border-radius:50%;width:80px;height:80px;
+      cursor:pointer;
+      -webkit-tap-highlight-color:transparent;
+      touch-action:manipulation;
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 0 0 3px rgba(255,255,255,.3);
+    ">
+      <div style="width:56px;height:56px;background:#1a1a2e;border-radius:50%;"></div>
     </button>
-  </div>
 
-  <!-- Hint -->
-  <div style="
-    position:absolute;
-    bottom:120px; left:0; right:0;
-    text-align:center;
-    color:rgba(255,255,255,.7);
-    font-size:13px;
-    z-index:10001;
-    pointer-events:none;
-  " id="scan-cam-hint">Align document within the frame</div>
+    <!-- Torch -->
+    <button id="scan-torch-btn" onclick="scanToggleTorch()" style="
+      background:rgba(255,255,255,.15);
+      border:2px solid rgba(255,255,255,.4);
+      border-radius:50%;width:52px;height:52px;
+      color:#fff;font-size:22px;cursor:pointer;
+      -webkit-tap-highlight-color:transparent;
+      touch-action:manipulation;
+      display:flex;align-items:center;justify-content:center;
+    ">🔦</button>
+  </div>
 </div>
 
 </body>
