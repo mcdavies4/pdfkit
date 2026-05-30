@@ -3769,19 +3769,14 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
     <div class="nb" style="margin-top:10px">📷 <strong>Best results:</strong> Good lighting, document on contrasting background, camera directly above.</div>
   </div>
 
-  <!-- Step 2: Camera viewfinder -->
+  <!-- Step 2: Camera viewfinder — hidden placeholder (actual UI is fullscreen overlay) -->
   <div id="scan-step-2" style="display:none">
-    <div style="position:relative;border-radius:12px;overflow:hidden;background:#000;margin-bottom:12px">
-      <video id="scan-video" autoplay playsinline style="width:100%;display:block;max-height:60vh;object-fit:cover"></video>
-      <canvas id="scan-overlay" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none"></canvas>
-      <div style="position:absolute;bottom:0;left:0;right:0;padding:12px;background:linear-gradient(transparent,rgba(0,0,0,.7));display:flex;align-items:center;justify-content:space-between">
-        <button onclick="scanStopCamera()" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;color:#fff;font-size:16px">✕</button>
-        <button onclick="scanCapture()" id="scan-capture-btn" style="background:#fff;border:none;border-radius:50%;width:64px;height:64px;cursor:pointer;font-size:28px;box-shadow:0 2px 12px rgba(0,0,0,.4)">●</button>
-        <button onclick="scanToggleTorch()" id="scan-torch-btn" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;color:#fff;font-size:16px">🔦</button>
-      </div>
+    <div style="height:60px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px">
+      Opening camera…
     </div>
-    <div style="font-size:11px;color:var(--hint);text-align:center" id="scan-hint">Point at document — edges will highlight automatically</div>
   </div>
+
+  <!-- Fullscreen camera overlay (outside panel flow) -->
 
   <!-- Step 3: Crop & Adjust -->
   <div id="scan-step-3" style="display:none">
@@ -32935,28 +32930,37 @@ let _scanStream = null;
 
 function scanOpenCamera() {
   if(!navigator.mediaDevices?.getUserMedia) {
-    // Fallback: open file picker for images
     document.getElementById('scan-file-in')?.click();
     return toast('Camera not available — use Upload Image instead');
   }
-  const step1 = document.getElementById('scan-step-1');
-  const step2 = document.getElementById('scan-step-2');
-  if(step1) step1.style.display = 'none';
-  if(step2) step2.style.display = 'block';
-  
-  navigator.mediaDevices.getUserMedia({ 
-    video: { facingMode: 'environment', width:{ideal:1920}, height:{ideal:1080} } 
+
+  // Show fullscreen overlay
+  const overlay = document.getElementById('scan-camera-overlay');
+  if(overlay) {
+    overlay.style.display = 'flex';
+    // Lock body scroll
+    document.body.style.overflow = 'hidden';
+  }
+
+  // Update page count hint
+  const hint = document.getElementById('scan-cam-page-count');
+  if(hint) hint.textContent = S.scanPages.length > 0 ? S.scanPages.length + ' page' + (S.scanPages.length>1?'s':'') + ' captured' : '';
+
+  navigator.mediaDevices.getUserMedia({
+    video: { facingMode: {ideal:'environment'}, width:{ideal:1920}, height:{ideal:1080} }
   })
   .then(stream => {
     _scanStream = stream;
     const video = document.getElementById('scan-video');
-    if(video) { video.srcObject = stream; video.play(); }
+    if(video) {
+      video.srcObject = stream;
+      video.play().catch(()=>{});
+    }
   })
-  .catch(err => {
+  .catch(() => {
     scanStopCamera();
-    // If camera denied, fall back to file picker
     document.getElementById('scan-file-in')?.click();
-    toast('Camera permission denied — uploading image instead');
+    toast('Camera permission denied — select an image instead');
   });
 }
 
@@ -32965,54 +32969,65 @@ function scanStopCamera() {
     _scanStream.getTracks().forEach(t => t.stop());
     _scanStream = null;
   }
-  const step1 = document.getElementById('scan-step-1');
-  const step2 = document.getElementById('scan-step-2');
-  if(step1) step1.style.display = 'block';
-  if(step2) step2.style.display = 'none';
   const video = document.getElementById('scan-video');
-  if(video) video.srcObject = null;
+  if(video) { video.srcObject = null; video.load(); }
+
+  // Hide overlay, restore scroll
+  const overlay = document.getElementById('scan-camera-overlay');
+  if(overlay) overlay.style.display = 'none';
+  document.body.style.overflow = '';
 }
 
 function scanCapture() {
   const video = document.getElementById('scan-video');
-  if(!video || !video.videoWidth) return toast('Camera not ready — point it at your document');
-  
+  if(!video || !video.videoWidth) return toast('Camera not ready — wait a moment');
+
+  // Flash feedback
+  const btn = document.getElementById('scan-capture-btn');
+  if(btn) { btn.style.opacity = '0.4'; setTimeout(()=>btn.style.opacity='1', 150); }
+
   const canvas = document.createElement('canvas');
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   canvas.getContext('2d').drawImage(video, 0, 0);
-  
+
   canvas.toBlob(blob => {
     if(!blob) return toast('Capture failed — try again');
-    // Store captured image for confirm step
+
+    // Store for confirm step
     window._scanCapturedBlob = blob;
     window._scanCapturedName = 'scan_' + (S.scanPages.length + 1) + '.jpg';
-    
-    // Show step 3 with the captured image
+
+    // Stop camera, hide overlay
+    if(_scanStream) { _scanStream.getTracks().forEach(t=>t.stop()); _scanStream = null; }
+    const overlay = document.getElementById('scan-camera-overlay');
+    if(overlay) overlay.style.display = 'none';
+    document.body.style.overflow = '';
+
+    // Show step 3 preview
+    const step3 = document.getElementById('scan-step-3');
+    const step1 = document.getElementById('scan-step-1');
+    if(step1) step1.style.display = 'none';
+    if(step3) step3.style.display = 'block';
+
+    // Draw captured image in crop canvas
     const cropCanvas = document.getElementById('scan-crop-canvas');
     if(cropCanvas) {
       const img = new Image();
       img.onload = () => {
-        // Scale to fit canvas display width
-        const displayW = cropCanvas.parentElement?.offsetWidth || 400;
-        const scale = displayW / img.width;
         cropCanvas.width = img.width;
         cropCanvas.height = img.height;
-        cropCanvas.style.width = displayW + 'px';
-        cropCanvas.style.height = (img.height * scale) + 'px';
+        const dw = cropCanvas.parentElement?.offsetWidth || img.width;
+        cropCanvas.style.width = '100%';
+        cropCanvas.style.height = 'auto';
         cropCanvas.getContext('2d').drawImage(img, 0, 0);
       };
       img.src = URL.createObjectURL(blob);
     }
-    
-    // Hide step 2, show step 3
-    const step2 = document.getElementById('scan-step-2');
-    const step3 = document.getElementById('scan-step-3');
-    if(step2) step2.style.display = 'none';
-    if(step3) step3.style.display = 'block';
-    
-    // Stop camera stream (save battery)
-    if(_scanStream) { _scanStream.getTracks().forEach(t=>t.stop()); _scanStream = null; }
+
+    // Scroll to top so step 3 is visible
+    window.scrollTo(0,0);
+    document.getElementById('main-content')?.scrollTo(0,0);
   }, 'image/jpeg', 0.92);
 }
 
@@ -33029,10 +33044,12 @@ function scanAddPage(file) {
 
 function scanRetake() {
   window._scanCapturedBlob = null;
-  // Go back to camera
   const step3 = document.getElementById('scan-step-3');
+  const step1 = document.getElementById('scan-step-1');
   if(step3) step3.style.display = 'none';
-  scanOpenCamera(); // reopen camera
+  if(step1) step1.style.display = 'block';
+  // Reopen camera fullscreen
+  scanOpenCamera();
 }
 
 function _scanUpdateUI() {
@@ -33883,6 +33900,146 @@ function setScanEnhance(mode, btn) {
 .feedback-chip.sel{background:var(--accent-bg);border-color:var(--accent)!important;color:var(--accent)!important}
 #feedback-modal.show{display:flex!important}
 </style>
+
+
+<!-- ── Fullscreen Camera Overlay ── -->
+<div id="scan-camera-overlay" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#000;
+  z-index:9999;
+  flex-direction:column;
+">
+  <!-- Video fills entire screen -->
+  <video id="scan-video" autoplay playsinline muted style="
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  "></video>
+
+  <!-- Top bar: close button -->
+  <div style="
+    position:absolute;
+    top:0; left:0; right:0;
+    padding:16px;
+    padding-top:max(16px, env(safe-area-inset-top));
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:linear-gradient(rgba(0,0,0,.5), transparent);
+    z-index:10001;
+  ">
+    <button 
+      onclick="scanStopCamera()" 
+      style="
+        background:rgba(0,0,0,.5);
+        border:2px solid rgba(255,255,255,.6);
+        border-radius:50%;
+        width:44px; height:44px;
+        color:#fff;
+        font-size:20px;
+        cursor:pointer;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        -webkit-tap-highlight-color:rgba(255,255,255,.3);
+        touch-action:manipulation;
+      "
+    >✕</button>
+    <div style="color:#fff;font-size:12px;opacity:.8" id="scan-cam-page-count"></div>
+    <button 
+      id="scan-torch-btn"
+      onclick="scanToggleTorch()" 
+      style="
+        background:rgba(0,0,0,.5);
+        border:2px solid rgba(255,255,255,.6);
+        border-radius:50%;
+        width:44px; height:44px;
+        color:#fff;
+        font-size:20px;
+        cursor:pointer;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        -webkit-tap-highlight-color:rgba(255,255,255,.3);
+        touch-action:manipulation;
+      "
+    >🔦</button>
+  </div>
+
+  <!-- Centre guide frame -->
+  <div style="
+    position:absolute;
+    top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    width:75%; max-width:340px;
+    aspect-ratio:3/4;
+    border:2px solid rgba(255,255,255,.4);
+    border-radius:12px;
+    pointer-events:none;
+    z-index:10000;
+  ">
+    <!-- Corner marks -->
+    <div style="position:absolute;top:-2px;left:-2px;width:24px;height:24px;border-top:3px solid #E8450A;border-left:3px solid #E8450A;border-radius:3px 0 0 0"></div>
+    <div style="position:absolute;top:-2px;right:-2px;width:24px;height:24px;border-top:3px solid #E8450A;border-right:3px solid #E8450A;border-radius:0 3px 0 0"></div>
+    <div style="position:absolute;bottom:-2px;left:-2px;width:24px;height:24px;border-bottom:3px solid #E8450A;border-left:3px solid #E8450A;border-radius:0 0 0 3px"></div>
+    <div style="position:absolute;bottom:-2px;right:-2px;width:24px;height:24px;border-bottom:3px solid #E8450A;border-right:3px solid #E8450A;border-radius:0 0 3px 0"></div>
+  </div>
+
+  <!-- Bottom bar: capture button -->
+  <div style="
+    position:absolute;
+    bottom:0; left:0; right:0;
+    padding:24px 32px;
+    padding-bottom:max(24px, env(safe-area-inset-bottom));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(transparent, rgba(0,0,0,.6));
+    z-index:10001;
+  ">
+    <!-- Capture button — big, easy to tap -->
+    <button
+      id="scan-capture-btn"
+      onclick="scanCapture()"
+      style="
+        background:#fff;
+        border:4px solid rgba(255,255,255,.4);
+        border-radius:50%;
+        width:80px; height:80px;
+        cursor:pointer;
+        box-shadow:0 4px 20px rgba(0,0,0,.5);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        -webkit-tap-highlight-color:rgba(255,255,255,.3);
+        touch-action:manipulation;
+        transition:transform .1s;
+      "
+      ontouchstart="this.style.transform='scale(0.92)'"
+      ontouchend="this.style.transform='scale(1)'"
+    >
+      <div style="
+        width:56px; height:56px;
+        background:#1a1a2e;
+        border-radius:50%;
+      "></div>
+    </button>
+  </div>
+
+  <!-- Hint -->
+  <div style="
+    position:absolute;
+    bottom:120px; left:0; right:0;
+    text-align:center;
+    color:rgba(255,255,255,.7);
+    font-size:13px;
+    z-index:10001;
+    pointer-events:none;
+  " id="scan-cam-hint">Align document within the frame</div>
+</div>
 
 </body>
 </html>
