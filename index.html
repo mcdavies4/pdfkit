@@ -1897,6 +1897,15 @@ html,body{overflow-x:hidden;max-width:100vw}
 #panel-blog strong{color:var(--text)}
 #panel-blog a{color:var(--accent)}
 
+
+.home-btn{
+  background:none;border:1px solid var(--border2);border-radius:7px;
+  color:var(--muted);font-size:12px;font-weight:600;padding:5px 11px;
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.home-btn:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:600px){.home-btn .home-label{display:none}}
+
 </style>
 
 <!-- Anti-flash: runs synchronously before first paint to set correct theme -->
@@ -1989,7 +1998,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <body>
 <h1 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">PDFKit — Free Online PDF Editor, No Uploads Required</h1>
 <header>
-  <div class="logo">
+  <div class="logo" onclick="nav('home')" style="cursor:pointer" title="Go to home">
     <div class="logo-mark">R</div>
     <div>
       <div class="logo-text">RightPDF<span style="color:var(--accent)">Kit</span></div>
@@ -1997,7 +2006,8 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
     </div>
   </div>
   <div class="active-tool-label" id="active-tool-label"></div>
-    <div class="header-right">
+  <div class="header-right">
+    <button class="home-btn" onclick="nav('home')" title="Home" aria-label="Home">⌂ Home</button>
     <span class="tool-badge">42 tools</span>
     <span class="pro-badge" id="pro-badge" style="display:none">⭐ PRO</span>
     <div class="pill"><div class="dot-g"></div><span class="pill-text">100% local — no uploads</span></div>
@@ -33295,6 +33305,16 @@ function showBlogHome() {
   document.getElementById('blog-article').style.display = 'none';
   window.scrollTo(0,0);
 }
+
+
+
+// Show/hide home button based on active panel
+const _origNav = nav;
+nav = function(t) {
+  _origNav(t);
+  const homeBtn = document.querySelector('.home-btn');
+  if (homeBtn) homeBtn.style.display = (t === 'home') ? 'none' : '';
+};
 
 </script>
 
