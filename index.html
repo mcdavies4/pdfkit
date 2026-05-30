@@ -2001,6 +2001,57 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     })(window, document, "clarity", "script", "wze6mleyvg");
 </script>
+
+<script>
+// ── Service Worker (offline support) ──
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => {
+        // Check for updates in background
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              // New version available — show refresh toast
+              toast('Update available — refresh to get the latest version');
+            }
+          });
+        });
+      })
+      .catch(() => {}); // fail silently
+  });
+}
+
+// ── PWA Install prompt ──
+let _installPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _installPrompt = e;
+  // Show install banner after 30s if not dismissed
+  setTimeout(showInstallBanner, 30000);
+});
+
+function showInstallBanner() {
+  if (!_installPrompt || localStorage.getItem('rpk-install-dismissed')) return;
+  const banner = document.getElementById('install-banner');
+  if (banner) banner.style.display = 'flex';
+}
+
+function installApp() {
+  if (!_installPrompt) return;
+  _installPrompt.prompt();
+  _installPrompt.userChoice.then(choice => {
+    _installPrompt = null;
+    document.getElementById('install-banner').style.display = 'none';
+  });
+}
+
+function dismissInstall() {
+  localStorage.setItem('rpk-install-dismissed', '1');
+  document.getElementById('install-banner').style.display = 'none';
+}
+</script>
 </head>
 <body>
 <h1 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">PDFKit — Free Online PDF Editor, No Uploads Required</h1>
@@ -34131,6 +34182,33 @@ window.runQrStamp = async function() {
       display:flex;align-items:center;justify-content:center;
     ">🔦</button>
   </div>
+</div>
+
+
+<!-- PWA Install Banner -->
+<div id="install-banner" style="
+  display:none;
+  position:fixed;
+  bottom:20px;left:50%;transform:translateX(-50%);
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px 18px;
+  display:none;
+  align-items:center;
+  gap:12px;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+  z-index:8000;
+  max-width:360px;
+  width:calc(100% - 32px);
+">
+  <div style="font-size:24px">📲</div>
+  <div style="flex:1">
+    <div style="font-size:13px;font-weight:700;color:var(--text)">Install RightPDFKit</div>
+    <div style="font-size:11px;color:var(--muted)">Works offline · No app store needed</div>
+  </div>
+  <button onclick="installApp()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">Install</button>
+  <button onclick="dismissInstall()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px">✕</button>
 </div>
 
 </body>

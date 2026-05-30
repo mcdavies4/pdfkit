@@ -1,34 +1,74 @@
-// RightPDFKit Service Worker v2
-// Cloudflare Pages handles caching — SW only handles offline for main app
-const CACHE_VERSION = 'rpk-v51-2026-05-29';
-const CACHE_NAME = CACHE_VERSION;
+// RightPDFKit Service Worker
+// Caches the app shell for full offline use
 
-self.addEventListener('install', event => {
-  event.waitUntil(self.skipWaiting());
-});
+const CACHE = 'rpk-v1';
+const ASSETS = [
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/favicon.ico',
+  '/og-image.png'
+];
 
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys()
-      .then(keys => Promise.all(keys.map(key => caches.delete(key))))
-      .then(() => self.clients.claim())
+// Install: cache all core assets
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE).then(cache => cache.addAll(ASSETS))
   );
+  self.skipWaiting();
 });
 
-self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
+// Activate: delete old caches
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+    )
+  );
+  self.clients.claim();
+});
 
-  // NEVER intercept blog pages — pass straight to network
-  if (url.pathname.startsWith('/blog')) return;
+// Fetch: cache-first for app shell, network-first for everything else
+self.addEventListener('fetch', e => {
+  const url = new URL(e.request.url);
 
-  // NEVER intercept API calls
-  if (url.pathname.startsWith('/api')) return;
+  // Only handle same-origin requests
+  if (url.origin !== location.origin) return;
 
-  // Only handle the main app page
-  if (url.pathname === '/' || url.pathname === '/index.html') {
-    event.respondWith(
-      fetch(event.request).catch(() => caches.match('/index.html'))
+  // Skip non-GET requests
+  if (e.request.method !== 'GET') return;
+
+  // Cache-first for core app assets
+  const isAppShell = ASSETS.some(a => url.pathname === a || url.pathname === '/');
+
+  if (isAppShell) {
+    e.respondWith(
+      caches.match(e.request).then(cached => {
+        if (cached) return cached;
+        return fetch(e.request).then(res => {
+          // Cache fresh copy
+          if (res.ok) {
+            const clone = res.clone();
+            caches.open(CACHE).then(c => c.put(e.request, clone));
+          }
+          return res;
+        });
+      })
+    );
+  } else {
+    // Network-first with cache fallback for other assets
+    e.respondWith(
+      fetch(e.request)
+        .then(res => {
+          if (res.ok) {
+            const clone = res.clone();
+            caches.open(CACHE).then(c => c.put(e.request, clone));
+          }
+          return res;
+        })
+        .catch(() => caches.match(e.request))
     );
   }
-  // Everything else goes to network directly
 });
