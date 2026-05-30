@@ -32425,10 +32425,41 @@ function rlLoad(f, slot) {
 }
 function aiCmdLoad(f) { _load(f, 'aiCmdFile', 'ai-file-fd', 'ai-run-btn'); }
 function i2pAddFiles(files) {
-  if (!files) { const fd = document.getElementById('i2p-fd'); if (fd) fd.innerHTML = S.i2pFiles.map(f => chip(f)).join(''); const btn = document.getElementById('i2p-btn'); if (btn) btn.disabled = S.i2pFiles.length === 0; return; }
-  for (const f of files) S.i2pFiles.push(f);
-  const fd = document.getElementById('i2p-fd'); if (fd) fd.innerHTML = S.i2pFiles.map(f => chip(f)).join('');
-  const btn = document.getElementById('i2p-btn'); if (btn) btn.disabled = S.i2pFiles.length === 0;
+  if (files && files.length > 0) {
+    Array.from(files).forEach(f => {
+      if (f.type.startsWith('image/')) S.i2pFiles.push(f);
+    });
+  }
+  // Update UI
+  const btn = document.getElementById('i2p-btn');
+  const count = document.getElementById('i2p-count');
+  const thumbs = document.getElementById('i2p-thumbs');
+  const listWrap = document.getElementById('i2p-list-wrap');
+  
+  if (btn) btn.disabled = S.i2pFiles.length === 0;
+  if (count) count.textContent = S.i2pFiles.length + ' image' + (S.i2pFiles.length !== 1 ? 's' : '') + ' ready';
+  if (listWrap) listWrap.style.display = S.i2pFiles.length > 0 ? 'block' : 'none';
+  
+  if (thumbs) {
+    thumbs.innerHTML = S.i2pFiles.map((f, idx) => {
+      const url = URL.createObjectURL(f);
+      return '<div style="position:relative;display:inline-block;margin:4px">' +
+        '<img src="' + url + '" style="width:72px;height:72px;object-fit:cover;border-radius:6px;border:1px solid var(--border)">' +
+        '<div style="font-size:10px;color:var(--muted);text-align:center;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + f.name + '</div>' +
+        '</div>';
+    }).join('');
+  }
+  
+  // Update dz text
+  const dzH3 = document.querySelector('#i2p-dz h3');
+  const dzP = document.querySelector('#i2p-dz p');
+  if (S.i2pFiles.length > 0) {
+    if (dzH3) dzH3.textContent = S.i2pFiles.length + ' image(s) added';
+    if (dzP) dzP.textContent = 'Click to add more or drag & drop';
+  } else {
+    if (dzH3) dzH3.textContent = 'Drop images here';
+    if (dzP) dzP.textContent = 'JPG, PNG, WebP, GIF — click to browse or drop multiple files';
+  }
 }
 function i2pClearAll() { S.i2pFiles = []; i2pAddFiles(null); }
 function w2pLoad(f) { _load(f, 'w2pFile', 'w2p-fd', 'w2p-btn'); }
