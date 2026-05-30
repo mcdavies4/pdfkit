@@ -57,4 +57,39 @@
   <!-- Info pages -->
   <url><loc>https://rightpdfkit.com/#compare</loc><lastmod>2026-05-24</lastmod><priority>0.8</priority></url>
   <url><loc>https://rightpdfkit.com/#privacy</loc><lastmod>2026-05-24</lastmod><priority>0.5</priority></url>
+  <url>
+    <loc>https://rightpdfkit.com/blog/how-to-merge-pdfs-free.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://rightpdfkit.com/blog/how-to-compress-pdf.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://rightpdfkit.com/blog/how-to-password-protect-pdf.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://rightpdfkit.com/blog/how-to-sign-pdf-online-free.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://rightpdfkit.com/blog/ocr-extract-text-scanned-pdf.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://rightpdfkit.com/blog/rightpdfkit-vs-ilovepdf-vs-smallpdf.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://rightpdfkit.com/blog/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>

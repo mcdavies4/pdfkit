@@ -1889,6 +1889,14 @@ html,body{overflow-x:hidden;max-width:100vw}
 }
 .dz:hover,.dz.drag{border-color:var(--accent);background:var(--accent-bg)}
 
+
+#panel-blog h2{font-size:17px;font-weight:700;color:var(--text);margin:20px 0 10px}
+#panel-blog p{color:var(--muted);line-height:1.8;margin-bottom:14px;font-size:14px}
+#panel-blog ul,#panel-blog ol{color:var(--muted);font-size:14px;margin-bottom:14px;padding-left:20px}
+#panel-blog li{margin-bottom:6px}
+#panel-blog strong{color:var(--text)}
+#panel-blog a{color:var(--accent)}
+
 </style>
 
 <!-- Anti-flash: runs synchronously before first paint to set correct theme -->
@@ -2048,6 +2056,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
   <div class="nav" data-t="word2pdf"><span class="nav-label" onclick="nav('word2pdf')"><span class="ni">📝</span>Word to PDF</span></div>
   <div class="nav" data-t="scan"><span class="nav-label" onclick="nav('scan')"><span class="ni">📷</span>Scan to PDF</span></div>
   <div class="nav" data-t="bulkextract"><span class="nav-label" onclick="nav('bulkextract')"><span class="ni">⊞</span>Bulk Extractor</span></div>
+  <div class="nav" data-t="blog" onclick="window.location='/blog/'"><span class="nav-label" onclick="window.location='/blog/'"><span class="ni">📝</span>Blog</span></div>
   <div class="nav" data-t="compare"><span class="nav-label" onclick="nav('compare')"><span class="ni">⚖</span>Why RightPDFKit?</span></div>
   <div class="nav" data-t="pricing"><span class="nav-label" onclick="nav('pricing')"><span class="ni">✦</span>Pricing</span></div>
   <div class="nav" data-t="privacy"><span class="nav-label" onclick="nav('privacy')"><span class="ni">🔒</span>Privacy Policy</span></div>
@@ -2941,6 +2950,13 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 </div>
 
 <!-- PRIVACY POLICY -->
+
+<!-- ══════════════════════════════════
+     BLOG PANEL
+══════════════════════════════════ -->
+
+
+
 <div class="panel" id="panel-privacy" style="max-width:680px">
   <div class="ph"><h2>🔒 Privacy Policy</h2><p>Last updated: May 2026</p></div>
   <div class="card" style="line-height:1.8;font-size:13px;color:var(--text)">
@@ -4096,12 +4112,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
     <p>Simple, honest pricing. All 42 tools work for free — no account, no uploads, ever.</p>
   </div>
 
-  <div id="pricing-nigeria-note" style="display:none;margin-bottom:16px;padding:12px 16px;background:rgba(46,204,113,.07);border:1px solid rgba(46,204,113,.2);border-radius:10px;font-size:12px;color:#2ECC71;line-height:1.6">
-    🇳🇬 <strong>Nigerian pricing active</strong> — ₦5,000/month<br>
-    <span style="opacity:.8;font-size:11px">Built by a Nigerian founder in London · Support in Yoruba, Igbo &amp; English</span>
-  </div>
-
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;max-width:700px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;max-width:700px">
 
     <!-- Free -->
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;display:flex;flex-direction:column">
@@ -4197,12 +4208,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
         <p style="font-size:12px;color:var(--muted);margin:10px 0 0;line-height:1.7">Yes, cancel anytime from your Stripe billing portal. No questions asked. You keep Pro access until the end of your billing period.</p>
       </details>
 
-      <details style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px">
-        <summary style="font-size:13px;font-weight:600;color:var(--text);cursor:pointer;list-style:none">Is there a Nigerian / local pricing option?</summary>
-        <p style="font-size:12px;color:var(--muted);margin:10px 0 0;line-height:1.7">Yes — if you're in Nigeria, pricing is ₦5,000/month · equivalent to £4.99. Built by a Nigerian founder in London. Support available in Yoruba, Igbo and English.</p>
-      </details>
-
-    </div>
+      </div>
   </div>
 
 </div>
@@ -31895,66 +31901,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // PURCHASING POWER PARITY PRICING
 // ==========================================
 const STRIPE_GLOBAL = 'https://rightpdfkit.lemonsqueezy.com/checkout/buy/c61ebda4-808a-4021-a82a-0bde8ab0fae9';
-const STRIPE_NIGERIA = 'https://rightpdfkit.lemonsqueezy.com/checkout/buy/c61ebda4-808a-4021-a82a-0bde8ab0fae9';
 
-let USER_COUNTRY = null;
-let IS_NIGERIA   = false;
-
-async function detectCountry() {
-  try {
-    const res = await fetch('https://ipapi.co/json/', {signal: AbortSignal.timeout(3000)});
-    const data = await res.json();
-    USER_COUNTRY = data.country_code;
-    IS_NIGERIA   = USER_COUNTRY === 'NG';
-  } catch(e) { IS_NIGERIA = false; }
-  if (IS_NIGERIA) applyNigerianPricing();
-}
-
-function applyNigerianPricing() {
-  // Update modal price
-  const priceEl = document.querySelector('.upgrade-price');
-  if (priceEl) priceEl.innerHTML = '₦5,000<em>/month</em>';
-
-  // Update modal CTA
-  const ctaEl = document.querySelector('.upgrade-cta');
-  if (ctaEl) ctaEl.textContent = 'Upgrade to Pro — ₦5,000/month';
-
-  // Update pricing page
-  const pagePriceEl = document.getElementById('pricing-pro-price');
-  if (pagePriceEl) pagePriceEl.textContent = '₦5,000';
-  const pageCtaBtn = document.getElementById('pricing-cta-btn');
-  if (pageCtaBtn) pageCtaBtn.textContent = 'Upgrade to Pro — ₦5,000/month';
-  const nigeriaNote = document.getElementById('pricing-nigeria-note');
-  if (nigeriaNote) nigeriaNote.style.display = 'block';
-
-  // Update pricing page period text
-  const periodEl = document.querySelector('#panel-pricing .upgrade-period');
-  if (periodEl) periodEl.textContent = 'per month — less than a phone top-up';
-
-  // Add Nigeria badge to modal with context
-  const modal = document.querySelector('.upgrade-modal');
-  if (modal && !document.getElementById('ppp-badge')) {
-    const badge = document.createElement('div');
-    badge.id = 'ppp-badge';
-    badge.style.cssText = 'font-size:11px;color:#2ECC71;background:rgba(46,204,113,.07);border:1px solid rgba(46,204,113,.2);border-radius:10px;padding:6px 12px;margin-bottom:12px;text-align:center;line-height:1.5';
-    badge.innerHTML = '🇳🇬 <strong>Nigerian pricing</strong> — ₦5,000/month<br><span style="font-size:10px;opacity:.8">Less than a phone top-up · Built by a Nigerian founder in London</span>';
-    modal.insertBefore(badge, modal.firstChild);
-  }
-
-  // Add Nigeria Pro bonuses to upgrade modal features
-  const featsList = document.querySelector('.upgrade-features');
-  if (featsList && !document.getElementById('ng-bonus')) {
-    const bonus = document.createElement('div');
-    bonus.id = 'ng-bonus';
-    bonus.className = 'upgrade-feat';
-    bonus.style.cssText = 'border-top:1px solid rgba(46,204,113,.15);margin-top:6px;padding-top:6px';
-    bonus.innerHTML = '<span class="upgrade-feat-icon" style="color:#2ECC71">🇳🇬</span> <span style="color:#2ECC71">Support in Yoruba, Igbo & English · Early access to new tools</span>';
-    featsList.appendChild(bonus);
-  }
-
-  // Show persistent nudge bar for Nigerian users
-  showNigerianNudge();
-}
 
 function showNigerianNudge() {
   if (isPro()) return;
@@ -31997,7 +31944,7 @@ function goToPro() {
   window.open('https://rightpdfkit.lemonsqueezy.com/checkout/buy/c61ebda4-808a-4021-a82a-0bde8ab0fae9', '_blank');
 }
 
-detectCountry();
+
 
 // Handle return from Stripe
 (function() {
@@ -33047,6 +32994,308 @@ function showLsStatus(type, msg) {
   el.textContent = msg;
 }
 
+
+
+// ══════════════════════════════════════
+// BLOG ARTICLES
+// ══════════════════════════════════════
+
+const BLOG_ARTICLES = {
+
+  a1: {
+    title: 'How to Merge PDFs for Free — No Upload Needed',
+    category: 'Guide', readTime: '5 min read',
+    content: `
+      <h1 style="font-size:24px;font-weight:800;color:var(--text);line-height:1.3;margin-bottom:8px">How to Merge PDFs for Free — No Upload Needed</h1>
+      <div style="font-size:12px;color:var(--hint);margin-bottom:24px">5 min read · PDF Basics · Updated May 2026</div>
+
+      <p>Need to combine multiple PDF files into one? You don't need to install anything, create an account, or upload your files to a server. RightPDFKit merges PDFs entirely in your browser — your documents never leave your device.</p>
+
+      <h2>Step-by-step: How to merge PDFs</h2>
+      <ol>
+        <li><strong>Open the Merge PDF tool</strong> — click "Merge PDFs" from the home screen or sidebar.</li>
+        <li><strong>Add your files</strong> — drag and drop your PDFs onto the upload zone, or click to browse. Add as many as you need.</li>
+        <li><strong>Reorder if needed</strong> — drag the file cards to set the order you want.</li>
+        <li><strong>Click Merge PDFs & Download</strong> — your combined PDF downloads instantly.</li>
+      </ol>
+
+      <h2>Why merge PDFs in the browser?</h2>
+      <p>Most online PDF tools upload your files to their servers. That means your contracts, invoices, medical records or personal documents are temporarily stored on someone else's computer. RightPDFKit uses WebAssembly to process everything locally — zero uploads, zero risk.</p>
+
+      <h2>Common uses for merging PDFs</h2>
+      <ul>
+        <li>Combining chapters of a report or thesis</li>
+        <li>Joining multiple invoices into one document for accounting</li>
+        <li>Merging bank statements for a mortgage application</li>
+        <li>Combining scanned pages from different sources</li>
+      </ul>
+
+      <h2>Tips</h2>
+      <ul>
+        <li>You can add 20+ PDFs in one go — no limit</li>
+        <li>Reorder files by dragging before merging</li>
+        <li>Works offline once the page has loaded</li>
+      </ul>
+
+      <div style="background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:12px;padding:16px;margin-top:24px">
+        <strong>Ready to merge?</strong> <a href="#" onclick="nav('merge');return false" style="color:var(--accent)">Open the Merge PDF tool →</a>
+      </div>
+    `
+  },
+
+  a2: {
+    title: 'How to Compress a PDF Without Losing Quality',
+    category: 'Guide', readTime: '4 min read',
+    content: `
+      <h1 style="font-size:24px;font-weight:800;color:var(--text);line-height:1.3;margin-bottom:8px">How to Compress a PDF Without Losing Quality</h1>
+      <div style="font-size:12px;color:var(--hint);margin-bottom:24px">4 min read · PDF Tips · Updated May 2026</div>
+
+      <p>Large PDFs are a headache — email attachments get rejected, WhatsApp won't send them, and uploading takes forever. Here's how to shrink any PDF quickly, privately, and for free.</p>
+
+      <h2>How to compress a PDF</h2>
+      <ol>
+        <li>Open the <strong>Compress PDF</strong> tool from the home screen.</li>
+        <li>Upload your PDF by dragging it onto the zone or clicking to browse.</li>
+        <li>Choose a compression level — Standard works for most documents; Aggressive for maximum reduction.</li>
+        <li>Click <strong>Compress & Download</strong>.</li>
+      </ol>
+
+      <h2>How much smaller will it get?</h2>
+      <p>Results depend on what's in the PDF. Text-heavy documents (reports, contracts) typically compress by 20–40%. PDFs with lots of images can be reduced by 60–80%.</p>
+
+      <h2>Will quality suffer?</h2>
+      <p>Standard compression reduces file size with no visible quality loss — it strips unnecessary metadata and optimises internal structure. Aggressive mode may slightly reduce image resolution, which is usually fine for screen viewing but not ideal for print.</p>
+
+      <h2>When to compress</h2>
+      <ul>
+        <li>Sending via email (attachments over 10MB are often blocked)</li>
+        <li>Sharing on WhatsApp or Telegram</li>
+        <li>Uploading to government portals with file size limits</li>
+        <li>Saving storage space on your phone or laptop</li>
+      </ul>
+
+      <div style="background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:12px;padding:16px;margin-top:24px">
+        <strong>Try it now:</strong> <a href="#" onclick="nav('compress');return false" style="color:var(--accent)">Open Compress PDF →</a>
+      </div>
+    `
+  },
+
+  a3: {
+    title: 'How to Password Protect a PDF — Completely Free',
+    category: 'Security', readTime: '3 min read',
+    content: `
+      <h1 style="font-size:24px;font-weight:800;color:var(--text);line-height:1.3;margin-bottom:8px">How to Password Protect a PDF — Completely Free</h1>
+      <div style="font-size:12px;color:var(--hint);margin-bottom:24px">3 min read · Security · Updated May 2026</div>
+
+      <p>Whether it's a contract, a payslip, or a personal document — adding a password to a PDF takes 30 seconds and ensures only the right people can open it.</p>
+
+      <h2>How to add a password to a PDF</h2>
+      <ol>
+        <li>Open <strong>Protect PDF</strong> from the home screen.</li>
+        <li>Upload your PDF.</li>
+        <li>Enter a password — use something strong (mix of letters, numbers, symbols).</li>
+        <li>Click <strong>Protect & Download</strong>.</li>
+      </ol>
+
+      <p>The protected PDF uses 128-bit AES encryption — the same standard used by banks. Anyone trying to open it without the password will be blocked.</p>
+
+      <h2>Is my file safe to encrypt here?</h2>
+      <p>Yes — RightPDFKit encrypts your PDF entirely in your browser using JavaScript. Your file is never uploaded anywhere. The encryption happens on your device and the protected PDF downloads directly to you.</p>
+
+      <h2>How to remove a password</h2>
+      <p>Use the <strong>Unlock PDF</strong> tool — upload the protected PDF, enter the correct password, and download an unprotected version.</p>
+
+      <div style="background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:12px;padding:16px;margin-top:24px">
+        <strong>Protect your PDF now:</strong> <a href="#" onclick="nav('protect');return false" style="color:var(--accent)">Open Protect PDF →</a>
+      </div>
+    `
+  },
+
+  a4: {
+    title: 'How to Sign a PDF Online Free — No Account Required',
+    category: 'Productivity', readTime: '4 min read',
+    content: `
+      <h1 style="font-size:24px;font-weight:800;color:var(--text);line-height:1.3;margin-bottom:8px">How to Sign a PDF Online Free — No Account Required</h1>
+      <div style="font-size:12px;color:var(--hint);margin-bottom:24px">4 min read · Productivity · Updated May 2026</div>
+
+      <p>Printing, signing and scanning a PDF is slow and wasteful. Here's how to sign any PDF digitally in seconds — on desktop or mobile, no account needed.</p>
+
+      <h2>How to sign a PDF</h2>
+      <ol>
+        <li>Open the <strong>Sign PDF</strong> tool.</li>
+        <li>Upload your PDF.</li>
+        <li>Choose your signature method: <strong>Draw</strong> (use your mouse or finger), <strong>Type</strong> (pick a font style), or <strong>Upload</strong> (use an existing signature image).</li>
+        <li>Choose where to place the signature on the page.</li>
+        <li>Click <strong>Apply & Download</strong>.</li>
+      </ol>
+
+      <h2>Draw vs Type vs Upload — which should I use?</h2>
+      <ul>
+        <li><strong>Draw</strong> — most personal, looks like a real handwritten signature. Best on touchscreen or with a mouse.</li>
+        <li><strong>Type</strong> — clean and fast. Choose from several signature-style fonts.</li>
+        <li><strong>Upload</strong> — use a scanned copy of your handwritten signature for the most authentic result.</li>
+      </ul>
+
+      <h2>Is a digital signature legally valid?</h2>
+      <p>In most countries, a digital signature on a PDF is legally binding for everyday documents (contracts, consent forms, agreements). For high-stakes legal documents requiring witnessed signatures, check your local regulations. Use <strong>eSign + Certificate</strong> for a more formal certified signature with timestamp.</p>
+
+      <div style="background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:12px;padding:16px;margin-top:24px">
+        <strong>Sign a PDF now:</strong> <a href="#" onclick="nav('sign');return false" style="color:var(--accent)">Open Sign PDF →</a>
+      </div>
+    `
+  },
+
+  a5: {
+    title: 'How to Extract Text from a Scanned PDF Using OCR',
+    category: 'OCR & Scanning', readTime: '5 min read',
+    content: `
+      <h1 style="font-size:24px;font-weight:800;color:var(--text);line-height:1.3;margin-bottom:8px">How to Extract Text from a Scanned PDF Using OCR</h1>
+      <div style="font-size:12px;color:var(--hint);margin-bottom:24px">5 min read · OCR & Scanning · Updated May 2026</div>
+
+      <p>Scanned PDFs are essentially images — you can't select text, search within them, or copy content. OCR (Optical Character Recognition) converts them into real, searchable text documents.</p>
+
+      <h2>What is OCR?</h2>
+      <p>OCR technology analyses an image and identifies characters, words and layout to produce machine-readable text. RightPDFKit uses Tesseract.js — the leading open-source OCR engine — running entirely in your browser.</p>
+
+      <h2>How to OCR a PDF</h2>
+      <ol>
+        <li>Open the <strong>OCR</strong> tool.</li>
+        <li>Upload your scanned PDF or image-based PDF.</li>
+        <li>Choose which pages to process (all pages, or specific ones).</li>
+        <li>Click <strong>Run OCR</strong> — the text appears in the panel below.</li>
+        <li>Copy the text or download it as a .txt file.</li>
+      </ol>
+
+      <h2>Tips for better OCR results</h2>
+      <ul>
+        <li><strong>Scan quality matters</strong> — 300 DPI or higher gives the best results</li>
+        <li><strong>Straight pages</strong> — straighten skewed scans using Rotate before OCR</li>
+        <li><strong>Clear contrast</strong> — black text on white background works best</li>
+        <li><strong>Handwriting</strong> — OCR works best on printed text, not handwriting</li>
+      </ul>
+
+      <h2>Common OCR use cases</h2>
+      <ul>
+        <li>Extracting text from scanned contracts or legal documents</li>
+        <li>Making old scanned books searchable</li>
+        <li>Pulling data from scanned receipts or invoices</li>
+        <li>Converting paper forms to digital text</li>
+      </ul>
+
+      <div style="background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:12px;padding:16px;margin-top:24px">
+        <strong>Try OCR now:</strong> <a href="#" onclick="nav('ocr');return false" style="color:var(--accent)">Open OCR Tool →</a>
+      </div>
+    `
+  },
+
+  a6: {
+    title: 'RightPDFKit vs iLovePDF vs Smallpdf — Which is Best in 2026?',
+    category: 'Comparison', readTime: '6 min read',
+    content: `
+      <h1 style="font-size:24px;font-weight:800;color:var(--text);line-height:1.3;margin-bottom:8px">RightPDFKit vs iLovePDF vs Smallpdf — Which is Best in 2026?</h1>
+      <div style="font-size:12px;color:var(--hint);margin-bottom:24px">6 min read · Comparison · Updated May 2026</div>
+
+      <p>There are dozens of free PDF tools online. We compared the three most popular options across privacy, speed, features and pricing.</p>
+
+      <div style="overflow-x:auto;margin:20px 0">
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead>
+            <tr style="border-bottom:2px solid var(--border)">
+              <th style="text-align:left;padding:10px;color:var(--muted)">Feature</th>
+              <th style="text-align:center;padding:10px;color:var(--accent);font-weight:800">RightPDFKit</th>
+              <th style="text-align:center;padding:10px;color:var(--muted)">iLovePDF</th>
+              <th style="text-align:center;padding:10px;color:var(--muted)">Smallpdf</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:10px;color:var(--text)">Files uploaded to server</td>
+              <td style="text-align:center;padding:10px;color:#2ECC71;font-weight:700">Never</td>
+              <td style="text-align:center;padding:10px;color:#e74c3c">Yes</td>
+              <td style="text-align:center;padding:10px;color:#e74c3c">Yes</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:10px;color:var(--text)">Account required</td>
+              <td style="text-align:center;padding:10px;color:#2ECC71;font-weight:700">No</td>
+              <td style="text-align:center;padding:10px;color:#e67e22">Optional</td>
+              <td style="text-align:center;padding:10px;color:#e74c3c">Yes (for most)</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:10px;color:var(--text)">Works offline</td>
+              <td style="text-align:center;padding:10px;color:#2ECC71;font-weight:700">Yes</td>
+              <td style="text-align:center;padding:10px;color:#e74c3c">No</td>
+              <td style="text-align:center;padding:10px;color:#e74c3c">No</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:10px;color:var(--text)">Number of free tools</td>
+              <td style="text-align:center;padding:10px;color:#2ECC71;font-weight:700">42</td>
+              <td style="text-align:center;padding:10px;color:var(--muted)">25+</td>
+              <td style="text-align:center;padding:10px;color:var(--muted)">21+</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:10px;color:var(--text)">Free file size limit</td>
+              <td style="text-align:center;padding:10px;color:#2ECC71;font-weight:700">20MB</td>
+              <td style="text-align:center;padding:10px;color:var(--muted)">~10MB</td>
+              <td style="text-align:center;padding:10px;color:#e74c3c">~2 tasks/day</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:10px;color:var(--text)">Pro price</td>
+              <td style="text-align:center;padding:10px;color:#2ECC71;font-weight:700">£4.99/mo</td>
+              <td style="text-align:center;padding:10px;color:var(--muted)">£6.61/mo</td>
+              <td style="text-align:center;padding:10px;color:var(--muted)">£9/mo</td>
+            </tr>
+            <tr>
+              <td style="padding:10px;color:var(--text)">OCR (scanned PDFs)</td>
+              <td style="text-align:center;padding:10px;color:#2ECC71;font-weight:700">✓ Free</td>
+              <td style="text-align:center;padding:10px;color:#e67e22">Pro only</td>
+              <td style="text-align:center;padding:10px;color:#e67e22">Pro only</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Privacy: the biggest difference</h2>
+      <p>iLovePDF and Smallpdf both upload your files to their servers to process them. They delete files after a few hours, but your documents are still transmitted over the internet and processed on someone else's infrastructure. For sensitive documents — payslips, contracts, medical records — that's a real risk.</p>
+      <p>RightPDFKit processes everything in your browser using WebAssembly. Your files never leave your device. Ever.</p>
+
+      <h2>Speed</h2>
+      <p>Because files don't need to upload, RightPDFKit is typically faster for operations like merge, split and compress — especially on larger files or slower connections.</p>
+
+      <h2>Verdict</h2>
+      <p>If privacy matters to you, RightPDFKit is the clear choice. If you need advanced features like converting to/from Office formats with full fidelity, iLovePDF's server-side processing may handle edge cases better. For most everyday tasks — merge, compress, sign, OCR, protect — RightPDFKit does it all, faster, privately, and for free.</p>
+
+      <div style="background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:12px;padding:16px;margin-top:24px">
+        <strong>Try all 42 tools free:</strong> <a href="#" onclick="nav('home');return false" style="color:var(--accent)">Go to RightPDFKit →</a>
+      </div>
+    `
+  }
+
+};
+
+function showArticle(id) {
+  const article = BLOG_ARTICLES[id];
+  if (!article) return;
+  document.getElementById('blog-home').style.display = 'none';
+  document.getElementById('blog-article').style.display = 'block';
+  document.getElementById('blog-article-content').innerHTML = `
+    <div style="font-size:12px;color:var(--hint);margin-bottom:16px">
+      <span style="color:var(--accent);font-weight:700">${article.category}</span>
+      · ${article.readTime}
+    </div>
+    <div style="line-height:1.8;color:var(--text);font-size:14px">
+      ${article.content}
+    </div>
+  `;
+  window.scrollTo(0,0);
+  document.getElementById('main-content')?.scrollTo(0,0);
+}
+
+function showBlogHome() {
+  document.getElementById('blog-home').style.display = 'block';
+  document.getElementById('blog-article').style.display = 'none';
+  window.scrollTo(0,0);
+}
+
 </script>
 
 
@@ -33062,7 +33311,7 @@ function showLsStatus(type, msg) {
     <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center">
       <a href="#" onclick="nav('privacy');return false;" style="font-size:11px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Privacy Policy</a>
       <a href="#" onclick="nav('pricing');return false;" style="font-size:11px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Pricing</a>
-      <a href="/blog" style="font-size:11px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Blog</a>
+      <a href="/blog/" style="font-size:11px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Blog</a>
       <a href="#" onclick="nav('compare');return false;" style="font-size:11px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Why Us?</a>
       <a href="https://twitter.com/RightPDFKit" target="_blank" rel="noopener" style="font-size:11px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">𝕏 Twitter</a>
       <a href="mailto:support@odogwu.online" style="font-size:11px;color:var(--muted);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Contact</a>
@@ -33072,5 +33321,31 @@ function showLsStatus(type, msg) {
     </div>
   </div>
 </footer>
+
+<!-- Suggest a Tool Modal -->
+<div id="feedback-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;align-items:center;justify-content:center">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:420px;width:90%;max-height:90vh;overflow-y:auto">
+    <h3 style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:8px">💡 Suggest a Tool</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px">What PDF tool would you like us to add? We read every suggestion.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px" id="feedback-chips">
+      <span class="feedback-chip" onclick="this.classList.toggle('sel')" style="border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;cursor:pointer;color:var(--muted)">PDF to Excel</span>
+      <span class="feedback-chip" onclick="this.classList.toggle('sel')" style="border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;cursor:pointer;color:var(--muted)">PDF to PowerPoint</span>
+      <span class="feedback-chip" onclick="this.classList.toggle('sel')" style="border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;cursor:pointer;color:var(--muted)">Batch compress</span>
+      <span class="feedback-chip" onclick="this.classList.toggle('sel')" style="border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;cursor:pointer;color:var(--muted)">Dark/light annotations</span>
+      <span class="feedback-chip" onclick="this.classList.toggle('sel')" style="border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;cursor:pointer;color:var(--muted)">Table extraction</span>
+    </div>
+    <textarea id="feedback-text" placeholder="Or describe what you need…" style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--text);font-family:inherit;resize:vertical;min-height:80px;outline:none;box-sizing:border-box"></textarea>
+    <div id="feedback-success" style="display:none;color:#2ECC71;font-size:13px;margin-top:10px;font-weight:600">✅ Thanks! We'll review your suggestion.</div>
+    <div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end">
+      <button class="btn btn-g" onclick="closeFeedback()" style="padding:9px 18px;font-size:13px">Cancel</button>
+      <button class="btn btn-p" onclick="submitFeedback()" style="padding:9px 18px;font-size:13px">Send Suggestion</button>
+    </div>
+  </div>
+</div>
+<style>
+.feedback-chip.sel{background:var(--accent-bg);border-color:var(--accent)!important;color:var(--accent)!important}
+#feedback-modal.show{display:flex!important}
+</style>
+
 </body>
 </html>
