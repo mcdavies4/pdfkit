@@ -30335,36 +30335,145 @@ async function applyPDFPassword(pdfBytes, userPwd, ownerPwd) {
 
 async function runUnlock(){
   if(!S.ulkFile) return;
-  const pw = document.getElementById('ulk-pw').value || '';
-  const btn = document.getElementById('ulk-btn'); btn.disabled = true;
+  const pw  = document.getElementById('ulk-pw').value || '';
+  const btn = document.getElementById('ulk-btn'); if(btn) btn.disabled = true;
+  const errEl = document.getElementById('ulk-err'); if(errEl) errEl.textContent = '';
   const fin = animProg('ulk-pf','ulk-pp','ulk-pw');
   try {
-    const b = await readBytes(S.ulkFile);
+    const bytes = await readBytes(S.ulkFile);
+    const pdfStr = new TextDecoder('latin1').decode(bytes);
+
+    // Not encrypted — return as-is
+    if(!pdfStr.includes('/Encrypt')) {
+      fin(() => {
+        dlBytes(bytes, S.ulkFile.name.replace('.pdf','') + '_unlocked.pdf');
+        showRes('ulk-rb', 'PDF has no password — downloaded as-is');
+        toast('Done!');
+      });
+      return;
+    }
+
+    // Try pdf-lib with password first (handles standard encrypted PDFs)
     let doc;
-    // Try loading with password
     try {
-      doc = await PDFDocument.load(b, { password: pw });
+      doc = await PDFDocument.load(bytes, { password: pw });
     } catch(e1) {
-      // Try with ignoreEncryption as fallback
+      // pdf-lib failed — try our own RC4 decrypt
       try {
-        doc = await PDFDocument.load(b, { ignoreEncryption: true });
+        const result = await _unlockRC4(bytes, pw);
+        if(result.wrongPassword) throw new Error('Incorrect password — please check and try again');
+        const e2=document.getElementById('ulk-err');if(e2) e2.textContent='';
+        fin(() => {
+          dlBytes(result.bytes, S.ulkFile.name.replace('.pdf','') + '_unlocked.pdf');
+          showRes('ulk-rb', 'Password removed (' + fmt(result.bytes.length) + ')');
+          toast('PDF unlocked! ✓');
+          document.getElementById('ulk-pw').value = '';
+        });
+        return;
       } catch(e2) {
-        throw new Error(pw ? 'Incorrect password or corrupted PDF' : 'PDF is password-protected — enter the password above');
+        throw new Error(e2.message.includes('Incorrect') ? e2.message : 'Incorrect password or unsupported encryption');
       }
     }
+
     const ob = await doc.save({ useObjectStreams: false });
     fin(() => {
       dlBytes(ob, S.ulkFile.name.replace('.pdf','') + '_unlocked.pdf');
       showRes('ulk-rb', 'Password removed (' + fmt(ob.length) + ')');
-      toast('PDF unlocked!');
+      toast('PDF unlocked! ✓');
       document.getElementById('ulk-pw').value = '';
     });
   } catch(e) {
     fin(()=>{});
-    showErr('ulk-err', e.message);
-    btn.disabled = false;
+    showErr('ulk-err', '⚠ ' + e.message);
+    if(btn) btn.disabled = false;
   }
 }
+
+// Decrypt PDFs protected by our applyPDFPassword (RC4-40)
+async function _unlockRC4(pdfBytes, password) {
+  const PAD = new Uint8Array([40,191,78,94,78,117,138,65,100,0,78,86,255,250,1,8,46,46,0,182,208,104,62,128,47,12,169,254,100,83,105,122]);
+  const KEY_LEN = 5;
+
+  function padPw(pw) {
+    const b = new TextEncoder().encode((pw||'').substring(0,32));
+    const out = new Uint8Array(32);
+    for(let i=0;i<32;i++) out[i] = i < b.length ? b[i] : PAD[i-b.length];
+    return out;
+  }
+
+  function rc4(key, data) {
+    const s=Array.from({length:256},(_,i)=>i);
+    for(let i=0,j=0;i<256;i++){j=(j+s[i]+key[i%key.length])&255;[s[i],s[j]]=[s[j],s[i]];}
+    const out=new Uint8Array(data.length);
+    for(let i=0,j=0,n=0;n<data.length;n++){i=(i+1)&255;j=(j+s[i])&255;[s[i],s[j]]=[s[j],s[i]];out[n]=data[n]^s[(s[i]+s[j])&255];}
+    return out;
+  }
+
+  function md5(data) {
+    const d=data instanceof Uint8Array?data:new Uint8Array(data);
+    const len=d.length,extra=((64-(len+9)%64)%64)+9,buf=new Uint8Array(len+extra);
+    buf.set(d);buf[len]=0x80;new DataView(buf.buffer).setUint32(buf.length-8,(len*8)>>>0,true);
+    let [a,b,cc,dd]=[1732584193,-271733879,-1732584194,271733878];
+    const T=[0xd76aa478,0xe8c7b756,0x242070db,0xc1bdceee,0xf57c0faf,0x4787c62a,0xa8304613,0xfd469501,0x698098d8,0x8b44f7af,0xffff5bb1,0x895cd7be,0x6b901122,0xfd987193,0xa679438e,0x49b40821,0xf61e2562,0xc040b340,0x265e5a51,0xe9b6c7aa,0xd62f105d,0x02441453,0xd8a1e681,0xe7d3fbc8,0x21e1cde6,0xc33707d6,0xf4d50d87,0x455a14ed,0xa9e3e905,0xfcefa3f8,0x676f02d9,0x8d2a4c8a,0xfffa3942,0x8771f681,0x6d9d6122,0xfde5380c,0xa4beea44,0x4bdecfa9,0xf6bb4b60,0xbebfbc70,0x289b7ec6,0xeaa127fa,0xd4ef3085,0x04881d05,0xd9d4d039,0xe6db99e5,0x1fa27cf8,0xc4ac5665,0xf4292244,0x432aff97,0xab9423a7,0xfc93a039,0x655b59c3,0x8f0ccc92,0xffeff47d,0x85845dd1,0x6fa87e4f,0xfe2ce6e0,0xa3014314,0x4e0811a1,0xf7537e82,0xbd3af235,0x2ad7d2bb,0xeb86d391];
+    const add=(x,y)=>(x+y)|0,rol=(n,c)=>(n<<c)|(n>>>(32-c));
+    for(let i=0;i<buf.length;i+=64){
+      const M=[];for(let j=0;j<16;j++)M[j]=new DataView(buf.buffer,i+j*4,4).getUint32(0,true);
+      let [A,B,C,D]=[a,b,cc,dd];
+      for(let j=0;j<64;j++){let f,g;if(j<16){f=(B&C)|((~B)&D);g=j;}else if(j<32){f=(B&D)|(C&(~D));g=(5*j+1)%16;}else if(j<48){f=B^C^D;g=(3*j+5)%16;}else{f=C^(B|(~D));g=(7*j)%16;}const tmp=D;D=C;C=B;B=add(B,rol(add(add(A,f),add(M[g],T[j])),[7,12,17,22,5,9,14,20,4,11,16,23,6,10,15,21][Math.floor(j/16)*4+(j%4)]));A=tmp;}
+      a=add(a,A);b=add(b,B);cc=add(cc,C);dd=add(dd,D);
+    }
+    const out=new Uint8Array(16);[a,b,cc,dd].forEach((v,i)=>new DataView(out.buffer).setUint32(i*4,v,true));return out;
+  }
+
+  const pdfStr = new TextDecoder('latin1').decode(pdfBytes);
+
+  // Parse O, U, P, fileId from Encrypt dict
+  const oMatch = pdfStr.match(/\/O\s*<([0-9A-Fa-f]{64})>/);
+  const uMatch = pdfStr.match(/\/U\s*<([0-9A-Fa-f]{64})>/);
+  const pMatch = pdfStr.match(/\/P\s*(-?\d+)/);
+  const idMatch = pdfStr.match(/\/ID\s*\[<([0-9A-Fa-f]{32})>/);
+  if(!oMatch || !uMatch || !pMatch) return { wrongPassword: true };
+
+  const O = new Uint8Array(oMatch[1].match(/../g).map(h=>parseInt(h,16)));
+  const storedU = uMatch[1].substring(0,10).toUpperCase();
+  const P = parseInt(pMatch[1]);
+  const fileId = idMatch ? new Uint8Array(idMatch[1].match(/../g).map(h=>parseInt(h,16))) : new Uint8Array(16);
+
+  // Compute encryption key
+  const userPadded = padPw(password);
+  const ki = new Uint8Array(32+32+4+8);
+  ki.set(userPadded,0); ki.set(O,32);
+  ki[64]=P&255;ki[65]=(P>>8)&255;ki[66]=(P>>16)&255;ki[67]=(P>>24)&255;
+  ki.set(fileId.slice(0,8),68);
+  const encKey = md5(ki).slice(0, KEY_LEN);
+
+  // Verify password: compute U and compare first 5 bytes
+  const computedU = Array.from(rc4(encKey,PAD).slice(0,5)).map(b=>b.toString(16).padStart(2,'0')).join('').toUpperCase();
+  if(computedU !== storedU) return { wrongPassword: true };
+
+  // Decrypt all streams — RC4 is symmetric (decrypt = encrypt)
+  const PER = Math.min(16, KEY_LEN+5);
+  const result = pdfStr.replace(/(\d+) (\d+) obj([\s\S]*?stream\r?\n)([\s\S]*?)(\r?\nendstream)/g,
+    (match, objN, genN, pre, content, post) => {
+      const on=parseInt(objN),gn=parseInt(genN);
+      const kd=new Uint8Array(KEY_LEN+5);
+      kd.set(encKey);kd[KEY_LEN]=on&255;kd[KEY_LEN+1]=(on>>8)&255;kd[KEY_LEN+2]=(on>>16)&255;kd[KEY_LEN+3]=gn&255;kd[KEY_LEN+4]=(gn>>8)&255;
+      const objKey=md5(kd).slice(0,PER);
+      const enc=Uint8Array.from(content,ch=>ch.charCodeAt(0)&255);
+      const dec=rc4(objKey,enc);
+      return objN+' '+genN+' obj'+pre+Array.from(dec,b=>String.fromCharCode(b)).join('')+post;
+    }
+  );
+
+  // Remove Encrypt object and trailer references
+  const clean = result
+    .replace(/9999 0 obj[\s\S]*?endobj\s*/g,'')
+    .replace(/\/Encrypt\s+\d+ \d+ R\s*/g,'')
+    .replace(/\/ID\s*\[<[0-9A-Fa-f]+><[0-9A-Fa-f]+>\]\s*/g,'');
+
+  return { bytes: new TextEncoder().encode(clean) };
+}
+
 
 // OCR
 function ocrLoad(f){if(!f)return;S.ocrFile=f;document.getElementById('ocr-fd').innerHTML=chip(f,null);document.getElementById('ocr-opts').style.display='block';document.getElementById('ocr-btn').disabled=false;}
