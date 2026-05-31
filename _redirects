@@ -1,8 +1,7 @@
-# www → non-www
+# www → non-www (canonical domain)
 https://www.rightpdfkit.com/* https://rightpdfkit.com/:splat 301
 
-# Blog clean URLs (no .html)
-/blog/jpg-to-pdf /blog/jpg-to-pdf.html 200
+# Clean blog URLs (no .html extension)
 /blog/how-to-merge-pdfs-free /blog/how-to-merge-pdfs-free.html 200
 /blog/how-to-compress-pdf /blog/how-to-compress-pdf.html 200
 /blog/how-to-password-protect-pdf /blog/how-to-password-protect-pdf.html 200
@@ -10,10 +9,11 @@ https://www.rightpdfkit.com/* https://rightpdfkit.com/:splat 301
 /blog/ocr-extract-text-scanned-pdf /blog/ocr-extract-text-scanned-pdf.html 200
 /blog/rightpdfkit-vs-ilovepdf-vs-smallpdf /blog/rightpdfkit-vs-ilovepdf-vs-smallpdf.html 200
 /blog/how-to-edit-pdf-free /blog/how-to-edit-pdf-free.html 200
+/blog/jpg-to-pdf /blog/jpg-to-pdf.html 200
 /blog/ /blog/index.html 200
 /blog /blog/index.html 200
 
-# Old URLs → redirect to nearest match
+# Old URLs — redirect to nearest match
 /blog/free-pdf-editor-nigeria /blog/how-to-edit-pdf-free.html 301
 /blog/compress-pdf-without-uploading /blog/how-to-compress-pdf.html 301
 /blog/ilovepdf-alternative /blog/rightpdfkit-vs-ilovepdf-vs-smallpdf.html 301

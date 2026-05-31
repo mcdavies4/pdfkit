@@ -1994,13 +1994,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
     }
   })();
 </script>
-<script type="text/javascript">
-    (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "wze6mleyvg");
-</script>
+<!-- Clarity loaded conditionally via cookie consent -->
 
 <script>
 // ── Service Worker (offline support) ──
@@ -34060,6 +34054,77 @@ window.runQrStamp = async function() {
   return _qr0 ? _qr0() : null;
 };
 
+
+
+// ── Cookie Consent ──
+function initCookieConsent() {
+  const consent = localStorage.getItem('rpk-cookie-consent');
+  if (!consent) {
+    // First visit — show banner after 1 second
+    setTimeout(() => {
+      const banner = document.getElementById('cookie-banner');
+      if (banner) banner.classList.add('show');
+    }, 1000);
+  } else if (consent === 'true') {
+    // Previously accepted — load Clarity
+    loadClarity();
+  }
+}
+
+function saveCookiePrefs(analytics) {
+  localStorage.setItem('rpk-cookie-consent', analytics ? 'true' : 'false');
+  document.getElementById('cookie-banner')?.classList.remove('show');
+  document.getElementById('cookie-modal')?.classList.remove('show');
+  if (analytics) loadClarity();
+}
+
+function openCookieSettings() {
+  const consent = localStorage.getItem('rpk-cookie-consent');
+  const toggle = document.getElementById('cookie-analytics-toggle');
+  const track = document.getElementById('cookie-toggle-track');
+  const thumb = document.getElementById('cookie-toggle-thumb');
+  if (toggle) {
+    toggle.checked = consent === 'true';
+    updateCookieToggle();
+  }
+  document.getElementById('cookie-banner')?.classList.remove('show');
+  document.getElementById('cookie-modal')?.classList.add('show');
+}
+
+function closeCookieModal() {
+  document.getElementById('cookie-modal')?.classList.remove('show');
+}
+
+function updateCookieToggle() {
+  const on = document.getElementById('cookie-analytics-toggle')?.checked;
+  const track = document.getElementById('cookie-toggle-track');
+  const thumb = document.getElementById('cookie-toggle-thumb');
+  if (track) track.style.background = on ? 'var(--accent)' : '#333';
+  if (thumb) thumb.style.left = on ? '19px' : '3px';
+}
+
+function saveModalPrefs() {
+  const analytics = document.getElementById('cookie-analytics-toggle')?.checked;
+  saveCookiePrefs(analytics);
+}
+
+function resetCookieConsent() {
+  localStorage.removeItem('rpk-cookie-consent');
+  openCookieSettings();
+}
+
+function loadClarity() {
+  // Only load if not already loaded
+  if (window.clarity) return;
+  const s = document.createElement('script');
+  s.async = true;
+  s.src = 'https://www.clarity.ms/tag/wze6mleyvg';
+  document.head.appendChild(s);
+}
+
+// Init on load
+document.addEventListener('DOMContentLoaded', initCookieConsent);
+
 </script>
 
 
@@ -34210,6 +34275,77 @@ window.runQrStamp = async function() {
   <button onclick="installApp()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">Install</button>
   <button onclick="dismissInstall()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px">✕</button>
 </div>
+
+
+<!-- ── Cookie Consent Banner ── -->
+<div id="cookie-banner" style="
+  display:none;
+  position:fixed;
+  bottom:0;left:0;right:0;
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  padding:16px 20px;
+  z-index:8500;
+  display:none;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  box-shadow:0 -4px 24px rgba(0,0,0,.3);
+">
+  <div style="flex:1;min-width:220px">
+    <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">🍪 Cookie Settings</div>
+    <div style="font-size:12px;color:var(--muted);line-height:1.5">We use Microsoft Clarity for analytics (session recordings, heatmaps). Your PDF files are never uploaded — all processing stays in your browser.</div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0">
+    <button onclick="saveCookiePrefs(false)" style="background:none;border:1px solid var(--border2);border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;font-family:inherit">Decline</button>
+    <button onclick="openCookieSettings()" style="background:none;border:1px solid var(--border2);border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;font-family:inherit">Manage</button>
+    <button onclick="saveCookiePrefs(true)" style="background:var(--accent);border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit">Accept All</button>
+  </div>
+</div>
+
+<!-- ── Cookie Settings Modal ── -->
+<div id="cookie-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9000;align-items:center;justify-content:center">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;max-width:440px;width:90%;max-height:90vh;overflow-y:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <div style="font-size:16px;font-weight:800;color:var(--text)">Cookie Settings</div>
+      <button onclick="closeCookieModal()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px;line-height:1">✕</button>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.6">
+      RightPDFKit never uploads your files. Cookies are only used for analytics to understand how the site is used.
+    </div>
+
+    <!-- Essential -->
+    <div style="border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <div style="font-size:13px;font-weight:700;color:var(--text)">Essential</div>
+        <div style="font-size:11px;color:var(--accent);font-weight:600;background:rgba(232,69,10,.1);border:1px solid rgba(232,69,10,.2);border-radius:10px;padding:2px 8px">Always on</div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.5">Required for the app to work — stores your preferences (theme, dismissed items). No tracking.</div>
+    </div>
+
+    <!-- Analytics -->
+    <div style="border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <div style="font-size:13px;font-weight:700;color:var(--text)">Analytics (Microsoft Clarity)</div>
+        <label style="position:relative;display:inline-block;width:40px;height:22px;cursor:pointer">
+          <input type="checkbox" id="cookie-analytics-toggle" style="opacity:0;width:0;height:0" onchange="updateCookieToggle()">
+          <span id="cookie-toggle-track" style="position:absolute;inset:0;background:#333;border-radius:11px;transition:.2s"></span>
+          <span id="cookie-toggle-thumb" style="position:absolute;height:16px;width:16px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s"></span>
+        </label>
+      </div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.5">Session recordings and heatmaps to improve the product. No personal data, no ad targeting. Loaded only with your consent.</div>
+    </div>
+
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button onclick="closeCookieModal()" style="background:none;border:1px solid var(--border2);border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;font-family:inherit">Cancel</button>
+      <button onclick="saveModalPrefs()" style="background:var(--accent);border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit">Save preferences</button>
+    </div>
+  </div>
+</div>
+<style>
+#cookie-banner.show { display:flex !important; }
+#cookie-modal.show { display:flex !important; }
+</style>
 
 </body>
 </html>
