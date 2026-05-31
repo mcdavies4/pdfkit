@@ -1,23 +1,9 @@
 # www → non-www
 https://www.rightpdfkit.com/* https://rightpdfkit.com/:splat 301
 
-# Blog clean URLs (no .html)
-/blog/jpg-to-pdf /blog/jpg-to-pdf.html 200
-/blog/how-to-merge-pdfs-free /blog/how-to-merge-pdfs-free.html 200
-/blog/how-to-compress-pdf /blog/how-to-compress-pdf.html 200
-/blog/how-to-password-protect-pdf /blog/how-to-password-protect-pdf.html 200
-/blog/how-to-sign-pdf-online-free /blog/how-to-sign-pdf-online-free.html 200
-/blog/ocr-extract-text-scanned-pdf /blog/ocr-extract-text-scanned-pdf.html 200
-/blog/rightpdfkit-vs-ilovepdf-vs-smallpdf /blog/rightpdfkit-vs-ilovepdf-vs-smallpdf.html 200
-/blog/how-to-edit-pdf-free /blog/how-to-edit-pdf-free.html 200
-/blog/ /blog/index.html 200
-/blog /blog/index.html 200
-
-/blog/how-to-remove-password-from-pdf /blog/how-to-remove-password-from-pdf.html 200
-
 # Old URLs → redirect to nearest match
-/blog/free-pdf-editor-nigeria /blog/how-to-edit-pdf-free.html 301
-/blog/compress-pdf-without-uploading /blog/how-to-compress-pdf.html 301
-/blog/ilovepdf-alternative /blog/rightpdfkit-vs-ilovepdf-vs-smallpdf.html 301
-/blog/fill-pdf-forms-online-nigeria /blog/index.html 301
-/blog/sign-pdf-free-without-adobe /blog/how-to-sign-pdf-online-free.html 301
+/blog/free-pdf-editor-nigeria /blog/how-to-edit-pdf-free 301
+/blog/compress-pdf-without-uploading /blog/how-to-compress-pdf 301
+/blog/ilovepdf-alternative /blog/rightpdfkit-vs-ilovepdf-vs-smallpdf 301
+/blog/fill-pdf-forms-online-nigeria /blog/ 301
+/blog/sign-pdf-free-without-adobe /blog/how-to-sign-pdf-online-free 301
