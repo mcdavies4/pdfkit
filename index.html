@@ -4247,109 +4247,124 @@ function dismissInstall() {
 <div class="panel" id="panel-pricing">
   <div class="ph">
     <h2>✦ Pricing</h2>
-    <p>Simple, honest pricing. All 42 tools work for free — no account, no uploads, ever.</p>
+    <p>Simple, honest pricing. 25 tools free forever. Upgrade to Pro for 15 advanced tools. No account required. Files never leave your device.</p>
   </div>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;max-width:700px">
+  <!-- Plans grid -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px;max-width:720px">
 
     <!-- Free -->
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;display:flex;flex-direction:column">
-      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px">Free</div>
-      <div style="font-size:40px;font-weight:800;color:var(--text);letter-spacing:-.04em;line-height:1;margin-bottom:4px">$0</div>
-      <div style="font-size:12px;color:var(--hint);margin-bottom:20px">Forever. No credit card.</div>
-      <div style="display:flex;flex-direction:column;gap:8px;flex:1;margin-bottom:20px">
-        <div style="font-size:12px;color:var(--muted);display:flex;gap:7px"><span style="color:#2ECC71;flex-shrink:0">✓</span>All 42 PDF tools</div>
-        <div style="font-size:12px;color:var(--muted);display:flex;gap:7px"><span style="color:#2ECC71;flex-shrink:0">✓</span>100% local — files never leave your device</div>
-        <div style="font-size:12px;color:var(--muted);display:flex;gap:7px"><span style="color:#2ECC71;flex-shrink:0">✓</span>Works offline</div>
-        <div style="font-size:12px;color:var(--muted);display:flex;gap:7px"><span style="color:#2ECC71;flex-shrink:0">✓</span>No account needed</div>
-        <div style="font-size:12px;color:var(--muted);display:flex;gap:7px"><span style="color:#2ECC71;flex-shrink:0">✓</span>No ads</div>
-        <div style="height:1px;background:var(--border);margin:4px 0"></div>
-        <div style="font-size:11px;color:var(--hint)">Files up to 20MB per tool</div>
+      <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Free</div>
+      <div style="font-size:42px;font-weight:800;color:var(--text);letter-spacing:-.04em;line-height:1;margin-bottom:4px">£0</div>
+      <div style="font-size:12px;color:var(--hint);margin-bottom:18px">Forever. No credit card.</div>
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">25 tools included</div>
+      <div style="display:flex;flex-direction:column;gap:7px;flex:1;margin-bottom:20px">
+        <div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#2ECC71;flex-shrink:0;margin-top:1px">✓</span>Merge, Split, Compress</div>
+<div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#2ECC71;flex-shrink:0;margin-top:1px">✓</span>Rotate, Delete, Reorder Pages</div>
+<div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#2ECC71;flex-shrink:0;margin-top:1px">✓</span>Extract & Delete Pages</div>
+<div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#2ECC71;flex-shrink:0;margin-top:1px">✓</span>Sign PDF (draw, type or upload)</div>
+<div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#2ECC71;flex-shrink:0;margin-top:1px">✓</span>Protect & Unlock PDF</div>
+<div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#2ECC71;flex-shrink:0;margin-top:1px">✓</span>Annotate, Redact, Watermark</div>
+<div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#2ECC71;flex-shrink:0;margin-top:1px">✓</span>Image to PDF, Scan to PDF</div>
+<div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#2ECC71;flex-shrink:0;margin-top:1px">✓</span>PDF to Images, Text & CSV</div>
+<div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#2ECC71;flex-shrink:0;margin-top:1px">✓</span>Word to PDF, Blank Page</div>
+<div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#2ECC71;flex-shrink:0;margin-top:1px">✓</span>Add Image, Page Numbers</div>
+<div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#2ECC71;flex-shrink:0;margin-top:1px">✓</span>Password Strength Checker</div>
+<div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#2ECC71;flex-shrink:0;margin-top:1px">✓</span>Preview PDF</div>
       </div>
-      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;font-size:12px;color:var(--muted);font-weight:600">Your current plan</div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;font-size:12px;color:var(--muted);font-weight:600" id="free-plan-btn">Your current plan</div>
     </div>
 
     <!-- Pro -->
-    <div style="background:rgba(232,69,10,.05);border:1.5px solid rgba(232,69,10,.3);border-radius:16px;padding:24px;display:flex;flex-direction:column;position:relative;overflow:hidden">
-      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent)"></div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.08em">Pro</div>
-        <div style="font-size:9px;background:var(--accent);color:#fff;border-radius:4px;padding:2px 7px;font-weight:700">BEST VALUE</div>
+    <div style="background:rgba(232,69,10,.05);border:2px solid #E8450A;border-radius:16px;padding:24px;display:flex;flex-direction:column;position:relative">
+      <div style="position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:#E8450A;color:#fff;font-size:10px;font-weight:700;border-radius:20px;padding:3px 12px;letter-spacing:.06em;white-space:nowrap">MOST VALUE</div>
+      <div style="font-size:10px;font-weight:700;color:#E8450A;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Pro</div>
+      <div style="display:flex;align-items:baseline;gap:4px;margin-bottom:4px">
+        <span style="font-size:42px;font-weight:800;color:var(--text);letter-spacing:-.04em;line-height:1">£4.99</span>
+        <span style="font-size:13px;color:var(--muted)">/month</span>
       </div>
-      <div style="font-size:40px;font-weight:800;color:var(--text);letter-spacing:-.04em;line-height:1;margin-bottom:4px" id="pricing-pro-price">£4.99</div>
-      <div style="font-size:12px;color:var(--hint);margin-bottom:20px">per month · cancel anytime</div>
-      <div style="display:flex;flex-direction:column;gap:8px;flex:1;margin-bottom:20px">
-        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px">Everything in Free, plus</div>
-        <div style="font-size:12px;color:var(--text);display:flex;gap:7px;font-weight:500"><span style="color:var(--accent);flex-shrink:0">✦</span>Files up to 100MB</div>
-        <div style="font-size:12px;color:var(--text);display:flex;gap:7px;font-weight:500"><span style="color:var(--accent);flex-shrink:0">✦</span>Priority processing</div>
-        <div style="font-size:12px;color:var(--text);display:flex;gap:7px;font-weight:500"><span style="color:var(--accent);flex-shrink:0">✦</span>Batch operations on all tools</div>
-        <div style="font-size:12px;color:var(--text);display:flex;gap:7px;font-weight:500"><span style="color:var(--accent);flex-shrink:0">✦</span>No usage limits — unlimited runs per day</div>
-        <div style="font-size:12px;color:var(--text);display:flex;gap:7px;font-weight:500"><span style="color:var(--accent);flex-shrink:0">✦</span>Early access to new tools</div>
-        <div style="font-size:12px;color:var(--text);display:flex;gap:7px;font-weight:500"><span style="color:var(--accent);flex-shrink:0">✦</span>Priority support</div>
+      <div style="font-size:12px;color:var(--hint);margin-bottom:18px">Cancel anytime. No questions asked.</div>
+      <div style="font-size:11px;font-weight:700;color:#E8450A;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Everything in Free, plus:</div>
+      <div style="display:flex;flex-direction:column;gap:7px;flex:1;margin-bottom:20px">
+        <div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#E8450A;flex-shrink:0;margin-top:1px">✓</span>OCR — Extract text from scanned PDFs</div>
+<div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#E8450A;flex-shrink:0;margin-top:1px">✓</span>PDF to Word (.docx)</div>
+<div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#E8450A;flex-shrink:0;margin-top:1px">✓</span>Bulk Extractor (20 PDFs → spreadsheet)</div>
+<div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#E8450A;flex-shrink:0;margin-top:1px">✓</span>eSign + Certificate (SHA-256)</div>
+<div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#E8450A;flex-shrink:0;margin-top:1px">✓</span>Bates Numbering</div>
+<div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#E8450A;flex-shrink:0;margin-top:1px">✓</span>Redline / Compare PDFs</div>
+<div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#E8450A;flex-shrink:0;margin-top:1px">✓</span>QR Stamp</div>
+<div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#E8450A;flex-shrink:0;margin-top:1px">✓</span>Metadata Editor</div>
+<div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#E8450A;flex-shrink:0;margin-top:1px">✓</span>Crop & Resize PDF</div>
+<div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#E8450A;flex-shrink:0;margin-top:1px">✓</span>Flatten PDF</div>
+<div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#E8450A;flex-shrink:0;margin-top:1px">✓</span>Grayscale PDF</div>
+<div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#E8450A;flex-shrink:0;margin-top:1px">✓</span>N-up Print</div>
+<div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#E8450A;flex-shrink:0;margin-top:1px">✓</span>Duplicate Page</div>
+<div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#E8450A;flex-shrink:0;margin-top:1px">✓</span>Fill PDF Form</div>
+<div style="font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start"><span style="color:#E8450A;flex-shrink:0;margin-top:1px">✓</span>Header / Footer</div>
       </div>
-      <button onclick="window.open('https://rightpdfkit.lemonsqueezy.com/checkout/buy/433605e7-0db3-4b59-bf2f-36cd01df669f','_blank')" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;width:100%">Upgrade to Pro ✦</button>
+      <a href="https://rightpdfkit.lemonsqueezy.com/checkout/buy/433605e7-0db3-4b59-bf2f-36cd01df669f" target="_blank"
+        style="display:block;background:#E8450A;color:#fff;border-radius:8px;padding:12px;text-align:center;font-size:13px;font-weight:700;text-decoration:none;margin-bottom:8px" id="pro-plan-btn">
+        Upgrade to Pro — £4.99/month
+      </a>
+      <div style="text-align:center;font-size:11px;color:var(--hint)">Secure checkout via Lemon Squeezy</div>
     </div>
   </div>
 
-
-  <!-- ── License Key Activation ── -->
-  <div style="max-width:700px;margin-bottom:32px">
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-        <span style="font-size:20px">🔑</span>
-        <div style="font-size:15px;font-weight:700;color:var(--text)">Already have a license key?</div>
-      </div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6">
-        After purchase you'll receive a key by email. Paste it below to activate Pro instantly — no account needed.
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <input id="ls-key-input" type="text" 
-          placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
-          style="flex:1;min-width:220px;background:var(--surface2);border:1.5px solid var(--border2);
-                 border-radius:8px;padding:10px 14px;font-size:13px;color:var(--text);
-                 font-family:monospace;outline:none;box-sizing:border-box"
-          oninput="this.style.borderColor='var(--border2)'"
-          onkeydown="if(event.key==='Enter') activateLicenseKey()">
-        <button onclick="activateLicenseKey()" id="ls-activate-btn"
-          style="background:var(--accent);color:#fff;border:none;border-radius:8px;
-                 padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;
-                 white-space:nowrap;transition:opacity .2s">
-          Activate ✦
-        </button>
-      </div>
-      <div id="ls-status" style="margin-top:10px;font-size:12px;display:none"></div>
-      <div style="margin-top:12px;font-size:11px;color:var(--hint)">
-        Don't have a key? 
-        <a href="#" onclick="document.getElementById('ls-buy-btn')?.click();return false" 
-           style="color:var(--accent);text-decoration:none">Buy Pro →</a>
-      </div>
+  <!-- Activate license -->
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;max-width:720px;margin-bottom:24px">
+    <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px">Already have a Pro key?</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Enter your license key from the Lemon Squeezy email to unlock Pro tools instantly.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <input type="text" id="lic-input" placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+        style="flex:1;min-width:200px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--text);font-family:monospace;outline:none">
+      <button onclick="activateLicense()" 
+        style="background:#E8450A;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">
+        Activate
+      </button>
+    </div>
+    <div id="lic-msg" style="font-size:12px;margin-top:8px;color:var(--muted)"></div>
+    <div id="pro-status-bar" style="display:none;margin-top:10px;background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.3);border-radius:8px;padding:10px 12px;font-size:12px;color:#2ECC71;font-weight:600">
+      ✓ Pro active — all 15 advanced tools unlocked
     </div>
   </div>
 
   <!-- FAQ -->
-  <div style="max-width:700px">
-    <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px">Common questions</div>
-    <div style="display:flex;flex-direction:column;gap:10px">
+  <div style="max-width:720px">
+    <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:14px">Common questions</div>
 
-      <details style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px">
-        <summary style="font-size:13px;font-weight:600;color:var(--text);cursor:pointer;list-style:none">Do my files ever leave my device?</summary>
-        <p style="font-size:12px;color:var(--muted);margin:10px 0 0;line-height:1.7">Never. All 42 tools run entirely in your browser using WebAssembly and JavaScript. No file is ever sent to a server. This is true for both Free and Pro.</p>
-      </details>
+    <details style="border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px">
+      <summary style="font-size:13px;font-weight:600;color:var(--text);cursor:pointer;list-style:none">What happens to my files?</summary>
+      <p style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6">Nothing leaves your device — ever. All 42 tools run entirely in your browser using WebAssembly. There is no server. There is no upload. Open DevTools Network tab while using the app and you'll see zero file data transmitted.</p>
+    </details>
 
-      <details style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px">
-        <summary style="font-size:13px;font-weight:600;color:var(--text);cursor:pointer;list-style:none">What's the difference between Free and Pro?</summary>
-        <p style="font-size:12px;color:var(--muted);margin:10px 0 0;line-height:1.7">Free gives you full access to all 42 tools with a 20MB file size limit and daily usage caps on some tools. Pro removes all limits — 100MB files, unlimited runs, batch operations and priority support.</p>
-      </details>
+    <details style="border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px">
+      <summary style="font-size:13px;font-weight:600;color:var(--text);cursor:pointer;list-style:none">How do I get my license key?</summary>
+      <p style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6">After checkout via Lemon Squeezy you'll receive a receipt email containing your license key. Paste it in the "Already have a Pro key?" box above and click Activate.</p>
+    </details>
 
-      <details style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px">
-        <summary style="font-size:13px;font-weight:600;color:var(--text);cursor:pointer;list-style:none">Can I cancel anytime?</summary>
-        <p style="font-size:12px;color:var(--muted);margin:10px 0 0;line-height:1.7">Yes, cancel anytime from your Stripe billing portal. No questions asked. You keep Pro access until the end of your billing period.</p>
-      </details>
+    <details style="border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px">
+      <summary style="font-size:13px;font-weight:600;color:var(--text);cursor:pointer;list-style:none">Can I cancel anytime?</summary>
+      <p style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6">Yes. Cancel from your Lemon Squeezy customer portal at any time. No questions, no friction. Your Pro access continues until the end of the billing period.</p>
+    </details>
+
+    <details style="border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px">
+      <summary style="font-size:13px;font-weight:600;color:var(--text);cursor:pointer;list-style:none">Does Pro work offline?</summary>
+      <p style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6">Yes. All tools — including Pro tools — work offline once the page has loaded. Your Pro status is stored locally in your browser.</p>
+    </details>
+
+    <details style="border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px">
+      <summary style="font-size:13px;font-weight:600;color:var(--text);cursor:pointer;list-style:none">Do I need an account?</summary>
+      <p style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6">No. Not for free tools, and not for Pro. Your license key is your identity. Paste it once, it's stored in your browser. No signup, no password, no email required.</p>
+    </details>
+
+    <details style="border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px">
+      <summary style="font-size:13px;font-weight:600;color:var(--text);cursor:pointer;list-style:none">What's the difference vs iLovePDF / Smallpdf?</summary>
+      <p style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6">They upload your files to their servers. RightPDFKit doesn't — your files stay on your device. They charge £9–25/month for the same tools. RightPDFKit Pro is £4.99/month. They show ads on the free tier. RightPDFKit never shows ads.</p>
+    </details>
 
       </div>
   </div>
-
-</div>
 
 </main>
 </div>
