@@ -29769,7 +29769,7 @@ function nav(t){
   document.documentElement.scrollTop=0;
   document.body.scrollTop=0;
   // Init canvases
-  if(t==='sign'){ setTimeout(()=>{ if(typeof setSignMethod==='function') setSignMethod('draw'); initSignCanvas(); }, 150); }
+  if(t==='sign'){ setTimeout(()=>{ setSignMethod('draw'); }, 200); }
   if(t==='esign'){ setTimeout(()=>{ if(typeof setEsSigMethod==='function') setEsSigMethod('draw'); initEsCanvas(); }, 150); }
   if(t==='qrstamp') setTimeout(qrPreview,50);
   // Analytics
@@ -32457,10 +32457,20 @@ function initSignCanvas() {
   canvas.addEventListener('touchend', stop);
 }
 
-function setSignMethod(method) {
-  document.querySelectorAll('.sign-method-btn').forEach(b => b.classList.toggle('active', b.dataset.method === method));
-  document.querySelectorAll('.sign-method-panel').forEach(p => p.style.display = p.dataset.method === method ? 'block' : 'none');
-  if (method === 'draw') setTimeout(initSignCanvas, 50);
+function setSignMethod(method, btn) {
+  // Update active button
+  document.querySelectorAll('#panel-sign .seg').forEach(b => b.classList.toggle('on', b.getAttribute('data-m') === method || (btn && b === btn)));
+  if(btn) { document.querySelectorAll('#panel-sign .seg').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); }
+  
+  // Show/hide wrap elements
+  const wraps = {draw:'sign-draw-wrap', type:'sign-type-wrap', upload:'sign-upload-wrap'};
+  Object.entries(wraps).forEach(([m, id]) => {
+    const el = document.getElementById(id);
+    if(el) el.style.display = m === method ? 'block' : 'none';
+  });
+  
+  S.signMethod = method;
+  if(method === 'draw') setTimeout(initSignCanvas, 80);
 }
 
 function setSignPos(pos) {
