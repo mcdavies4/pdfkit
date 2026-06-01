@@ -27,7 +27,7 @@ export async function onRequestPost({ request, env }) {
     }
 
     // ── Validate with Lemon Squeezy API ──
-    const LS_PRODUCT_ID = '1100029';
+    const LS_PRODUCT_ID = '1105626';
     const lsRes = await fetch('https://api.lemonsqueezy.com/v1/licenses/validate', {
       method: 'POST',
       headers: {

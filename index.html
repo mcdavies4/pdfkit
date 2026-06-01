@@ -322,7 +322,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .info-table td:first-child{color:var(--muted);width:40%}
 .info-table td:last-child{color:var(--text);word-break:break-all}
 .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:10px}
-.tool-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 14px;cursor:pointer;transition:all .2s}
+.tool-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 14px;cursor:pointer;transition:all .2sposition:relative;}
 .tool-card:hover{border-color:var(--accent-border);background:var(--accent-bg)}
 .tool-card .tc-icon{font-size:22px;margin-bottom:8px}
 .tool-card .tc-name{font-size:13px;font-weight:600;margin-bottom:3px}
@@ -2081,43 +2081,43 @@ function dismissInstall() {
   <div class="nav" data-t="extract"><span class="nav-label" onclick="nav('extract')"><span class="ni">⬡</span>Extract Pages</span></div>
   <div class="nav" data-t="delete"><span class="nav-label" onclick="nav('delete')"><span class="ni">✕</span>Delete Pages</span></div>
   <div class="nav" data-t="rotate"><span class="nav-label" onclick="nav('rotate')"><span class="ni">↻</span>Rotate Pages</span></div>
-  <div class="nav" data-t="crop"><span class="nav-label" onclick="nav('crop')"><span class="ni">⊡</span>Crop Pages</span></div>
+  <div class="nav" data-t="crop"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span><span class="nav-label" onclick="nav('crop')"><span class="ni">⊡</span>Crop Pages</span></div>
   <div class="nav" data-t="addimage"><span class="nav-label" onclick="nav('addimage')"><span class="ni">🖼</span>Add Image</span></div>
   <div class="nav" data-t="annotate"><span class="nav-label" onclick="nav('annotate')"><span class="ni">✏️</span>Annotate</span></div>
   <div class="nav" data-t="redact"><span class="nav-label" onclick="nav('redact')"><span class="ni">⬛</span>Redact</span></div>
-  <div class="nav" data-t="headfoot"><span class="nav-label" onclick="nav('headfoot')"><span class="ni">≡</span>Header / Footer</span></div>
+  <div class="nav" data-t="headfoot"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span><span class="nav-label" onclick="nav('headfoot')"><span class="ni">≡</span>Header / Footer</span></div>
   <div class="nav" data-t="watermark"><span class="nav-label" onclick="nav('watermark')"><span class="ni">◈</span>Watermark</span></div>
   <div class="nav" data-t="pagenums"><span class="nav-label" onclick="nav('pagenums')"><span class="ni">#</span>Page Numbers</span></div>
   <div class="nav" data-t="compress"><span class="nav-label" onclick="nav('compress')"><span class="ni">◎</span>Compress</span></div>
   <div class="nav" data-t="protect"><span class="nav-label" onclick="nav('protect')"><span class="ni">🔒</span>Protect PDF</span></div>
   <div class="nav" data-t="unlock"><span class="nav-label" onclick="nav('unlock')"><span class="ni">🔓</span>Unlock PDF</span></div>
-  <div class="nav" data-t="ocr"><span class="nav-label" onclick="nav('ocr')"><span class="ni">🔍</span>OCR</span></div>
+  <div class="nav" data-t="ocr"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span><span class="nav-label" onclick="nav('ocr')"><span class="ni">🔍</span>OCR</span></div>
   <div class="nav" data-t="pdftext"><span class="nav-label" onclick="nav('pdftext')"><span class="ni">📝</span>PDF to Text</span></div>
-  <div class="nav" data-t="pdftoword"><span class="nav-label" onclick="nav('pdftoword')"><span class="ni">📄</span>PDF to Word</span></div>
+  <div class="nav" data-t="pdftoword"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span><span class="nav-label" onclick="nav('pdftoword')"><span class="ni">📄</span>PDF to Word</span></div>
   <div class="nav" data-t="images"><span class="nav-label" onclick="nav('images')"><span class="ni">📷</span>PDF to Images</span></div>
   <div class="nav" data-t="pdftocsv"><span class="nav-label" onclick="nav('pdftocsv')"><span class="ni">⊟</span>PDF to CSV</span></div>
   <div class="nav" data-t="preview"><span class="nav-label" onclick="nav('preview')"><span class="ni">◻</span>Preview</span></div>
   <div class="nav" data-t="info"><span class="nav-label" onclick="nav('info')"><span class="ni">◉</span>PDF Info</span></div>
   <div class="nav" data-t="blankpage"><span class="nav-label" onclick="nav('blankpage')"><span class="ni">□</span>Blank Page</span></div>
-  <div class="nav" data-t="resize"><span class="nav-label" onclick="nav('resize')"><span class="ni">⊟</span>Resize</span></div>
-  <div class="nav" data-t="flatten"><span class="nav-label" onclick="nav('flatten')"><span class="ni">⊠</span>Flatten</span></div>
-  <div class="nav" data-t="grayscale"><span class="nav-label" onclick="nav('grayscale')"><span class="ni">◑</span>Grayscale</span></div>
-  <div class="nav" data-t="metadata"><span class="nav-label" onclick="nav('metadata')"><span class="ni">🏷</span>Metadata</span></div>
+  <div class="nav" data-t="resize"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span><span class="nav-label" onclick="nav('resize')"><span class="ni">⊟</span>Resize</span></div>
+  <div class="nav" data-t="flatten"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span><span class="nav-label" onclick="nav('flatten')"><span class="ni">⊠</span>Flatten</span></div>
+  <div class="nav" data-t="grayscale"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span><span class="nav-label" onclick="nav('grayscale')"><span class="ni">◑</span>Grayscale</span></div>
+  <div class="nav" data-t="metadata"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span><span class="nav-label" onclick="nav('metadata')"><span class="ni">🏷</span>Metadata</span></div>
   <div class="nav" data-t="sign"><span class="nav-label" onclick="nav('sign')"><span class="ni">✍️</span>Sign PDF</span></div>
-  <div class="nav" data-t="esign"><span class="nav-label" onclick="nav('esign')"><span class="ni">✦</span>eSign + Certificate</span></div>
-  <div class="nav" data-t="dupepage"><span class="nav-label" onclick="nav('dupepage')"><span class="ni">⧉</span>Duplicate Page</span></div>
-  <div class="nav" data-t="nup"><span class="nav-label" onclick="nav('nup')"><span class="ni">⊞</span>N-up</span></div>
+  <div class="nav" data-t="esign"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span><span class="nav-label" onclick="nav('esign')"><span class="ni">✦</span>eSign + Certificate</span></div>
+  <div class="nav" data-t="dupepage"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span><span class="nav-label" onclick="nav('dupepage')"><span class="ni">⧉</span>Duplicate Page</span></div>
+  <div class="nav" data-t="nup"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span><span class="nav-label" onclick="nav('nup')"><span class="ni">⊞</span>N-up</span></div>
   <div class="nav" data-t="repair"><span class="nav-label" onclick="nav('repair')"><span class="ni">⚕</span>Repair PDF</span></div>
-  <div class="nav" data-t="compare-pdf"><span class="nav-label" onclick="nav('compare-pdf')"><span class="ni">⊟</span>Compare PDFs</span></div>
-  <div class="nav" data-t="fillform"><span class="nav-label" onclick="nav('fillform')"><span class="ni">✎</span>Fill Form</span></div>
-  <div class="nav" data-t="qrstamp"><span class="nav-label" onclick="nav('qrstamp')"><span class="ni">⊟</span>QR Stamp</span></div>
-  <div class="nav" data-t="bates"><span class="nav-label" onclick="nav('bates')"><span class="ni">⊞</span>Bates Numbers</span></div>
-  <div class="nav" data-t="redline"><span class="nav-label" onclick="nav('redline')"><span class="ni">✎</span>Redline</span></div>
+  <div class="nav" data-t="compare-pdf"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span><span class="nav-label" onclick="nav('compare-pdf')"><span class="ni">⊟</span>Compare PDFs</span></div>
+  <div class="nav" data-t="fillform"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span><span class="nav-label" onclick="nav('fillform')"><span class="ni">✎</span>Fill Form</span></div>
+  <div class="nav" data-t="qrstamp"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span><span class="nav-label" onclick="nav('qrstamp')"><span class="ni">⊟</span>QR Stamp</span></div>
+  <div class="nav" data-t="bates"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span><span class="nav-label" onclick="nav('bates')"><span class="ni">⊞</span>Bates Numbers</span></div>
+  <div class="nav" data-t="redline"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span><span class="nav-label" onclick="nav('redline')"><span class="ni">✎</span>Redline</span></div>
   <div class="nav" data-t="pwcheck"><span class="nav-label" onclick="nav('pwcheck')"><span class="ni">⊛</span>Password Check</span></div>
   <div class="nav" data-t="img2pdf"><span class="nav-label" onclick="nav('img2pdf')"><span class="ni">🖼</span>Image to PDF</span></div>
   <div class="nav" data-t="word2pdf"><span class="nav-label" onclick="nav('word2pdf')"><span class="ni">📝</span>Word to PDF</span></div>
   <div class="nav" data-t="scan"><span class="nav-label" onclick="nav('scan')"><span class="ni">📷</span>Scan to PDF</span></div>
-  <div class="nav" data-t="bulkextract"><span class="nav-label" onclick="nav('bulkextract')"><span class="ni">⊞</span>Bulk Extractor</span></div>
+  <div class="nav" data-t="bulkextract"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span><span class="nav-label" onclick="nav('bulkextract')"><span class="ni">⊞</span>Bulk Extractor</span></div>
   <div class="nav" data-t="blog" onclick="window.location='/blog/'"><span class="nav-label" onclick="window.location='/blog/'"><span class="ni">📝</span>Blog</span></div>
   <div class="nav" data-t="compare"><span class="nav-label" onclick="nav('compare')"><span class="ni">⚖</span>Why RightPDFKit?</span></div>
   <div class="nav" data-t="pricing"><span class="nav-label" onclick="nav('pricing')"><span class="ni">✦</span>Pricing</span></div>
@@ -4287,7 +4287,7 @@ function dismissInstall() {
         <div style="font-size:12px;color:var(--text);display:flex;gap:7px;font-weight:500"><span style="color:var(--accent);flex-shrink:0">✦</span>Early access to new tools</div>
         <div style="font-size:12px;color:var(--text);display:flex;gap:7px;font-weight:500"><span style="color:var(--accent);flex-shrink:0">✦</span>Priority support</div>
       </div>
-      <button onclick="window.open('https://rightpdfkit.lemonsqueezy.com/checkout/buy/c61ebda4-808a-4021-a82a-0bde8ab0fae9','_blank')" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;width:100%">Upgrade to Pro ✦</button>
+      <button onclick="window.open('https://rightpdfkit.lemonsqueezy.com/checkout/buy/433605e7-0db3-4b59-bf2f-36cd01df669f','_blank')" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;width:100%">Upgrade to Pro ✦</button>
     </div>
   </div>
 
@@ -29831,6 +29831,9 @@ const S={
 };
 
 function nav(t){
+  if(PRO_TOOLS && PRO_TOOLS.has(t) && !isPro()){ showUpgradeModal(t); return; }
+  closeUpgradeModal();
+
   document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n.dataset.t===t));
   document.querySelectorAll('.panel,.home').forEach(p=>p.classList.remove('active'));
   const panel=document.getElementById('panel-'+t);
@@ -32360,7 +32363,14 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 // PURCHASING POWER PARITY PRICING
 // ==========================================
-const STRIPE_GLOBAL = 'https://rightpdfkit.lemonsqueezy.com/checkout/buy/c61ebda4-808a-4021-a82a-0bde8ab0fae9';
+const STRIPE_GLOBAL = 'https://rightpdfkit.lemonsqueezy.com/checkout/buy/433605e7-0db3-4b59-bf2f-36cd01df669f';
+
+const PRO_TOOLS = new Set([
+  "ocr","pdftoword","bulkextract","esign",
+  "bates","redline","compare-pdf","qrstamp",
+  "metadata","crop","resize","flatten",
+  "grayscale","nup","dupepage","fillform","headfoot"
+]);
 
 
 function showNigerianNudge() {
@@ -32401,7 +32411,7 @@ function showNigerianNudge() {
 }
 
 function goToPro() {
-  window.open('https://rightpdfkit.lemonsqueezy.com/checkout/buy/c61ebda4-808a-4021-a82a-0bde8ab0fae9', '_blank');
+  window.open('https://rightpdfkit.lemonsqueezy.com/checkout/buy/433605e7-0db3-4b59-bf2f-36cd01df669f', '_blank');
 }
 
 
@@ -34563,6 +34573,48 @@ function updateSigPreview() {
 }
 
 
+
+
+// ── Pro upgrade modal ──
+const PRO_TOOL_NAMES = {
+  ocr: "OCR — Extract Text from Scanned PDF",
+  pdftoword: "PDF to Word",
+  bulkextract: "Bulk Extractor",
+  esign: "eSign + Certificate",
+  bates: "Bates Numbering",
+  redline: "PDF Redline",
+  "compare-pdf": "Compare PDFs",
+  qrstamp: "QR Stamp",
+  metadata: "Metadata Editor",
+  crop: "Crop PDF",
+  resize: "Resize PDF",
+  flatten: "Flatten PDF",
+  grayscale: "Grayscale PDF",
+  nup: "N-up Print",
+  dupepage: "Duplicate Page",
+  fillform: "Fill Form",
+  headfoot: "Header / Footer"
+};
+
+function showUpgradeModal(tool) {
+  const modal = document.getElementById('upgrade-modal');
+  const msg   = document.getElementById('upgrade-tool-msg');
+  if(msg) msg.textContent = (PRO_TOOL_NAMES[tool] || 'This tool') + ' requires Pro';
+  if(modal) modal.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeUpgradeModal() {
+  const modal = document.getElementById('upgrade-modal');
+  if(modal) modal.classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+// Close on backdrop click
+document.getElementById('upgrade-modal')?.addEventListener('click', function(e) {
+  if(e.target === this) closeUpgradeModal();
+});
+
 </script>
 
 
@@ -34783,6 +34835,67 @@ function updateSigPreview() {
 <style>
 #cookie-banner.show { display:flex !important; }
 #cookie-modal.show { display:flex !important; }
+</style>
+
+
+<!-- ── Pro Upgrade Modal ── -->
+<div id="upgrade-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9500;align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px 24px;max-width:420px;width:100%;position:relative">
+    
+    <!-- Close -->
+    <button onclick="closeUpgradeModal()" style="position:absolute;top:14px;right:14px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1">✕</button>
+
+    <!-- Header -->
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:36px;margin-bottom:8px">⭐</div>
+      <div style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:6px">Upgrade to Pro</div>
+      <div style="font-size:13px;color:var(--muted)" id="upgrade-tool-msg">This tool requires a Pro subscription</div>
+    </div>
+
+    <!-- Price -->
+    <div style="background:rgba(232,69,10,.08);border:1.5px solid rgba(232,69,10,.25);border-radius:12px;padding:16px;text-align:center;margin-bottom:20px">
+      <div style="font-size:28px;font-weight:800;color:var(--accent)">£4.99<span style="font-size:14px;font-weight:400;color:var(--muted)">/month</span></div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">Cancel anytime · No account needed</div>
+    </div>
+
+    <!-- Pro tools list -->
+    <div style="margin-bottom:20px">
+      <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em">Pro includes 17 advanced tools:</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px;color:var(--muted)">
+        <div>✦ OCR (scanned PDFs)</div>
+        <div>✦ PDF to Word</div>
+        <div>✦ Bulk Extractor</div>
+        <div>✦ eSign + Certificate</div>
+        <div>✦ Bates Numbering</div>
+        <div>✦ Redline / Compare</div>
+        <div>✦ QR Stamp</div>
+        <div>✦ Metadata Editor</div>
+        <div>✦ Crop, Resize, N-up</div>
+        <div>✦ Fill Form</div>
+        <div>✦ Flatten, Grayscale</div>
+        <div>✦ Header / Footer</div>
+      </div>
+    </div>
+
+    <!-- Plus free tools reminder -->
+    <div style="font-size:11px;color:var(--hint);margin-bottom:16px;text-align:center">
+      Plus all 25 free tools — merge, split, compress, sign, protect, unlock and more
+    </div>
+
+    <!-- CTA buttons -->
+    <a href="https://rightpdfkit.lemonsqueezy.com/checkout/buy/433605e7-0db3-4b59-bf2f-36cd01df669f" 
+       target="_blank" onclick="closeUpgradeModal()"
+       style="display:block;background:var(--accent);color:#fff;border-radius:10px;padding:14px;text-align:center;font-size:14px;font-weight:700;text-decoration:none;margin-bottom:10px">
+      Upgrade to Pro — £4.99/month
+    </a>
+    <button onclick="closeUpgradeModal();nav('pricing')" 
+      style="display:block;width:100%;background:none;border:1px solid var(--border2);border-radius:10px;padding:11px;font-size:13px;color:var(--muted);cursor:pointer;font-family:inherit">
+      Have a key? Activate license →
+    </button>
+  </div>
+</div>
+<style>
+#upgrade-modal.show { display:flex !important; }
 </style>
 
 </body>
