@@ -30583,7 +30583,12 @@ async function runOcr(){
     document.getElementById('ocr-status').textContent='Scanning '+pages.length+' page(s)…';
     const worker=await Tesseract.createWorker('eng',1,{logger:m=>{if(m.status==='recognizing text')setP(10+(m.progress*80),'Recognising…');}});
     let fullText='';
-    for(let pi=0;pi<pages.length;pi++){const n=pages[pi];setP(10+pi/pages.length*70,'Rendering p.'+n+'…');
+    for(let pi=0;pi<pages.length;pi++){const n=pages[pi];
+    const pct=10+(pi/pages.length*80);
+    const rem=Math.ceil((pages.length-pi)*4);
+    const tStr=rem>60?Math.ceil(rem/60)+'min left':rem+'s left';
+    setP(pct,'Page '+(pi+1)+' of '+pages.length+' — '+tStr);
+    document.getElementById('ocr-status').textContent='Processing page '+(pi+1)+' of '+pages.length+'...';
     const page=await pj.getPage(n);const vp=page.getViewport({scale:S.ocrScale});const cv=document.createElement('canvas');cv.width=vp.width;cv.height=vp.height;
     await page.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;
     const{data:{text}}=await worker.recognize(cv);fullText+=(pages.length>1?'\n\n=== Page '+n+' ===\n':'')+(text||'(no text detected)');}
@@ -32672,6 +32677,26 @@ function _load(file, stateKey, fdId, btnId) {
   if (fd) fd.innerHTML = chip(file);
   const btn = document.getElementById(btnId);
   if (btn) btn.disabled = false;
+  _checkFileSize(file, fdId);
+}
+
+function _checkFileSize(file, fdId) {
+  if(!file) return;
+  const mb = file.size / 1024 / 1024;
+  const fd = document.getElementById(fdId);
+  if(!fd) return;
+  fd.parentNode.querySelectorAll('.size-warn').forEach(e=>e.remove());
+  if(mb < 30) return;
+  const w = document.createElement('div');
+  w.className = 'size-warn';
+  if(mb > 100) {
+    w.textContent = '⚠ Large file (' + mb.toFixed(0) + ' MB) — processing may be slow on older devices. Consider splitting into smaller files first.';
+    w.style.cssText = 'background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.25);border-radius:8px;padding:10px 12px;font-size:12px;color:#e74c3c;margin:8px 0;line-height:1.5';
+  } else {
+    w.textContent = '📄 ' + mb.toFixed(0) + ' MB file — this may take a moment to process.';
+    w.style.cssText = 'background:rgba(232,69,10,.06);border:1px solid rgba(232,69,10,.2);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--muted);margin:8px 0';
+  }
+  fd.parentNode.insertBefore(w, fd.nextSibling);
 }
 
 // -- Extract text from PDF using PDF.js --
@@ -34628,6 +34653,32 @@ function closeUpgradeModal() {
 // Close on backdrop click
 document.getElementById('upgrade-modal')?.addEventListener('click', function(e) {
   if(e.target === this) closeUpgradeModal();
+});
+
+
+// ── Global file size check on all tool file inputs ──
+document.addEventListener('change', function(e) {
+  if(e.target.type !== 'file' || !e.target.files[0]) return;
+  const file = e.target.files[0];
+  const panel = e.target.closest('.panel');
+  if(!panel) return;
+  // Remove existing warnings
+  panel.querySelectorAll('.size-warn').forEach(el=>el.remove());
+  const mb = file.size / 1024 / 1024;
+  if(mb < 30) return;
+  // Find a good place to insert — after the dz or fd element
+  const anchor = panel.querySelector('.fd') || panel.querySelector('.dz');
+  if(!anchor) return;
+  const w = document.createElement('div');
+  w.className = 'size-warn';
+  if(mb > 100) {
+    w.textContent = '⚠ Large file (' + mb.toFixed(0) + ' MB) — processing may be slow on older devices. Consider splitting first.';
+    w.style.cssText = 'background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.25);border-radius:8px;padding:10px 12px;font-size:12px;color:#e74c3c;margin:8px 0;line-height:1.5';
+  } else {
+    w.textContent = '📄 ' + mb.toFixed(0) + ' MB — may take a moment to process on slower devices.';
+    w.style.cssText = 'background:rgba(232,69,10,.06);border:1px solid rgba(232,69,10,.2);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--muted);margin:8px 0';
+  }
+  anchor.parentNode.insertBefore(w, anchor.nextSibling);
 });
 
 </script>
