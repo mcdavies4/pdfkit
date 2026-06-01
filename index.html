@@ -34964,5 +34964,31 @@ document.addEventListener('change', function(e) {
 #upgrade-modal.show { display:flex !important; }
 </style>
 
+<script>
+// ── Chrome Extension URL handler ──
+// Handles ?from_ext=1&tool=compress&pdf=https://...
+(function handleExtensionParams() {
+  const params = new URLSearchParams(location.search);
+  if(!params.get('from_ext')) return;
+
+  const tool    = params.get('tool');
+  const pdfUrl  = params.get('pdf');
+
+  // Show a small "Opened from extension" notice
+  const notice = document.createElement('div');
+  notice.style.cssText = 'position:fixed;top:60px;right:16px;background:#161625;border:1px solid rgba(232,69,10,.3);border-radius:8px;padding:8px 14px;font-size:12px;color:rgba(242,240,235,.7);z-index:9999;font-family:inherit';
+  notice.innerHTML = '🔌 Opened from Chrome extension' + (pdfUrl ? ' · <a href="' + pdfUrl + '" target="_blank" style="color:#E8450A">View PDF</a>' : '');
+  document.body.appendChild(notice);
+  setTimeout(() => notice.remove(), 5000);
+
+  // Navigate to the requested tool
+  if(tool) {
+    setTimeout(() => { if(typeof nav === 'function') nav(tool); }, 500);
+  }
+
+  // Clean URL without reloading
+  history.replaceState({}, '', location.pathname);
+})();
+</script>
 </body>
 </html>
