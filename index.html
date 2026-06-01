@@ -3057,12 +3057,11 @@ function dismissInstall() {
 <!-- SIGN PDF -->
 <div class="panel" id="panel-sign">
   <div class="ph"><h2>&#x270D;&#xFE0F; Sign PDF</h2><p>Draw, type or upload your signature and place it on any page.</p></div>
-  <div class="dz" onclick=\"dzClick('sign-in')\" >
-    <input type="file" id="sign-in" accept=".pdf" onchange="signLoad(this.files[0])" onclick="event.stopPropagation()">
+  <div class="dz" onclick="dzClick('sign-in')"  <input type="file" id="sign-in" accept=".pdf" onchange="signLoad(this.files[0])" onclick="event.stopPropagation()">
     <div class="di">&#x2B06;</div><h3>Drop a PDF here</h3><p>Click to browse</p>
   </div>
   <div class="fl" id="sign-fd"></div>
-  <div id="sign-opts" style="display:none" class="card">
+  <div id="sign-opts" class="card">
     <h3>Create your signature</h3>
     <div class="fcol">
       <div><label class="lbl">Signature method</label>
@@ -32497,7 +32496,12 @@ function signClear() {
   }
 }
 
-function signLoad(f) { _load(f, 'signFile', 'sign-fd', 'sign-btn'); }
+function signLoad(f) {
+  _load(f, 'signFile', 'sign-fd', 'sign-btn');
+  const opts = document.getElementById('sign-opts');
+  if(opts) opts.style.display = 'block';
+  setTimeout(() => { setSignMethod('draw'); }, 150);
+}
 
 function signImgLoad(file) {
   if (!file) return;
@@ -34242,7 +34246,7 @@ function loadClarity() {
 }
 
 // Init on load
-document.addEventListener('DOMContentLoaded', initCookieConsent);
+document.addEventListener('DOMContentLoaded', () => { initCookieConsent(); setTimeout(initSignCanvas, 500); });
 
 </script>
 
