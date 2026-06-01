@@ -2599,7 +2599,81 @@ function dismissInstall() {
   <div class="card" id="hf-opts" style="display:none"><h3>Header &amp; Footer</h3>
     <div class="fcol">
       <div style="background:var(--surface2);border-radius:8px;padding:12px">
-        <div style="font-size:12px;font-weight:600;margin-bottom:8px">Header (top)</div>
+        <div style="font-size:12px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px">
+          <span>📍 Drag signature to position · Resize from corners</span>
+          <div style="display:flex;gap:6px;align-items:center">
+            <select id="sign-preset" onchange="signApplyPreset(this.value)" style="background:var(--surface);border:1px solid var(--border2);border-radius:6px;padding:4px 8px;color:var(--text);font-size:11px;cursor:pointer">
+              <option value="">Quick position…</option>
+              <option value="bottom-right">Bottom right</option>
+              <option value="bottom-left">Bottom left</option>
+              <option value="bottom-center">Bottom centre</option>
+              <option value="top-right">Top right</option>
+              <option value="top-left">Top left</option>
+              <option value="center">Centre</option>
+            </select>
+            <input type="number" id="sign-page" value="1" min="1" style="width:50px;background:var(--surface);border:1px solid var(--border2);border-radius:6px;padding:4px 6px;color:var(--text);font-size:11px" oninput="signPreviewPage()" title="Page">
+            <span style="font-size:10px;color:var(--hint)">/ <span id="sign-pagecount">?</span></span>
+          </div>
+        </div>
+
+        <!-- PDF preview with draggable signature -->
+        <div id="sign-drop-zone" style="position:relative;background:#f0f0f0;border:2px solid var(--border2);border-radius:8px;overflow:hidden;cursor:default;min-height:280px;user-select:none;-webkit-user-select:none">
+          
+          <!-- Page render canvas -->
+          <canvas id="sign-preview-canvas" style="display:block;width:100%;pointer-events:none"></canvas>
+          
+          <!-- No preview placeholder -->
+          <div id="sign-no-preview" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#aaa;font-size:12px;text-align:center;pointer-events:none">
+            <div style="font-size:32px;margin-bottom:8px">📄</div>
+            Upload a PDF to preview the page<br>
+            <span style="font-size:10px;margin-top:4px">Your signature will appear here</span>
+          </div>
+
+          <!-- Draggable signature overlay -->
+          <div id="sign-drag-sig" style="
+            position:absolute;
+            left:60%;top:75%;
+            transform:translate(-50%,-50%);
+            min-width:140px;min-height:50px;
+            border:2px dashed #E8450A;
+            background:rgba(232,69,10,0.06);
+            border-radius:4px;
+            cursor:move;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            user-select:none;
+            -webkit-user-select:none;
+            touch-action:none;
+          ">
+            <!-- Signature preview inside drag box -->
+            <canvas id="sign-drag-canvas" style="max-width:100%;max-height:100%;pointer-events:none;display:block"></canvas>
+            <span id="sign-drag-label" style="font-size:11px;color:#E8450A;pointer-events:none;padding:8px 12px">✍ Your signature</span>
+            
+            <!-- Resize handle - bottom right -->
+            <div id="sign-resize-handle" style="
+              position:absolute;
+              bottom:-5px;right:-5px;
+              width:14px;height:14px;
+              background:#E8450A;
+              border-radius:50%;
+              cursor:se-resize;
+              z-index:10;
+            "></div>
+          </div>
+        </div>
+
+        <!-- Size display -->
+        <div style="display:flex;gap:12px;margin-top:8px;font-size:11px;color:var(--hint);flex-wrap:wrap">
+          <span>Size: <span id="sign-size-display" style="color:var(--text)">140×50pt</span></span>
+          <span>Position: <span id="sign-pos-display" style="color:var(--text)">right, bottom</span></span>
+        </div>
+
+        <!-- Hidden values for runSign -->
+        <input type="hidden" id="sign-x" value="380">
+        <input type="hidden" id="sign-y" value="50">
+        <input type="hidden" id="sign-width" value="140">
+      </div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
           <div><label class="lbl">Left</label><input type="text" id="hf-hl" placeholder="Company"></div>
           <div><label class="lbl">Centre</label><input type="text" id="hf-hc" placeholder="Title"></div>
@@ -3102,7 +3176,7 @@ function dismissInstall() {
       </div>
       <div id="sign-upload-wrap" style="display:none">
         <label class="lbl">Upload signature image (transparent PNG recommended)</label>
-        <div class="dz" onclick=\"dzClick('sign-img-in')\"  style="padding:14px">
+        <div class="dz" onclick="dzClick('sign-img-in')" style="padding:14px">="padding:14px">
           <input type="file" id="sign-img-in" accept="image/*" onchange="signImgLoad(this.files[0])" onclick="event.stopPropagation()">
           <p style="font-size:11px;color:var(--muted)">PNG or JPG</p>
         </div>
@@ -32500,7 +32574,11 @@ function signLoad(f) {
   _load(f, 'signFile', 'sign-fd', 'sign-btn');
   const opts = document.getElementById('sign-opts');
   if(opts) opts.style.display = 'block';
-  setTimeout(() => { setSignMethod('draw'); }, 150);
+  setTimeout(() => {
+    setSignMethod('draw');
+    signPreviewPage();
+    initSignDragDrop();
+  }, 200);
 }
 
 function signImgLoad(file) {
@@ -34247,6 +34325,243 @@ function loadClarity() {
 
 // Init on load
 document.addEventListener('DOMContentLoaded', () => { initCookieConsent(); setTimeout(initSignCanvas, 500); });
+
+
+
+// ── Sign PDF — drag & resize placement ──
+let _signDrag = null;   // { startX, startY, startLeft, startTop }
+let _signResize = null; // { startX, startY, startW, startH }
+let _signPageData = null; // { pageW, pageH, scaleX, scaleY }
+
+function initSignDragDrop() {
+  const sig = document.getElementById('sign-drag-sig');
+  const handle = document.getElementById('sign-resize-handle');
+  const zone = document.getElementById('sign-drop-zone');
+  if(!sig || !zone) return;
+
+  // ── Drag (mouse + touch) ──
+  function startDrag(e) {
+    if(e.target === handle || e.target.id === 'sign-resize-handle') return; // let resize handle its own
+    e.preventDefault();
+    const touch = e.touches?.[0] || e;
+    const rect = sig.getBoundingClientRect();
+    _signDrag = {
+      startX: touch.clientX,
+      startY: touch.clientY,
+      startLeft: parseFloat(sig.style.left) || 60,
+      startTop: parseFloat(sig.style.top) || 75,
+    };
+    sig.style.cursor = 'grabbing';
+    sig.style.opacity = '0.85';
+  }
+
+  function onDrag(e) {
+    if(!_signDrag) return;
+    e.preventDefault();
+    const touch = e.touches?.[0] || e;
+    const zoneRect = zone.getBoundingClientRect();
+    const dx = touch.clientX - _signDrag.startX;
+    const dy = touch.clientY - _signDrag.startY;
+    const newLeft = Math.max(0, Math.min(100, _signDrag.startLeft + (dx / zoneRect.width * 100)));
+    const newTop  = Math.max(0, Math.min(100, _signDrag.startTop  + (dy / zoneRect.height * 100)));
+    sig.style.left = newLeft + '%';
+    sig.style.top  = newTop  + '%';
+    updateSignCoords();
+  }
+
+  function endDrag(e) {
+    if(!_signDrag) return;
+    _signDrag = null;
+    sig.style.cursor = 'move';
+    sig.style.opacity = '1';
+    updateSignCoords();
+  }
+
+  sig.addEventListener('mousedown', startDrag);
+  sig.addEventListener('touchstart', startDrag, {passive:false});
+  document.addEventListener('mousemove', onDrag);
+  document.addEventListener('touchmove', onDrag, {passive:false});
+  document.addEventListener('mouseup', endDrag);
+  document.addEventListener('touchend', endDrag);
+
+  // ── Resize ──
+  function startResize(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const touch = e.touches?.[0] || e;
+    _signResize = {
+      startX: touch.clientX,
+      startY: touch.clientY,
+      startW: sig.offsetWidth,
+      startH: sig.offsetHeight,
+    };
+  }
+
+  function onResize(e) {
+    if(!_signResize) return;
+    e.preventDefault();
+    const touch = e.touches?.[0] || e;
+    const dx = touch.clientX - _signResize.startX;
+    const dy = touch.clientY - _signResize.startY;
+    const newW = Math.max(60, Math.min(400, _signResize.startW + dx));
+    const newH = Math.max(30, Math.min(200, _signResize.startH + dy));
+    sig.style.width  = newW + 'px';
+    sig.style.height = newH + 'px';
+    sig.style.minWidth  = 'unset';
+    sig.style.minHeight = 'unset';
+    updateSignCoords();
+  }
+
+  function endResize() {
+    if(!_signResize) return;
+    _signResize = null;
+    updateSignCoords();
+  }
+
+  handle.addEventListener('mousedown', startResize);
+  handle.addEventListener('touchstart', startResize, {passive:false});
+  document.addEventListener('mousemove', onResize);
+  document.addEventListener('touchmove', onResize, {passive:false});
+  document.addEventListener('mouseup', endResize);
+  document.addEventListener('touchend', endResize);
+}
+
+function updateSignCoords() {
+  const sig  = document.getElementById('sign-drag-sig');
+  const zone = document.getElementById('sign-drop-zone');
+  if(!sig || !zone) return;
+
+  const zoneRect = zone.getBoundingClientRect();
+  const sigRect  = sig.getBoundingClientRect();
+
+  // Use percentage from style if zone not rendered yet
+  const leftPct = zoneRect.width > 0
+    ? (sigRect.left - zoneRect.left) / zoneRect.width
+    : parseFloat(sig.style.left||'60') / 100;
+  const topPct = zoneRect.height > 0
+    ? (sigRect.top - zoneRect.top) / zoneRect.height
+    : parseFloat(sig.style.top||'75') / 100;
+  const wPct = zoneRect.width > 0 && sigRect.width > 0
+    ? sigRect.width / zoneRect.width
+    : 0.25;
+  const hPct = zoneRect.height > 0 && sigRect.height > 0
+    ? sigRect.height / zoneRect.height
+    : 0.08;
+
+  // Convert to PDF points (default A4: 595 x 842)
+  const pageW = _signPageData?.pageW || 595;
+  const pageH = _signPageData?.pageH || 842;
+
+  const xPt = Math.round(leftPct * pageW);
+  const yPt = Math.round((1 - topPct - hPct) * pageH); // PDF Y from bottom
+  const wPt = Math.round(wPct * pageW);
+
+  document.getElementById('sign-x').value = Math.max(0, xPt);
+  document.getElementById('sign-y').value = Math.max(0, yPt);
+  document.getElementById('sign-width').value = Math.max(40, wPt);
+
+  // Update display
+  const sizeEl = document.getElementById('sign-size-display');
+  const posEl  = document.getElementById('sign-pos-display');
+  if(sizeEl) sizeEl.textContent = wPt + '×' + Math.round(hPct * pageH) + 'pt';
+  if(posEl) {
+    const hLabel = leftPct < 0.33 ? 'left' : leftPct > 0.66 ? 'right' : 'centre';
+    const vLabel = topPct < 0.33 ? 'top' : topPct > 0.66 ? 'bottom' : 'middle';
+    posEl.textContent = hLabel + ', ' + vLabel;
+  }
+}
+
+function signApplyPreset(preset) {
+  if(!preset) return;
+  const sig  = document.getElementById('sign-drag-sig');
+  const zone = document.getElementById('sign-drop-zone');
+  if(!sig || !zone) return;
+
+  const positions = {
+    'bottom-right':  {left:'65%', top:'80%'},
+    'bottom-left':   {left:'15%', top:'80%'},
+    'bottom-center': {left:'40%', top:'80%'},
+    'top-right':     {left:'65%', top:'12%'},
+    'top-left':      {left:'15%', top:'12%'},
+    'center':        {left:'40%', top:'45%'},
+  };
+
+  const pos = positions[preset];
+  if(!pos) return;
+  sig.style.left = pos.left;
+  sig.style.top  = pos.top;
+  sig.style.width  = '';
+  sig.style.height = '';
+  sig.style.minWidth  = '140px';
+  sig.style.minHeight = '50px';
+  setTimeout(updateSignCoords, 50);
+}
+
+async function signPreviewPage() {
+  if(!S.signFile) return;
+  const pageNum = parseInt(document.getElementById('sign-page')?.value) || 1;
+  const previewCanvas = document.getElementById('sign-preview-canvas');
+  const noPreview = document.getElementById('sign-no-preview');
+  const zone = document.getElementById('sign-drop-zone');
+  if(!previewCanvas || !zone) return;
+
+  try {
+    const bytes = await readBytes(S.signFile);
+    const pj = await pdfjsLib.getDocument({data: bytes}).promise;
+    const totalPages = pj.numPages;
+    document.getElementById('sign-pagecount').textContent = totalPages;
+    document.getElementById('sign-page').max = totalPages;
+
+    const page = await pj.getPage(Math.min(pageNum, totalPages));
+    const vp0  = page.getViewport({scale: 1});
+    const zoneW = zone.offsetWidth || 500;
+    const scale = zoneW / vp0.width;
+    const vp    = page.getViewport({scale});
+
+    previewCanvas.width  = vp.width;
+    previewCanvas.height = vp.height;
+    await page.render({canvasContext: previewCanvas.getContext('2d'), viewport: vp}).promise;
+
+    if(noPreview) noPreview.style.display = 'none';
+    previewCanvas.style.display = 'block';
+
+    // Store page dimensions for coord conversion
+    _signPageData = {pageW: vp0.width, pageH: vp0.height, scaleX: scale, scaleY: scale};
+
+    // Update sig preview in drag box
+    updateSigPreview();
+    updateSignCoords();
+  } catch(e) {
+    console.warn('Preview failed:', e);
+  }
+}
+
+// Update the mini signature preview inside the drag box
+function updateSigPreview() {
+  const dragCanvas = document.getElementById('sign-drag-canvas');
+  const label      = document.getElementById('sign-drag-label');
+  const srcCanvas  = S.signMethod === 'draw'   ? document.getElementById('sign-canvas') :
+                     S.signMethod === 'type'   ? document.getElementById('sign-typed-canvas') :
+                     document.getElementById('sign-upload-canvas');
+
+  if(!dragCanvas) return;
+
+  if(srcCanvas && srcCanvas.width > 0) {
+    // Copy signature into drag box preview
+    const ratio = srcCanvas.width / srcCanvas.height;
+    dragCanvas.width  = 120;
+    dragCanvas.height = Math.round(120 / ratio);
+    const ctx = dragCanvas.getContext('2d');
+    ctx.clearRect(0, 0, dragCanvas.width, dragCanvas.height);
+    ctx.drawImage(srcCanvas, 0, 0, dragCanvas.width, dragCanvas.height);
+    dragCanvas.style.display = 'block';
+    if(label) label.style.display = 'none';
+  } else {
+    dragCanvas.style.display = 'none';
+    if(label) label.style.display = 'block';
+  }
+}
+
 
 </script>
 
