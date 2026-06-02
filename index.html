@@ -598,7 +598,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
   .main{padding:14px 14px 80px}
   .section-pills{display:flex}
   .bottom-nav{display:block}
-  .panel,.home{width:100%;max-width:none}
+  .panel,.home{width:100%;max-width:none} .panel:not(.active){display:none!important}
   .tg{grid-template-columns:repeat(2,1fr);gap:8px}
   .dz{padding:22px 16px}
   .dz .di{font-size:20px;margin-bottom:6px}
@@ -31573,6 +31573,8 @@ const MAX_FILE_SIZE_PRO  = 100 * 1024 * 1024; // 100MB
 
 // -- Pro status --
 function isPro() {
+  // Dev mode override
+  if(localStorage.getItem('rpk-dev-pro') === 'the36th2026') return true;
   const token = localStorage.getItem(PRO_KEY);
   if (!token) return false;
   try {
@@ -34975,6 +34977,20 @@ document.addEventListener('change', function(e) {
 </style>
 
 <script>
+
+// ── URL hash navigation (e.g. from blog /#pricing links) ──
+(function handleHash() {
+  const hash = location.hash.replace('#', '');
+  if(!hash || hash === 'home') return;
+  // Wait for app to initialize
+  setTimeout(() => {
+    const panel = document.getElementById('panel-' + hash);
+    if(panel && typeof nav === 'function') {
+      nav(hash);
+    }
+  }, 300);
+})();
+
 // ── Chrome Extension URL handler ──
 // Handles ?from_ext=1&tool=compress&pdf=https://...
 (function handleExtensionParams() {
@@ -35417,6 +35433,24 @@ async function runEditText() {
 }
 
 // ── End Edit PDF Text ──
+
+
+// ── Dev Pro unlock (for testing only) ──
+function devUnlockPro() {
+  localStorage.setItem('rpk-dev-pro', 'the36th2026');
+  localStorage.setItem('rpk-pro-key', 'DEV-TEST-KEY');
+  toast('✅ Pro unlocked for testing!');
+  document.getElementById('upgrade-modal')?.classList.remove('show');
+  // Refresh any pro badges in UI
+  document.querySelectorAll('.pro-gate-overlay').forEach(e => e.classList.remove('show'));
+  console.log('%c✅ RightPDFKit Pro UNLOCKED (dev mode)', 'color:#E8450A;font-size:14px;font-weight:bold');
+}
+
+function devLockPro() {
+  localStorage.removeItem('rpk-dev-pro');
+  localStorage.removeItem('rpk-pro-key');
+  toast('🔒 Pro locked');
+}
 
 </script>
 </body>
