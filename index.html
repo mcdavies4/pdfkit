@@ -2104,6 +2104,7 @@ function dismissInstall() {
   <div class="nav" data-t="grayscale"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span><span class="nav-label" onclick="nav('grayscale')"><span class="ni">◑</span>Grayscale</span></div>
   <div class="nav" data-t="metadata"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span><span class="nav-label" onclick="nav('metadata')"><span class="ni">🏷</span>Metadata</span></div>
   <div class="nav" data-t="sign"><span class="nav-label" onclick="nav('sign')"><span class="ni">✍️</span>Sign PDF</span></div>
+  <div class="nav" data-t="edittext"><span class="nav-label" onclick="nav('edittext')"><span class="ni">🖊</span>Edit Text <span style="font-size:9px;background:var(--accent);color:#fff;border-radius:3px;padding:1px 4px;margin-left:3px">PRO</span></span></div>
   <div class="nav" data-t="esign"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span><span class="nav-label" onclick="nav('esign')"><span class="ni">✦</span>eSign + Certificate</span></div>
   <div class="nav" data-t="dupepage"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span><span class="nav-label" onclick="nav('dupepage')"><span class="ni">⧉</span>Duplicate Page</span></div>
   <div class="nav" data-t="nup"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span><span class="nav-label" onclick="nav('nup')"><span class="ni">⊞</span>N-up</span></div>
@@ -2312,6 +2313,11 @@ function dismissInstall() {
       <span class="tc-hint">Fill PDF fields</span>
     </div>
   </div>
+    <div class="tool-card" onclick="nav('edittext')" data-t="edittext" style="position:relative"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span>
+      <span class="tc-icon">🖊</span>
+      <span class="tc-name">Edit PDF Text</span>
+      <span class="tc-hint">Click &amp; edit text inline</span>
+    </div>
 </div>
 <div class="tool-section">
   <div class="tool-section-label">Advanced</div>
@@ -2564,6 +2570,47 @@ function dismissInstall() {
   <div class="pw" id="ann-pw"><div class="pb"><div class="pf" id="ann-pf"></div></div><div class="pl"><span>Annotating…</span><span class="pp" id="ann-pp">0%</span></div></div>
   <div class="rb" id="ann-rb"><h4>✓ Annotations applied</h4><p id="ann-rm"></p></div>
 </div>
+
+<!-- EDIT TEXT -->
+<div class="panel" id="panel-edittext">
+  <div class="ph"><h2>🖊 Edit PDF Text</h2><p>Click any text on the page to edit it. Changes are saved directly into the PDF — no conversion needed.</p></div>
+
+  <div class="dz" onclick="dzClick('edittext-in')"><input type="file" id="edittext-in" accept=".pdf" onchange="edittextLoad(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
+  <div class="fl" id="edittext-fd"></div>
+
+  <div id="edittext-opts" style="display:none">
+    <!-- Page nav -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+      <div style="font-size:12px;font-weight:700;color:var(--text)">Page</div>
+      <button onclick="edittextPrevPage()" style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:4px 10px;color:var(--text);cursor:pointer;font-family:inherit;font-size:13px">‹</button>
+      <span id="edittext-pagenum" style="font-size:13px;font-weight:700;color:var(--accent)">1</span>
+      <span style="font-size:12px;color:var(--muted)">of <span id="edittext-pagecount">?</span></span>
+      <button onclick="edittextNextPage()" style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:4px 10px;color:var(--text);cursor:pointer;font-family:inherit;font-size:13px">›</button>
+      <div style="margin-left:auto;font-size:11px;color:var(--hint)">🖊 Click any text block to edit</div>
+    </div>
+
+    <!-- PDF canvas with overlay -->
+    <div id="edittext-wrap" style="position:relative;background:#f5f5f5;border:2px solid var(--border2);border-radius:10px;overflow:hidden;cursor:default">
+      <canvas id="edittext-canvas" style="display:block;width:100%"></canvas>
+      <div id="edittext-overlay" style="position:absolute;inset:0;pointer-events:none"></div>
+    </div>
+
+    <!-- Edit count indicator -->
+    <div style="display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap">
+      <div style="font-size:12px;color:var(--muted)">
+        <span id="edittext-editcount" style="color:var(--accent);font-weight:700">0</span> edits made
+      </div>
+      <button onclick="edittextUndo()" id="edittext-undo" style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:5px 12px;font-size:12px;color:var(--muted);cursor:pointer;font-family:inherit" disabled>↩ Undo</button>
+      <button onclick="edittextClearAll()" style="background:none;border:1px solid rgba(231,76,60,.3);border-radius:6px;padding:5px 12px;font-size:12px;color:#e74c3c;cursor:pointer;font-family:inherit">Clear all</button>
+    </div>
+
+    <div class="eb" id="edittext-err"></div>
+    <button class="btn btn-p btn-blk" id="edittext-btn" onclick="runEditText()" disabled>Save Edited PDF</button>
+    <div class="pw" id="edittext-pw"><div class="pb"><div class="pf" id="edittext-pf"></div></div><div class="pl"><span>Saving…</span><span class="pp" id="edittext-pp">0%</span></div></div>
+    <div class="rb" id="edittext-rb"></div>
+  </div>
+</div>
+
 
 <!-- REDACT -->
 <div class="panel" id="panel-redact">
@@ -32324,7 +32371,7 @@ const PRO_TOOLS = new Set([
   "ocr","pdftoword","bulkextract","esign",
   "bates","redline","compare-pdf","qrstamp",
   "metadata","crop","resize","flatten",
-  "grayscale","nup","dupepage","fillform","headfoot"
+  "grayscale","nup","dupepage","fillform","headfoot","edittext"
 ]);
 
 
@@ -34595,7 +34642,8 @@ const PRO_TOOL_NAMES = {
   nup: "N-up Print",
   dupepage: "Duplicate Page",
   fillform: "Fill Form",
-  headfoot: "Header / Footer"
+  headfoot: "Header / Footer",
+  edittext: "Edit PDF Text"
 };
 
 function showUpgradeModal(tool) {
@@ -34991,6 +35039,384 @@ function _loadQrLib() {
   });
   return _qrProm;
 }
+
+
+
+// ═══════════════════════════════════════════════════════
+// EDIT PDF TEXT TOOL
+// Uses pdfjs to render page + detect text blocks
+// Overlays click-to-edit inputs on each text item
+// On save: covers original text with white rect + draws new text with pdf-lib
+// ═══════════════════════════════════════════════════════
+
+const ET = {
+  file: null,
+  pageNum: 1,
+  totalPages: 0,
+  scale: 1,
+  viewport: null,
+  pjDoc: null,
+  edits: [],       // [{pageNum, x, y, w, h, origText, newText, fontSize, fontName}]
+  undoStack: [],
+};
+
+function edittextLoad(f) {
+  if(!f) return;
+  ET.file = f;
+  ET.pageNum = 1;
+  ET.edits = [];
+  ET.undoStack = [];
+  document.getElementById('edittext-fd').innerHTML = chip(f);
+  document.getElementById('edittext-btn').disabled = false;
+  document.getElementById('edittext-opts').style.display = 'block';
+  document.getElementById('edittext-editcount').textContent = '0';
+  edittextRenderPage();
+}
+
+async function edittextRenderPage() {
+  if(!ET.file) return;
+  const canvas = document.getElementById('edittext-canvas');
+  const overlay = document.getElementById('edittext-overlay');
+  overlay.innerHTML = '';
+
+  try {
+    const bytes = await readBytes(ET.file);
+    ET.pjDoc = ET.pjDoc || await pdfjsLib.getDocument({data: bytes}).promise;
+    ET.totalPages = ET.pjDoc.numPages;
+    document.getElementById('edittext-pagecount').textContent = ET.totalPages;
+    document.getElementById('edittext-pagenum').textContent = ET.pageNum;
+
+    const page = await ET.pjDoc.getPage(ET.pageNum);
+    const containerW = canvas.parentElement.offsetWidth || 600;
+    const vp0 = page.getViewport({scale: 1});
+    ET.scale = (containerW - 4) / vp0.width;
+    ET.viewport = page.getViewport({scale: ET.scale});
+
+    canvas.width  = ET.viewport.width;
+    canvas.height = ET.viewport.height;
+    canvas.style.width = '100%';
+
+    // Render the PDF page
+    await page.render({
+      canvasContext: canvas.getContext('2d'),
+      viewport: ET.viewport
+    }).promise;
+
+    // Extract text items
+    const textContent = await page.getTextContent();
+    overlay.style.pointerEvents = 'auto';
+    overlay.style.position = 'absolute';
+    overlay.style.inset = '0';
+
+    // Group nearby items into blocks for better UX
+    textContent.items.forEach((item, idx) => {
+      if(!item.str.trim()) return;
+
+      const tx = pdfjsLib.Util.transform(ET.viewport.transform, item.transform);
+      const x = tx[4];
+      const y = tx[5];
+      const w = Math.max(item.width * ET.scale, 30);
+      const h = Math.abs(item.transform[3]) * ET.scale || 14;
+      const fontSize = Math.round(Math.abs(item.transform[3]));
+
+      // Check if this text has an edit on this page
+      const existingEdit = ET.edits.find(e =>
+        e.pageNum === ET.pageNum &&
+        Math.abs(e.x_orig - item.transform[4]) < 2 &&
+        Math.abs(e.y_orig - item.transform[5]) < 2
+      );
+
+      // Create clickable hotspot
+      const hotspot = document.createElement('div');
+      hotspot.style.cssText = [
+        `position:absolute`,
+        `left:${x}px`,
+        `top:${y - h}px`,
+        `width:${w}px`,
+        `min-width:${w}px`,
+        `height:${h + 4}px`,
+        `cursor:text`,
+        `border-radius:2px`,
+        `border:1px solid transparent`,
+        `transition:border-color .1s, background .1s`,
+        `box-sizing:border-box`,
+        existingEdit ? `background:rgba(232,69,10,0.08);border-color:rgba(232,69,10,0.5)` : '',
+      ].join(';');
+
+      hotspot.title = 'Click to edit: "' + item.str.substring(0,30) + '"';
+
+      hotspot.addEventListener('mouseover', () => {
+        if(!hotspot._editing) hotspot.style.borderColor = 'rgba(232,69,10,0.4)';
+        hotspot.style.background = 'rgba(232,69,10,0.06)';
+      });
+      hotspot.addEventListener('mouseout', () => {
+        if(!hotspot._editing) {
+          hotspot.style.borderColor = existingEdit ? 'rgba(232,69,10,0.5)' : 'transparent';
+          hotspot.style.background = existingEdit ? 'rgba(232,69,10,0.08)' : '';
+        }
+      });
+
+      hotspot.addEventListener('click', () => {
+        edittextOpenEditor(hotspot, item, x, y, w, h, fontSize, idx);
+      });
+
+      overlay.appendChild(hotspot);
+    });
+
+    // Re-enable clicks on overlay
+    overlay.style.pointerEvents = 'auto';
+
+  } catch(e) {
+    showErr('edittext-err', '⚠ ' + e.message);
+  }
+}
+
+function edittextOpenEditor(hotspot, item, x, y, w, h, fontSize, idx) {
+  // Close any open editor first
+  document.querySelectorAll('.et-editor').forEach(e => e.remove());
+
+  hotspot._editing = true;
+  hotspot.style.borderColor = '#E8450A';
+  hotspot.style.background = 'rgba(232,69,10,0.08)';
+
+  // Find existing edit
+  const existingEdit = ET.edits.find(e =>
+    e.pageNum === ET.pageNum &&
+    Math.abs(e.x_orig - item.transform[4]) < 2 &&
+    Math.abs(e.y_orig - item.transform[5]) < 2
+  );
+
+  // Create inline editor
+  const editor = document.createElement('div');
+  editor.className = 'et-editor';
+  editor.style.cssText = [
+    'position:absolute',
+    `left:${Math.max(0, x - 2)}px`,
+    `top:${y - h - 2}px`,
+    `min-width:${Math.max(w + 20, 120)}px`,
+    'max-width:400px',
+    'z-index:100',
+    'background:#fff',
+    'border:2px solid #E8450A',
+    'border-radius:6px',
+    'box-shadow:0 4px 20px rgba(232,69,10,0.25)',
+    'padding:6px 8px',
+    'display:flex',
+    'flex-direction:column',
+    'gap:5px',
+  ].join(';');
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = existingEdit ? existingEdit.newText : item.str;
+  input.style.cssText = [
+    'border:none',
+    'outline:none',
+    `font-size:${Math.min(Math.max(fontSize * ET.scale * 0.85, 11), 16)}px`,
+    'color:#1a1a1a',
+    'background:transparent',
+    'width:100%',
+    'font-family:sans-serif',
+    'padding:2px 0',
+  ].join(';');
+
+  const actions = document.createElement('div');
+  actions.style.cssText = 'display:flex;gap:5px;justify-content:flex-end';
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.textContent = 'Cancel';
+  cancelBtn.style.cssText = 'font-size:10px;padding:3px 8px;border:1px solid #ddd;border-radius:4px;cursor:pointer;background:#f5f5f5;font-family:inherit';
+
+  const saveBtn = document.createElement('button');
+  saveBtn.textContent = 'Save';
+  saveBtn.style.cssText = 'font-size:10px;padding:3px 8px;border:none;border-radius:4px;cursor:pointer;background:#E8450A;color:#fff;font-family:inherit;font-weight:700';
+
+  actions.appendChild(cancelBtn);
+  actions.appendChild(saveBtn);
+  editor.appendChild(input);
+  editor.appendChild(actions);
+
+  const overlay = document.getElementById('edittext-overlay');
+  overlay.appendChild(editor);
+  input.focus();
+  input.select();
+
+  function closeEditor() {
+    editor.remove();
+    hotspot._editing = false;
+    hotspot.style.borderColor = 'transparent';
+    hotspot.style.background = '';
+  }
+
+  function saveEdit() {
+    const newText = input.value;
+    closeEditor();
+
+    // Remove existing edit for this item if any
+    ET.edits = ET.edits.filter(e => !(
+      e.pageNum === ET.pageNum &&
+      Math.abs(e.x_orig - item.transform[4]) < 2 &&
+      Math.abs(e.y_orig - item.transform[5]) < 2
+    ));
+
+    // Only add edit if text changed
+    if(newText !== item.str) {
+      const edit = {
+        pageNum:  ET.pageNum,
+        x_orig:   item.transform[4],
+        y_orig:   item.transform[5],
+        x:        item.transform[4],
+        y:        item.transform[5],
+        w:        item.width || 50,
+        h:        Math.abs(item.transform[3]) || 12,
+        origText: item.str,
+        newText:  newText,
+        fontSize: Math.abs(item.transform[3]) || 12,
+        fontName: item.fontName || 'Helvetica',
+        r:        item.transform[0], // rotation/scale
+        scaleX:   item.transform[0],
+      };
+      ET.edits.push(edit);
+      ET.undoStack.push(edit);
+    }
+
+    // Update counts and re-render overlay
+    document.getElementById('edittext-editcount').textContent = ET.edits.length;
+    document.getElementById('edittext-undo').disabled = ET.edits.length === 0;
+    edittextRenderPage(); // re-render to show edit highlights
+  }
+
+  saveBtn.addEventListener('click', saveEdit);
+  cancelBtn.addEventListener('click', closeEditor);
+  input.addEventListener('keydown', e => {
+    if(e.key === 'Enter') saveEdit();
+    if(e.key === 'Escape') closeEditor();
+  });
+
+  // Stop hotspot click from bubbling
+  editor.addEventListener('click', e => e.stopPropagation());
+}
+
+function edittextPrevPage() {
+  if(ET.pageNum <= 1) return;
+  ET.pageNum--;
+  ET.pjDoc = null; // force reload
+  edittextRenderPage();
+}
+
+function edittextNextPage() {
+  if(ET.pageNum >= ET.totalPages) return;
+  ET.pageNum++;
+  ET.pjDoc = null;
+  edittextRenderPage();
+}
+
+function edittextUndo() {
+  if(ET.undoStack.length === 0) return;
+  const last = ET.undoStack.pop();
+  ET.edits = ET.edits.filter(e => e !== last);
+  document.getElementById('edittext-editcount').textContent = ET.edits.length;
+  document.getElementById('edittext-undo').disabled = ET.edits.length === 0;
+  edittextRenderPage();
+}
+
+function edittextClearAll() {
+  ET.edits = [];
+  ET.undoStack = [];
+  document.getElementById('edittext-editcount').textContent = '0';
+  document.getElementById('edittext-undo').disabled = true;
+  edittextRenderPage();
+}
+
+async function runEditText() {
+  if(!ET.file) return;
+  if(ET.edits.length === 0) { showErr('edittext-err', '⚠ No edits made yet — click on text to edit it'); return; }
+
+  const btn = document.getElementById('edittext-btn');
+  btn.disabled = true;
+  const fin = animProg('edittext-pf','edittext-pp','edittext-pw');
+
+  try {
+    const bytes = await readBytes(ET.file);
+    setP('edittext-pf','edittext-pp', 10, 'Loading PDF…');
+
+    const doc = await PDFDocument.load(bytes, {ignoreEncryption: true});
+    const pages = doc.getPages();
+
+    // Embed the standard font (Helvetica covers most text)
+    const helvetica = await doc.embedFont(StandardFonts.Helvetica);
+    const helveticaBold = await doc.embedFont(StandardFonts.HelveticaBold);
+
+    // Group edits by page
+    const editsByPage = {};
+    ET.edits.forEach(e => {
+      if(!editsByPage[e.pageNum]) editsByPage[e.pageNum] = [];
+      editsByPage[e.pageNum].push(e);
+    });
+
+    const total = Object.keys(editsByPage).length;
+    let done = 0;
+
+    for(const [pageNumStr, pageEdits] of Object.entries(editsByPage)) {
+      const pageIdx = parseInt(pageNumStr) - 1;
+      const page = pages[pageIdx];
+      if(!page) continue;
+
+      const {width, height} = page.getSize();
+
+      for(const edit of pageEdits) {
+        // 1. Cover original text with white rectangle
+        const padding = 2;
+        page.drawRectangle({
+          x:      edit.x - padding,
+          y:      edit.y - padding,
+          width:  edit.w + padding * 2,
+          height: edit.h + padding * 2,
+          color:  rgb(1, 1, 1),
+          opacity: 1,
+        });
+
+        // 2. Draw the new text at the same position
+        if(edit.newText.trim()) {
+          const fontSize = Math.max(6, Math.min(edit.fontSize, 72));
+          const font = edit.fontName?.toLowerCase().includes('bold') ? helveticaBold : helvetica;
+          page.drawText(edit.newText, {
+            x:        edit.x,
+            y:        edit.y,
+            size:     fontSize,
+            font:     font,
+            color:    rgb(0, 0, 0),
+            opacity:  1,
+          });
+        }
+      }
+
+      done++;
+      setP('edittext-pf','edittext-pp', 10 + (done/total)*85, `Applying edits (${done}/${total})…`);
+    }
+
+    setP('edittext-pf','edittext-pp', 98, 'Saving…');
+    const out = await doc.save({useObjectStreams: false});
+
+    fin(() => {
+      dlBytes(out, ET.file.name.replace('.pdf','') + '_edited.pdf');
+      showRes('edittext-rb', '✓ PDF saved with ' + ET.edits.length + ' edit' + (ET.edits.length > 1 ? 's' : ''));
+      toast('PDF saved! ✓');
+      // Reset
+      ET.edits = [];
+      ET.undoStack = [];
+      ET.pjDoc = null;
+      document.getElementById('edittext-editcount').textContent = '0';
+      document.getElementById('edittext-undo').disabled = true;
+    });
+  } catch(e) {
+    fin(()=>{});
+    showErr('edittext-err', '⚠ ' + e.message);
+    btn.disabled = false;
+  }
+}
+
+// ── End Edit PDF Text ──
 
 </script>
 </body>
