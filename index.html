@@ -453,8 +453,8 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .nav.active{background:var(--accent-bg);color:var(--accent);font-weight:600;border-color:var(--accent-border)}
 .ni{font-size:14px;width:17px;text-align:center;flex-shrink:0}
 .sb-sec{font-size:10px;color:var(--hint);letter-spacing:.1em;text-transform:uppercase;padding:10px 10px 5px;font-weight:600}
-.panel{display:none!important;flex-direction:column;gap:15px;width:100%}
-.panel.active{display:flex;width:100%}
+.panel{display:none;flex-direction:column;gap:15px;width:100%}
+.panel.active{display:flex!important;width:100%}
 .home{display:none;flex-direction:column;gap:18px;width:100%}
 .home.active{display:flex;width:100%}
 .ph h2{font-size:19px;font-weight:700;letter-spacing:-.02em}
@@ -598,7 +598,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
   .main{padding:14px 14px 80px}
   .section-pills{display:flex}
   .bottom-nav{display:block}
-  .panel,.home{width:100%;max-width:none} .panel:not(.active){display:none!important}
+  .panel,.home{width:100%;max-width:none} .panel:not(.active){display:none}
   .tg{grid-template-columns:repeat(2,1fr);gap:8px}
   .dz{padding:22px 16px}
   .dz .di{font-size:20px;margin-bottom:6px}
