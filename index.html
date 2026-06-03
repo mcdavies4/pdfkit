@@ -2094,6 +2094,8 @@ function dismissInstall() {
   <div class="nav" data-t="ocr"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span><span class="nav-label" onclick="nav('ocr')"><span class="ni">🔍</span>OCR</span></div>
   <div class="nav" data-t="pdftext"><span class="nav-label" onclick="nav('pdftext')"><span class="ni">📝</span>PDF to Text</span></div>
   <div class="nav" data-t="pdftoword"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span><span class="nav-label" onclick="nav('pdftoword')"><span class="ni">📄</span>PDF to Word</span></div>
+  <div class="nav" data-t="pdftomd"><span class="nav-label" onclick="nav('pdftomd')"><span class="ni">#️⃣</span>PDF to Markdown <span style="font-size:9px;background:var(--accent);color:#fff;border-radius:3px;padding:1px 4px;margin-left:3px">PRO</span></span></div>
+  <div class="nav" data-t="mdtopdf"><span class="nav-label" onclick="nav('mdtopdf')"><span class="ni">📄</span>Markdown to PDF <span style="font-size:9px;background:var(--accent);color:#fff;border-radius:3px;padding:1px 4px;margin-left:3px">PRO</span></span></div>
   <div class="nav" data-t="images"><span class="nav-label" onclick="nav('images')"><span class="ni">📷</span>PDF to Images</span></div>
   <div class="nav" data-t="pdftocsv"><span class="nav-label" onclick="nav('pdftocsv')"><span class="ni">⊟</span>PDF to CSV</span></div>
   <div class="nav" data-t="preview"><span class="nav-label" onclick="nav('preview')"><span class="ni">◻</span>Preview</span></div>
@@ -2261,6 +2263,16 @@ function dismissInstall() {
       <span class="tc-icon">📄</span>
       <span class="tc-name">PDF to Word</span>
       <span class="tc-hint">Convert to .docx</span>
+    </div>
+    <div class="tool-card" onclick="nav('pdftomd')" data-t="pdftomd" style="position:relative"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span>
+      <span class="tc-icon">#️⃣</span>
+      <span class="tc-name">PDF to Markdown</span>
+      <span class="tc-hint">Export as .md for AI &amp; devs</span>
+    </div>
+    <div class="tool-card" onclick="nav('mdtopdf')" data-t="mdtopdf" style="position:relative"><span style="position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:1px 4px;line-height:1.4">PRO</span>
+      <span class="tc-icon">📄</span>
+      <span class="tc-name">Markdown to PDF</span>
+      <span class="tc-hint">Convert .md files to PDF</span>
     </div>
     <div class="tool-card" onclick="nav('images')" data-t="images">
       <span class="tc-icon">📷</span>
@@ -2609,6 +2621,123 @@ function dismissInstall() {
     <div class="pw" id="edittext-pw"><div class="pb"><div class="pf" id="edittext-pf"></div></div><div class="pl"><span>Saving…</span><span class="pp" id="edittext-pp">0%</span></div></div>
     <div class="rb" id="edittext-rb"></div>
   </div>
+</div>
+
+
+<!-- PDF TO MARKDOWN -->
+<div class="panel" id="panel-pdftomd">
+  <div class="ph">
+    <h2>#️⃣ PDF to Markdown</h2>
+    <p>Convert any PDF to clean Markdown — headings, lists, bold, tables. Perfect for AI workflows, documentation and developers.</p>
+  </div>
+
+  <div class="dz" onclick="dzClick('pdftomd-in')"><input type="file" id="pdftomd-in" accept=".pdf" onchange="pdftomdLoad(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p></div>
+  <div class="fl" id="pdftomd-fd"></div>
+
+  <div id="pdftomd-opts" style="display:none">
+    <!-- Options -->
+    <div style="background:var(--surface2);border-radius:8px;padding:12px;margin-bottom:4px">
+      <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px">Options</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer">
+          <input type="checkbox" id="pdftomd-headings" checked style="accent-color:var(--accent)"> Detect headings
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer">
+          <input type="checkbox" id="pdftomd-lists" checked style="accent-color:var(--accent)"> Detect lists
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer">
+          <input type="checkbox" id="pdftomd-tables" checked style="accent-color:var(--accent)"> Detect tables
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer">
+          <input type="checkbox" id="pdftomd-bold" checked style="accent-color:var(--accent)"> Detect bold/italic
+        </label>
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div style="background:var(--surface2);border-radius:8px;padding:12px">
+      <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
+        <span>Preview</span>
+        <button onclick="pdftomdCopyPreview()" style="font-size:11px;background:none;border:1px solid var(--border2);border-radius:5px;padding:3px 8px;color:var(--muted);cursor:pointer;font-family:inherit">Copy</button>
+      </div>
+      <pre id="pdftomd-preview" style="font-size:11px;color:var(--muted);white-space:pre-wrap;word-break:break-word;max-height:300px;overflow-y:auto;font-family:'SF Mono',monospace;line-height:1.6;background:var(--bg);border-radius:6px;padding:10px">Convert a PDF to see the Markdown preview here...</pre>
+    </div>
+  </div>
+
+  <div class="eb" id="pdftomd-err"></div>
+  <button class="btn btn-p btn-blk" id="pdftomd-btn" onclick="runPdfToMd()" disabled>Convert to Markdown &amp; Download</button>
+  <div class="pw" id="pdftomd-pw"><div class="pb"><div class="pf" id="pdftomd-pf"></div></div><div class="pl"><span>Converting…</span><span class="pp" id="pdftomd-pp">0%</span></div></div>
+  <div class="rb" id="pdftomd-rb"></div>
+</div>
+
+
+<!-- MARKDOWN TO PDF -->
+<div class="panel" id="panel-mdtopdf">
+  <div class="ph">
+    <h2>📄 Markdown to PDF</h2>
+    <p>Convert any Markdown file or paste Markdown text into a clean, styled PDF. Perfect for README files, documentation, AI output and technical reports.</p>
+  </div>
+
+  <!-- Two input modes: upload file or paste text -->
+  <div style="display:flex;gap:8px;margin-bottom:14px">
+    <button id="mdtopdf-tab-file" onclick="mdtopdfSetTab('file')" class="seg on" data-m="file">Upload .md file</button>
+    <button id="mdtopdf-tab-paste" onclick="mdtopdfSetTab('paste')" class="seg" data-m="paste">Paste Markdown</button>
+  </div>
+
+  <!-- File upload -->
+  <div id="mdtopdf-file-wrap">
+    <div class="dz" onclick="dzClick('mdtopdf-in')"><input type="file" id="mdtopdf-in" accept=".md,.markdown,.txt" onchange="mdtopdfLoadFile(this.files[0])" onclick="event.stopPropagation()"><div class="di">⬆</div><h3>Drop a .md file here</h3><p>Click to browse</p></div>
+    <div class="fl" id="mdtopdf-fd"></div>
+  </div>
+
+  <!-- Paste area -->
+  <div id="mdtopdf-paste-wrap" style="display:none">
+    <textarea id="mdtopdf-input" placeholder="# My Document&#10;&#10;Paste your Markdown here...&#10;&#10;## Features&#10;- Item one&#10;- Item two&#10;&#10;**Bold text** and *italic text* supported." style="width:100%;height:200px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:12px;color:var(--text);font-family:'SF Mono',monospace;font-size:12px;resize:vertical;outline:none;line-height:1.6" oninput="mdtopdfUpdatePreview()"></textarea>
+  </div>
+
+  <!-- Style options -->
+  <div style="background:var(--surface2);border-radius:8px;padding:12px;margin-top:10px">
+    <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px">Style</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div>
+        <label class="lbl">Theme</label>
+        <select id="mdtopdf-theme" onchange="mdtopdfUpdatePreview()" style="width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:6px;padding:6px 8px;color:var(--text);font-size:12px">
+          <option value="clean">Clean (default)</option>
+          <option value="github">GitHub style</option>
+          <option value="minimal">Minimal</option>
+          <option value="dark">Dark</option>
+        </select>
+      </div>
+      <div>
+        <label class="lbl">Font size</label>
+        <select id="mdtopdf-fontsize" style="width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:6px;padding:6px 8px;color:var(--text);font-size:12px">
+          <option value="11">Small (11pt)</option>
+          <option value="12" selected>Medium (12pt)</option>
+          <option value="14">Large (14pt)</option>
+        </select>
+      </div>
+      <div>
+        <label class="lbl">Page size</label>
+        <select id="mdtopdf-pagesize" style="width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:6px;padding:6px 8px;color:var(--text);font-size:12px">
+          <option value="a4" selected>A4</option>
+          <option value="letter">Letter</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview -->
+  <div style="background:var(--surface2);border-radius:8px;padding:12px;margin-top:10px">
+    <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px">Preview</div>
+    <div id="mdtopdf-preview" style="background:#fff;border-radius:6px;padding:16px;min-height:80px;font-size:13px;color:#1a1a1a;line-height:1.7;max-height:300px;overflow-y:auto">
+      <p style="color:#aaa;font-size:12px">Upload a file or paste Markdown to see a preview…</p>
+    </div>
+  </div>
+
+  <div class="eb" id="mdtopdf-err"></div>
+  <button class="btn btn-p btn-blk" id="mdtopdf-btn" onclick="runMdToPdf()" disabled>Convert to PDF &amp; Download</button>
+  <div class="pw" id="mdtopdf-pw"><div class="pb"><div class="pf" id="mdtopdf-pf"></div></div><div class="pl"><span>Building PDF…</span><span class="pp" id="mdtopdf-pp">0%</span></div></div>
+  <div class="rb" id="mdtopdf-rb"></div>
 </div>
 
 
@@ -32373,7 +32502,7 @@ const PRO_TOOLS = new Set([
   "ocr","pdftoword","bulkextract","esign",
   "bates","redline","compare-pdf","qrstamp",
   "metadata","crop","resize","flatten",
-  "grayscale","nup","dupepage","fillform","headfoot","edittext"
+  "grayscale","nup","dupepage","fillform","headfoot","edittext","pdftomd","mdtopdf"
 ]);
 
 
@@ -34645,7 +34774,9 @@ const PRO_TOOL_NAMES = {
   dupepage: "Duplicate Page",
   fillform: "Fill Form",
   headfoot: "Header / Footer",
-  edittext: "Edit PDF Text"
+  edittext: "Edit PDF Text",
+  pdftomd: "PDF to Markdown",
+  mdtopdf: "Markdown to PDF"
 };
 
 function showUpgradeModal(tool) {
@@ -35461,6 +35592,714 @@ function setP(a, b, c, d) {
   if(barId) { const el = document.getElementById(barId); if(el) el.style.width = Math.round(pct||0) + '%'; }
   if(pctId) { const el = document.getElementById(pctId); if(el) el.textContent = Math.round(pct||0) + '%'; }
 }
+
+
+
+// ═══════════════════════════════════════════════
+// PDF TO MARKDOWN TOOL
+// Uses pdfjs to extract text with font metadata
+// Detects: headings (by font size), lists, bold,
+// italic, tables, code blocks
+// ═══════════════════════════════════════════════
+
+const MD = {
+  file: null,
+  result: '',
+};
+
+function pdftomdLoad(f) {
+  if(!f) return;
+  MD.file = f;
+  _load(f, 'pdftomdFile', 'pdftomd-fd', 'pdftomd-btn');
+  document.getElementById('pdftomd-opts').style.display = 'block';
+  // Auto-preview
+  setTimeout(pdftomdPreview, 200);
+}
+
+async function pdftomdPreview() {
+  if(!MD.file) return;
+  const preview = document.getElementById('pdftomd-preview');
+  if(preview) preview.textContent = 'Analysing PDF…';
+  try {
+    const md = await pdfToMarkdown(MD.file, { maxPages: 3 });
+    MD.result = md;
+    if(preview) preview.textContent = md.substring(0, 2000) + (md.length > 2000 ? '\n\n…(preview truncated)' : '');
+  } catch(e) {
+    if(preview) preview.textContent = 'Preview failed: ' + e.message;
+  }
+}
+
+function pdftomdCopyPreview() {
+  const text = document.getElementById('pdftomd-preview')?.textContent;
+  if(!text) return;
+  navigator.clipboard.writeText(text).then(() => toast('Copied! ✓'));
+}
+
+async function runPdfToMd() {
+  if(!MD.file) return;
+  const btn = document.getElementById('pdftomd-btn');
+  btn.disabled = true;
+  const fin = animProg('pdftomd-pf','pdftomd-pp','pdftomd-pw');
+
+  try {
+    setP('pdftomd-pf','pdftomd-pp', 5, 'Reading PDF…');
+    const md = await pdfToMarkdown(MD.file, { maxPages: 9999 });
+    setP('pdftomd-pf','pdftomd-pp', 95, 'Building .md file…');
+
+    // Create .md blob and download
+    const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = MD.file.name.replace(/\.pdf$/i, '') + '.md';
+    a.click();
+    URL.revokeObjectURL(url);
+
+    fin(() => {
+      showRes('pdftomd-rb', '✓ Markdown file downloaded — ' + md.split('\n').length + ' lines');
+      toast('Done! ✓');
+      MD.result = md;
+    });
+  } catch(e) {
+    fin(()=>{});
+    showErr('pdftomd-err', '⚠ ' + e.message);
+    btn.disabled = false;
+  }
+}
+
+// ── Core conversion engine ──
+async function pdfToMarkdown(file, opts = {}) {
+  const { maxPages = 9999 } = opts;
+  const useHeadings = document.getElementById('pdftomd-headings')?.checked !== false;
+  const useLists    = document.getElementById('pdftomd-lists')?.checked !== false;
+  const useTables   = document.getElementById('pdftomd-tables')?.checked !== false;
+  const useBold     = document.getElementById('pdftomd-bold')?.checked !== false;
+
+  const bytes = await readBytes(file);
+  const pj    = await pdfjsLib.getDocument({ data: bytes }).promise;
+  const total = Math.min(pj.numPages, maxPages);
+
+  // Collect all text items with metadata
+  const allItems = [];
+  for(let p = 1; p <= total; p++) {
+    setP('pdftomd-pf','pdftomd-pp', 5 + (p/total)*85, `Page ${p} of ${total}…`);
+    const page    = await pj.getPage(p);
+    const content = await page.getTextContent({ includeMarkedContent: false });
+    const vp      = page.getViewport({ scale: 1 });
+
+    content.items.forEach(item => {
+      if(!item.str?.trim()) return;
+      allItems.push({
+        text:     item.str,
+        x:        item.transform[4],
+        y:        vp.height - item.transform[5], // flip Y (PDF Y is bottom-up)
+        fontSize: Math.abs(item.transform[3]) || Math.abs(item.transform[0]),
+        fontName: item.fontName || '',
+        width:    item.width,
+        page:     p,
+      });
+    });
+  }
+
+  if(allItems.length === 0) throw new Error('No text found. Is this a scanned PDF? Try OCR first.');
+
+  // Calculate median font size (body text reference)
+  const sizes   = allItems.map(i => i.fontSize).sort((a,b) => a-b);
+  const median  = sizes[Math.floor(sizes.length / 2)];
+  const maxSize = sizes[sizes.length - 1];
+
+  // Group items into lines (same Y within tolerance)
+  const lines = [];
+  let currentLine = [];
+  let lastY = -9999, lastPage = -1;
+
+  const sorted = [...allItems].sort((a,b) => {
+    if(a.page !== b.page) return a.page - b.page;
+    if(Math.abs(a.y - b.y) > 3) return a.y - b.y;
+    return a.x - b.x;
+  });
+
+  sorted.forEach(item => {
+    if(lastPage !== item.page || Math.abs(item.y - lastY) > item.fontSize * 0.8) {
+      if(currentLine.length) lines.push(currentLine);
+      currentLine = [item];
+    } else {
+      // Same line - add space if gap between items
+      const last = currentLine[currentLine.length - 1];
+      const gap  = item.x - (last.x + last.width);
+      if(gap > last.fontSize * 0.5) currentLine.push({ ...item, text: ' ' + item.text });
+      else currentLine.push(item);
+    }
+    lastY    = item.y;
+    lastPage = item.page;
+  });
+  if(currentLine.length) lines.push(currentLine);
+
+  // Convert each line to Markdown
+  const mdLines = [];
+  let prevBlank = false;
+
+  lines.forEach(line => {
+    const text     = line.map(i => i.text).join('').trim();
+    if(!text) { if(!prevBlank) mdLines.push(''); prevBlank = true; return; }
+    prevBlank = false;
+
+    const avgSize  = line.reduce((s,i) => s + i.fontSize, 0) / line.length;
+    const isBoldFont = line.some(i => /bold|heavy|black/i.test(i.fontName));
+    const isItalic   = line.some(i => /italic|oblique/i.test(i.fontName));
+    const lineX      = line[0].x;
+    const isIndented = lineX > 60; // rough indent detection
+
+    // Heading detection
+    if(useHeadings && avgSize > median * 1.4) {
+      const ratio = avgSize / median;
+      if(ratio >= 2.0 || avgSize >= maxSize * 0.9)      mdLines.push('\n# ' + text);
+      else if(ratio >= 1.6)                              mdLines.push('\n## ' + text);
+      else if(ratio >= 1.3)                              mdLines.push('\n### ' + text);
+      else                                               mdLines.push('\n#### ' + text);
+      return;
+    }
+
+    // Bold heading (same size but bold font)
+    if(useHeadings && isBoldFont && avgSize >= median * 1.1 && text.length < 80) {
+      mdLines.push('\n### ' + text);
+      return;
+    }
+
+    // List detection
+    if(useLists) {
+      const bulletMatch = text.match(/^([•\-\*\u2022\u2023\u25E6\u2043])\s+(.+)/);
+      const numberedMatch = text.match(/^(\d+[\.\)])\s+(.+)/);
+      if(bulletMatch)  { mdLines.push('- ' + bulletMatch[2]);  return; }
+      if(numberedMatch){ mdLines.push(numberedMatch[1] + ' ' + numberedMatch[2].trim()); return; }
+    }
+
+    // Apply bold/italic inline formatting
+    let formatted = text;
+    if(useBold) {
+      if(isBoldFont && isItalic)  formatted = '***' + text + '***';
+      else if(isBoldFont)         formatted = '**' + text + '**';
+      else if(isItalic)           formatted = '*' + text + '*';
+    }
+
+    mdLines.push(formatted);
+  });
+
+  // Clean up excessive blank lines
+  const result = mdLines
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+
+  return result;
+}
+
+// ── End PDF to Markdown ──
+
+
+
+async function pdfToMarkdown(file, opts = {}) {
+  const { maxPages = 9999 } = opts;
+  const useHeadings = document.getElementById('pdftomd-headings')?.checked !== false;
+  const useLists    = document.getElementById('pdftomd-lists')?.checked !== false;
+  const useTables   = document.getElementById('pdftomd-tables')?.checked !== false;
+  const useBold     = document.getElementById('pdftomd-bold')?.checked !== false;
+
+  const bytes = await readBytes(file);
+  const pj    = await pdfjsLib.getDocument({ data: bytes }).promise;
+  const total = Math.min(pj.numPages, maxPages);
+
+  // Collect all text items with metadata
+  const allItems = [];
+  for(let p = 1; p <= total; p++) {
+    setP('pdftomd-pf','pdftomd-pp', 5 + (p/total)*85, `Page ${p} of ${total}…`);
+    const page    = await pj.getPage(p);
+    const content = await page.getTextContent({ includeMarkedContent: false });
+    const vp      = page.getViewport({ scale: 1 });
+
+    content.items.forEach(item => {
+      if(!item.str?.trim()) return;
+      allItems.push({
+        text:     item.str,
+        x:        item.transform[4],
+        y:        vp.height - item.transform[5], // flip Y (PDF Y is bottom-up)
+        fontSize: Math.abs(item.transform[3]) || Math.abs(item.transform[0]),
+        fontName: item.fontName || '',
+        width:    item.width,
+        page:     p,
+      });
+    });
+  }
+
+  if(allItems.length === 0) throw new Error('No text found. Is this a scanned PDF? Try OCR first.');
+
+  // Calculate median font size (body text reference)
+  const sizes   = allItems.map(i => i.fontSize).sort((a,b) => a-b);
+  const median  = sizes[Math.floor(sizes.length / 2)];
+  const maxSize = sizes[sizes.length - 1];
+
+  // Group items into lines (same Y within tolerance)
+  const lines = [];
+  let currentLine = [];
+  let lastY = -9999, lastPage = -1;
+
+  const sorted = [...allItems].sort((a,b) => {
+    if(a.page !== b.page) return a.page - b.page;
+    if(Math.abs(a.y - b.y) > 3) return a.y - b.y;
+    return a.x - b.x;
+  });
+
+  sorted.forEach(item => {
+    if(lastPage !== item.page || Math.abs(item.y - lastY) > item.fontSize * 0.8) {
+      if(currentLine.length) lines.push(currentLine);
+      currentLine = [item];
+    } else {
+      // Same line - add space if gap between items
+      const last = currentLine[currentLine.length - 1];
+      const gap  = item.x - (last.x + last.width);
+      if(gap > last.fontSize * 0.5) currentLine.push({ ...item, text: ' ' + item.text });
+      else currentLine.push(item);
+    }
+    lastY    = item.y;
+    lastPage = item.page;
+  });
+  if(currentLine.length) lines.push(currentLine);
+
+  // Convert each line to Markdown
+  const mdLines = [];
+  let prevBlank = false;
+
+  lines.forEach(line => {
+    const text     = line.map(i => i.text).join('').trim();
+    if(!text) { if(!prevBlank) mdLines.push(''); prevBlank = true; return; }
+    prevBlank = false;
+
+    const avgSize  = line.reduce((s,i) => s + i.fontSize, 0) / line.length;
+    const isBoldFont = line.some(i => /bold|heavy|black/i.test(i.fontName));
+    const isItalic   = line.some(i => /italic|oblique/i.test(i.fontName));
+    const lineX      = line[0].x;
+    const isIndented = lineX > 60; // rough indent detection
+
+    // Heading detection
+    if(useHeadings && avgSize > median * 1.4) {
+      const ratio = avgSize / median;
+      if(ratio >= 2.0 || avgSize >= maxSize * 0.9)      mdLines.push('\n# ' + text);
+      else if(ratio >= 1.6)                              mdLines.push('\n## ' + text);
+      else if(ratio >= 1.3)                              mdLines.push('\n### ' + text);
+      else                                               mdLines.push('\n#### ' + text);
+      return;
+    }
+
+    // Bold heading (same size but bold font)
+    if(useHeadings && isBoldFont && avgSize >= median * 1.1 && text.length < 80) {
+      mdLines.push('\n### ' + text);
+      return;
+    }
+
+    // List detection
+    if(useLists) {
+      const bulletMatch = text.match(/^([•\-\*\u2022\u2023\u25E6\u2043])\s+(.+)/);
+      const numberedMatch = text.match(/^(\d+[\.\)])\s+(.+)/);
+      if(bulletMatch)  { mdLines.push('- ' + bulletMatch[2]);  return; }
+      if(numberedMatch){ mdLines.push(numberedMatch[1] + ' ' + numberedMatch[2].trim()); return; }
+    }
+
+    // Apply bold/italic inline formatting
+    let formatted = text;
+    if(useBold) {
+      if(isBoldFont && isItalic)  formatted = '***' + text + '***';
+      else if(isBoldFont)         formatted = '**' + text + '**';
+      else if(isItalic)           formatted = '*' + text + '*';
+    }
+
+    mdLines.push(formatted);
+  });
+
+  // Clean up excessive blank lines
+  const result = mdLines
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+
+  return result;
+}
+
+// ── End PDF to Markdown ──
+
+// ═══════════════════════════════════════════════
+// MARKDOWN TO PDF TOOL
+// Parses Markdown → HTML → renders in pdf-lib
+// Supports: headings, bold, italic, lists,
+// code blocks, blockquotes, tables, hr
+// ═══════════════════════════════════════════════
+
+const MDPDF = {
+  file: null,
+  text: '',
+  filename: 'document',
+};
+
+function mdtopdfSetTab(tab) {
+  document.querySelectorAll('#panel-mdtopdf .seg').forEach(b => b.classList.remove('on'));
+  document.getElementById('mdtopdf-tab-' + tab)?.classList.add('on');
+  document.getElementById('mdtopdf-file-wrap').style.display = tab === 'file' ? 'block' : 'none';
+  document.getElementById('mdtopdf-paste-wrap').style.display = tab === 'paste' ? 'block' : 'none';
+  const btn = document.getElementById('mdtopdf-btn');
+  if(tab === 'paste') { btn.disabled = false; }
+}
+
+function mdtopdfLoadFile(f) {
+  if(!f) return;
+  MDPDF.file = f;
+  MDPDF.filename = f.name.replace(/\.(md|markdown|txt)$/i, '');
+  document.getElementById('mdtopdf-fd').innerHTML = chip(f);
+  document.getElementById('mdtopdf-btn').disabled = false;
+  const reader = new FileReader();
+  reader.onload = e => {
+    MDPDF.text = e.target.result;
+    mdtopdfUpdatePreview();
+  };
+  reader.readAsText(f);
+}
+
+function mdtopdfUpdatePreview() {
+  const tab  = document.getElementById('mdtopdf-tab-paste')?.classList.contains('on');
+  const text = tab
+    ? document.getElementById('mdtopdf-input')?.value || ''
+    : MDPDF.text;
+  if(!text.trim()) return;
+  MDPDF.text = text;
+  const theme = document.getElementById('mdtopdf-theme')?.value || 'clean';
+  const html  = markdownToHtml(text);
+  const preview = document.getElementById('mdtopdf-preview');
+  if(preview) {
+    preview.innerHTML = `<style>${getThemeCSS(theme)}</style>` + html;
+  }
+}
+
+// ── Markdown parser ──
+function markdownToHtml(md) {
+  let html = md
+    // Escape HTML
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    // Code blocks (``` ```)
+    .replace(/```([\w]*)\n([\s\S]*?)```/gm, (_, lang, code) =>
+      `<pre><code class="lang-${lang}">${code.trim()}</code></pre>`)
+    // Inline code
+    .replace(/`([^`\n]+)`/g, '<code>$1</code>')
+    // Headings
+    .replace(/^###### (.+)$/gm, '<h6>$1</h6>')
+    .replace(/^##### (.+)$/gm, '<h5>$1</h5>')
+    .replace(/^#### (.+)$/gm, '<h4>$1</h4>')
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    // Blockquotes
+    .replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>')
+    // Bold + italic
+    .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/__(.+?)__/g, '<strong>$1</strong>')
+    .replace(/_(.+?)_/g, '<em>$1</em>')
+    // Strikethrough
+    .replace(/~~(.+?)~~/g, '<del>$1</del>')
+    // Horizontal rule
+    .replace(/^---+$/gm, '<hr>')
+    .replace(/^\*\*\*+$/gm, '<hr>')
+    // Unordered lists
+    .replace(/^[\-\*\+] (.+)$/gm, '<li>$1</li>')
+    // Ordered lists
+    .replace(/^\d+\. (.+)$/gm, '<oli>$1</oli>')
+    // Links
+    .replace(/\[([^\]]+)\]\(([^\)]+)\)/g, '<a href="$2">$1</a>')
+    // Images (show as [image: alt])
+    .replace(/!\[([^\]]*)\]\([^\)]+\)/g, '<em>[image: $1]</em>')
+    // Line breaks and paragraphs
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+
+  // Wrap li elements in ul
+  html = html.replace(/(<li>.*?<\/li>(\s*<br>)*)+/gs, m =>
+    '<ul>' + m.replace(/<br>/g,'') + '</ul>');
+  // Wrap oli elements in ol
+  html = html.replace(/(<oli>.*?<\/oli>(\s*<br>)*)+/gs, m =>
+    '<ol>' + m.replace(/<oli>/g,'<li>').replace(/<\/oli>/g,'</li>').replace(/<br>/g,'') + '</ol>');
+
+  return '<p>' + html + '</p>';
+}
+
+// ── Theme CSS ──
+function getThemeCSS(theme) {
+  const base = `
+    body,div{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.7}
+    h1{font-size:24px;font-weight:800;margin:16px 0 8px;letter-spacing:-.02em}
+    h2{font-size:20px;font-weight:700;margin:14px 0 6px}
+    h3{font-size:17px;font-weight:700;margin:12px 0 5px}
+    h4,h5,h6{font-size:15px;font-weight:600;margin:10px 0 4px}
+    p{margin:0 0 10px;font-size:13px}
+    ul,ol{padding-left:20px;margin:0 0 10px;font-size:13px}
+    li{margin-bottom:4px}
+    code{font-family:'SF Mono',Consolas,monospace;font-size:11px;padding:2px 5px;border-radius:3px}
+    pre{border-radius:6px;padding:12px;overflow-x:auto;margin:10px 0}
+    pre code{padding:0;background:none}
+    blockquote{border-left:3px solid #E8450A;margin:10px 0;padding:6px 12px;font-style:italic}
+    hr{border:none;border-top:1px solid #eee;margin:16px 0}
+    a{color:#E8450A;text-decoration:none}
+    strong{font-weight:700} em{font-style:italic} del{text-decoration:line-through}
+  `;
+  const themes = {
+    clean:   'body{color:#1a1a1a;background:#fff} code{background:#f5f5f5;color:#e8450a} pre{background:#f5f5f5}',
+    github:  'body{color:#24292e;background:#fff} h1,h2{border-bottom:1px solid #eee;padding-bottom:6px} code{background:#f6f8fa;color:#d63384} pre{background:#f6f8fa}',
+    minimal: 'body{color:#333;background:#fff;font-family:Georgia,serif} h1,h2,h3{font-family:-apple-system,sans-serif} code{background:#f0f0f0} pre{background:#f0f0f0}',
+    dark:    'body{color:#f0ede8;background:#1a1a2e} h1{color:#E8450A} code{background:#0d0d1a;color:#2ECC71} pre{background:#0d0d1a} blockquote{border-color:#E8450A}',
+  };
+  return base + (themes[theme] || themes.clean);
+}
+
+async function runMdToPdf() {
+  const tab = document.getElementById('mdtopdf-tab-paste')?.classList.contains('on');
+  const text = tab
+    ? document.getElementById('mdtopdf-input')?.value || ''
+    : MDPDF.text;
+
+  if(!text.trim()) { showErr('mdtopdf-err','⚠ No content — upload a file or paste Markdown first'); return; }
+
+  const btn = document.getElementById('mdtopdf-btn');
+  btn.disabled = true;
+  const fin = animProg('mdtopdf-pf','mdtopdf-pp','mdtopdf-pw');
+
+  try {
+    setP('mdtopdf-pf','mdtopdf-pp', 10, 'Parsing Markdown…');
+    const theme    = document.getElementById('mdtopdf-theme')?.value || 'clean';
+    const fontSize = parseInt(document.getElementById('mdtopdf-fontsize')?.value) || 12;
+    const pageSize = document.getElementById('mdtopdf-pagesize')?.value || 'a4';
+
+    // Page dimensions in points
+    const pageW = pageSize === 'letter' ? 612 : 595;
+    const pageH = pageSize === 'letter' ? 792 : 842;
+    const margin = 50;
+    const contentW = pageW - margin * 2;
+
+    setP('mdtopdf-pf','mdtopdf-pp', 20, 'Building PDF…');
+
+    // Parse markdown into tokens
+    const tokens = parseMarkdownTokens(text);
+
+    // Create PDF
+    const doc  = await PDFDocument.create();
+    const font = await doc.embedFont(StandardFonts.Helvetica);
+    const bold = await doc.embedFont(StandardFonts.HelveticaBold);
+    const ital = await doc.embedFont(StandardFonts.HelveticaOblique);
+
+    let page  = doc.addPage([pageW, pageH]);
+    let y     = pageH - margin;
+    const lineH = fontSize * 1.6;
+
+    // Determine colors based on theme
+    const isDark = theme === 'dark';
+    const bgColor   = isDark ? rgb(0.1,0.1,0.16) : rgb(1,1,1);
+    const textColor = isDark ? rgb(0.94,0.93,0.91) : rgb(0.1,0.1,0.1);
+    const accentClr = rgb(0.91,0.27,0.04);
+    const mutedClr  = isDark ? rgb(0.6,0.6,0.6) : rgb(0.4,0.4,0.4);
+    const codeBg    = isDark ? rgb(0.05,0.05,0.1) : rgb(0.96,0.96,0.96);
+
+    function newPage() {
+      if(isDark) page.drawRectangle({x:0,y:0,width:pageW,height:pageH,color:bgColor});
+      page = doc.addPage([pageW, pageH]);
+      if(isDark) page.drawRectangle({x:0,y:0,width:pageW,height:pageH,color:bgColor});
+      y = pageH - margin;
+    }
+
+    function ensureSpace(needed) {
+      if(y - needed < margin) newPage();
+    }
+
+    function drawText(text, x, size, f, color, maxW) {
+      if(!text.trim()) return;
+      // Word wrap
+      const words = text.split(' ');
+      let line = '';
+      const lines = [];
+      words.forEach(word => {
+        const test = line ? line + ' ' + word : word;
+        const w = f.widthOfTextAtSize(test, size);
+        if(w > maxW && line) { lines.push(line); line = word; }
+        else line = test;
+      });
+      if(line) lines.push(line);
+      return lines;
+    }
+
+    // Render tokens to PDF
+    for(let ti = 0; ti < tokens.length; ti++) {
+      const tok = tokens[ti];
+      setP('mdtopdf-pf','mdtopdf-pp', 20 + (ti/tokens.length)*75, 'Rendering…');
+
+      if(tok.type === 'h1') {
+        ensureSpace(lineH * 2.5);
+        const size = fontSize + 12;
+        const lines = drawText(tok.text, margin, size, bold, accentClr, contentW);
+        lines?.forEach(l => {
+          y -= size * 1.5;
+          page.drawText(l, {x:margin, y, size, font:bold, color:accentClr});
+        });
+        // underline
+        y -= 4;
+        page.drawLine({start:{x:margin,y},end:{x:pageW-margin,y},thickness:1,color:accentClr,opacity:0.4});
+        y -= 8;
+      }
+      else if(tok.type === 'h2') {
+        ensureSpace(lineH * 2);
+        const size = fontSize + 7;
+        const lines = drawText(tok.text, margin, size, bold, textColor, contentW);
+        y -= 8;
+        lines?.forEach(l => {
+          y -= size * 1.4;
+          page.drawText(l, {x:margin, y, size, font:bold, color:textColor});
+        });
+        y -= 6;
+      }
+      else if(tok.type === 'h3') {
+        ensureSpace(lineH * 1.5);
+        const size = fontSize + 3;
+        const lines = drawText(tok.text, margin, size, bold, textColor, contentW);
+        y -= 6;
+        lines?.forEach(l => {
+          y -= size * 1.4;
+          page.drawText(l, {x:margin, y, size, font:bold, color:textColor});
+        });
+        y -= 4;
+      }
+      else if(tok.type === 'p') {
+        const lines = drawText(tok.text, margin, fontSize, font, textColor, contentW) || [];
+        lines.forEach(l => {
+          ensureSpace(lineH);
+          y -= lineH;
+          page.drawText(l, {x:margin, y, size:fontSize, font, color:textColor});
+        });
+        y -= 6;
+      }
+      else if(tok.type === 'li') {
+        ensureSpace(lineH);
+        const indent = margin + (tok.depth || 0) * 14;
+        const bullet = tok.ordered ? (tok.index + '.') : '•';
+        page.drawText(bullet, {x:indent, y:y-lineH+2, size:fontSize, font, color:accentClr});
+        const lines = drawText(tok.text, indent+16, fontSize, font, textColor, contentW-(indent-margin)-16) || [];
+        lines.forEach((l,i) => {
+          y -= lineH;
+          page.drawText(l, {x:indent+16, y, size:fontSize, font, color:textColor});
+        });
+      }
+      else if(tok.type === 'code') {
+        const codeLines = tok.text.split('\n');
+        const blockH = codeLines.length * (fontSize * 1.3) + 16;
+        ensureSpace(blockH + 8);
+        y -= 6;
+        page.drawRectangle({x:margin-4, y:y-blockH, width:contentW+8, height:blockH, color:codeBg, borderRadius:4});
+        codeLines.forEach(l => {
+          y -= fontSize * 1.3;
+          if(l) page.drawText(l, {x:margin+4, y, size:fontSize-1, font:ital, color:mutedClr});
+        });
+        y -= 10;
+      }
+      else if(tok.type === 'blockquote') {
+        ensureSpace(lineH * 1.5);
+        y -= 4;
+        page.drawLine({start:{x:margin,y},end:{x:margin,y:y-lineH*1.2},thickness:3,color:accentClr});
+        const lines = drawText(tok.text, margin+12, fontSize, ital, mutedClr, contentW-12) || [];
+        lines.forEach(l => {
+          y -= lineH;
+          page.drawText(l, {x:margin+12, y, size:fontSize, font:ital, color:mutedClr});
+        });
+        y -= 6;
+      }
+      else if(tok.type === 'hr') {
+        ensureSpace(20);
+        y -= 10;
+        page.drawLine({start:{x:margin,y},end:{x:pageW-margin,y},thickness:0.5,color:mutedClr,opacity:0.4});
+        y -= 10;
+      }
+    }
+
+    setP('mdtopdf-pf','mdtopdf-pp', 97, 'Saving…');
+    const out = await doc.save({useObjectStreams:false});
+    const fname = (MDPDF.filename || 'document') + '.pdf';
+
+    fin(() => {
+      dlBytes(out, fname);
+      showRes('mdtopdf-rb', '✓ PDF saved — ' + doc.getPageCount() + ' page' + (doc.getPageCount()>1?'s':''));
+      toast('Done! ✓');
+      btn.disabled = false;
+    });
+  } catch(e) {
+    fin(()=>{});
+    showErr('mdtopdf-err','⚠ ' + e.message);
+    btn.disabled = false;
+  }
+}
+
+// ── Markdown tokeniser ──
+function parseMarkdownTokens(md) {
+  const tokens = [];
+  const lines  = md.split('\n');
+  let inCode   = false, codeLines = [], codeLang = '';
+  let inList   = false, listItems = [], listOrdered = false, listIndex = 1;
+
+  function flushList() {
+    if(!listItems.length) return;
+    listItems.forEach((item, i) => tokens.push({type:'li', text:item.text, ordered:listOrdered, index:i+1, depth:item.depth||0}));
+    listItems = []; inList = false;
+  }
+
+  lines.forEach(line => {
+    // Code block
+    if(line.startsWith('```')) {
+      if(inCode) { tokens.push({type:'code', text:codeLines.join('\n'), lang:codeLang}); codeLines=[]; inCode=false; }
+      else { inCode=true; codeLang=line.slice(3).trim(); }
+      return;
+    }
+    if(inCode) { codeLines.push(line); return; }
+
+    // Headings
+    const hMatch = line.match(/^(#{1,6}) (.+)/);
+    if(hMatch) { flushList(); tokens.push({type:'h'+hMatch[1].length, text:hMatch[2].trim()}); return; }
+
+    // HR
+    if(/^(-{3,}|\*{3,})$/.test(line.trim())) { flushList(); tokens.push({type:'hr'}); return; }
+
+    // Blockquote
+    const bqMatch = line.match(/^> (.+)/);
+    if(bqMatch) { flushList(); tokens.push({type:'blockquote', text:bqMatch[1]}); return; }
+
+    // Unordered list
+    const ulMatch = line.match(/^(\s*)[-\*\+] (.+)/);
+    if(ulMatch) { if(!inList){inList=true;listOrdered=false;} listItems.push({text:ulMatch[2], depth:Math.floor(ulMatch[1].length/2)}); return; }
+
+    // Ordered list
+    const olMatch = line.match(/^(\s*)\d+[\.)] (.+)/);
+    if(olMatch) { if(!inList){inList=true;listOrdered=true;listIndex=1;} listItems.push({text:olMatch[2], depth:Math.floor(olMatch[1].length/2)}); return; }
+
+    // Regular paragraph
+    flushList();
+    const clean = line
+      .replace(/\*\*\*(.+?)\*\*\*/g,'$1')
+      .replace(/\*\*(.+?)\*\*/g,'$1')
+      .replace(/\*(.+?)\*/g,'$1')
+      .replace(/__(.+?)__/g,'$1')
+      .replace(/_(.+?)_/g,'$1')
+      .replace(/~~(.+?)~~/g,'$1')
+      .replace(/`([^`]+)`/g,'$1')
+      .replace(/\[([^\]]+)\]\([^\)]+\)/g,'$1')
+      .replace(/!\[[^\]]*\]\([^\)]+\)/g,'');
+    if(clean.trim()) tokens.push({type:'p', text:clean.trim()});
+  });
+
+  flushList();
+  return tokens;
+}
+
+// ── End Markdown to PDF ──
 
 </script>
 </body>
