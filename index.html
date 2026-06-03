@@ -35359,8 +35359,7 @@ async function runEditText() {
     const doc = await PDFDocument.load(bytes, {ignoreEncryption: true});
     const pages = doc.getPages();
 
-    // Embed the standard font (Helvetica covers most text)
-    const helvetica = await doc.embedFont(StandardFonts.Helvetica);
+    const helvetica    = await doc.embedFont(StandardFonts.Helvetica);
     const helveticaBold = await doc.embedFont(StandardFonts.HelveticaBold);
 
     // Group edits by page
@@ -35378,31 +35377,22 @@ async function runEditText() {
       const page = pages[pageIdx];
       if(!page) continue;
 
-      const {width, height} = page.getSize();
-
       for(const edit of pageEdits) {
-        // 1. Cover original text with white rectangle
-        const padding = 2;
+        // Cover original text with white rect
+        const pad = 2;
         page.drawRectangle({
-          x:      edit.x - padding,
-          y:      edit.y - padding,
-          width:  edit.w + padding * 2,
-          height: edit.h + padding * 2,
-          color:  rgb(1, 1, 1),
-          opacity: 1,
+          x: edit.x - pad, y: edit.y - pad,
+          width: edit.w + pad*2, height: edit.h + pad*2,
+          color: rgb(1,1,1), opacity: 1,
         });
-
-        // 2. Draw the new text at the same position
+        // Draw replacement text
         if(edit.newText.trim()) {
           const fontSize = Math.max(6, Math.min(edit.fontSize, 72));
           const font = edit.fontName?.toLowerCase().includes('bold') ? helveticaBold : helvetica;
           page.drawText(edit.newText, {
-            x:        edit.x,
-            y:        edit.y,
-            size:     fontSize,
-            font:     font,
-            color:    rgb(0, 0, 0),
-            opacity:  1,
+            x: edit.x, y: edit.y,
+            size: fontSize, font: font,
+            color: rgb(0,0,0), opacity: 1,
           });
         }
       }
@@ -35418,10 +35408,7 @@ async function runEditText() {
       dlBytes(out, ET.file.name.replace('.pdf','') + '_edited.pdf');
       showRes('edittext-rb', '✓ PDF saved with ' + ET.edits.length + ' edit' + (ET.edits.length > 1 ? 's' : ''));
       toast('PDF saved! ✓');
-      // Reset
-      ET.edits = [];
-      ET.undoStack = [];
-      ET.pjDoc = null;
+      ET.edits = []; ET.undoStack = []; ET.pjDoc = null;
       document.getElementById('edittext-editcount').textContent = '0';
       document.getElementById('edittext-undo').disabled = true;
     });
@@ -35450,6 +35437,29 @@ function devLockPro() {
   localStorage.removeItem('rpk-dev-pro');
   localStorage.removeItem('rpk-pro-key');
   toast('🔒 Pro locked');
+}
+
+
+// ── setP: update progress bar for current tool or explicit bar ──
+function setP(a, b, c, d) {
+  let barId, pctId, pct, label;
+  if(typeof a === 'string' && typeof b === 'string') {
+    // 4-arg: setP(barId, pctId, pct, label)
+    barId = a; pctId = b; pct = c; label = d;
+  } else {
+    // 2-arg: setP(pct, label) — find active panel's pf/pp elements
+    pct = a; label = b;
+    const activePanel = document.querySelector('.panel.active');
+    if(activePanel) {
+      const pf = activePanel.querySelector('[id$="-pf"]');
+      const pp = activePanel.querySelector('[id$="-pp"]');
+      const pw = activePanel.querySelector('[id$="-pw"]');
+      barId = pf?.id; pctId = pp?.id;
+      if(pw && pw.style.display === 'none') pw.style.display = 'block';
+    }
+  }
+  if(barId) { const el = document.getElementById(barId); if(el) el.style.width = Math.round(pct||0) + '%'; }
+  if(pctId) { const el = document.getElementById(pctId); if(el) el.textContent = Math.round(pct||0) + '%'; }
 }
 
 </script>
