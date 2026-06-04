@@ -31,7 +31,7 @@
 <meta property="og:title" content="RightPDFKit – 52 Free PDF Tools | No Upload, No Account, Works Offline">
 <meta property="og:description" content="52 free PDF tools — merge, compress, sign, OCR, AI summarize, edit text inline, PDF to Word, Markdown to PDF and more. No uploads. No account. Files stay on your device. Privacy-first alternative to iLovePDF and Smallpdf.">
 <meta property="og:url" content="https://rightpdfkit.com/">
-<meta property="og:image" content="https://rightpdfkit.com/og-image.png">
+<meta property="og:image" content="https://rightpdfkit.com/og-image.png?v=52">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="RightPDFKit – 52 Free PDF Tools, Zero Uploads">
@@ -43,7 +43,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="RightPDFKit – 52 Free PDF Tools, Zero Uploads">
 <meta name="twitter:description" content="Merge, compress, sign, OCR, AI summarize, edit text, PDF to Word, Markdown to PDF — 52 tools. Files never leave your browser. Free, no account.">
-<meta name="twitter:image" content="https://rightpdfkit.com/og-image.png">
+<meta name="twitter:image" content="https://rightpdfkit.com/og-image.png?v=52">
 <meta name="twitter:image:alt" content="RightPDFKit – Privacy-First PDF Tools">
 
 <!-- ═══════════════════════════════════════════════
@@ -2144,6 +2144,27 @@ function dismissInstall() {
       <span class="sp-pill">✓ Works offline</span>
       <span class="sp-pill">✓ Free forever</span>
     </div>
+<!-- ══ STATS BAR ══ -->
+<div id="stats-bar" style="display:flex;align-items:center;justify-content:center;background:var(--surface2);border:1px solid var(--border2);border-radius:12px;margin:16px 0 4px;overflow:hidden;flex-wrap:wrap">
+  <div style="flex:1;min-width:110px;padding:13px 14px;text-align:center;border-right:1px solid var(--border2)">
+    <div style="font-size:18px;font-weight:900;color:var(--accent);line-height:1;margin-bottom:3px" id="stat-total-num">—</div>
+    <div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Total processed</div>
+  </div>
+  <div style="flex:1;min-width:90px;padding:13px 14px;text-align:center;border-right:1px solid var(--border2)">
+    <div style="font-size:18px;font-weight:900;color:var(--text);line-height:1;margin-bottom:3px" id="stat-today-num">—</div>
+    <div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Today</div>
+  </div>
+  <div style="flex:1;min-width:90px;padding:13px 14px;text-align:center;border-right:1px solid var(--border2)">
+    <div style="font-size:18px;font-weight:900;color:var(--text);line-height:1;margin-bottom:3px" id="stat-week-num">—</div>
+    <div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">This week</div>
+  </div>
+  <div style="flex:1;min-width:90px;padding:13px 14px;text-align:center">
+    <div style="font-size:18px;font-weight:900;color:var(--text);line-height:1;margin-bottom:3px" id="stat-you-num">0</div>
+    <div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Your PDFs</div>
+  </div>
+</div>
+<!-- ══ END STATS BAR ══ -->
+
   </div>
   <div id="tool-search-wrap" style="padding:0 0 8px">
     <div class="search-box" style="max-width:400px">
@@ -37207,6 +37228,102 @@ async function run_aireview() {
 }
 
 // ── End AI Tools ──
+
+
+
+// ═══════════════════════════════════════════════
+// STATS BAR — tracks tool usage and shows counts
+// ═══════════════════════════════════════════════
+
+const STATS_API = 'https://rpk-stats.azubuikedavies.workers.dev'; // update after deploying Worker
+const STATS_KEY = 'rpk_stats_you';
+
+// Load personal stats from localStorage
+function loadPersonalStats() {
+  try {
+    const s = JSON.parse(localStorage.getItem(STATS_KEY) || '{"total":0}');
+    animCount('stat-you-num', s.total || 0);
+  } catch(e) {}
+}
+
+// Increment personal counter
+function trackPersonal() {
+  try {
+    const s = JSON.parse(localStorage.getItem(STATS_KEY) || '{"total":0}');
+    s.total = (s.total || 0) + 1;
+    localStorage.setItem(STATS_KEY, JSON.stringify(s));
+    animCount('stat-you-num', s.total);
+  } catch(e) {}
+}
+
+// Fetch global stats from Worker
+async function loadGlobalStats() {
+  try {
+    const r = await fetch(STATS_API + '/api/stats', { signal: AbortSignal.timeout(4000) });
+    if(!r.ok) return;
+    const d = await r.json();
+    if(d.total)      animCount('stat-total-num', d.total, true);
+    if(d.today)      animCount('stat-today-num', d.today);
+    if(d.this_week)  animCount('stat-week-num',  d.this_week);
+  } catch(e) {
+    // Worker not deployed yet — show dashes
+  }
+}
+
+// Ping Worker when tool completes
+async function trackGlobal(toolId) {
+  try {
+    await fetch(STATS_API + '/api/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tool: toolId }),
+      signal: AbortSignal.timeout(3000),
+    });
+  } catch(e) { /* silent fail */ }
+}
+
+// Animated number counter
+function animCount(elId, target, format) {
+  const el = document.getElementById(elId);
+  if(!el) return;
+  const start = parseInt(el.textContent.replace(/,/g,'')) || 0;
+  const diff  = target - start;
+  if(diff === 0) { el.textContent = fmt(target, format); return; }
+  const steps = 30;
+  let step = 0;
+  const timer = setInterval(() => {
+    step++;
+    const val = Math.round(start + (diff * step / steps));
+    el.textContent = fmt(val, format);
+    if(step >= steps) clearInterval(timer);
+  }, 16);
+}
+
+function fmt(n, addComma) {
+  if(!addComma) return n.toString();
+  return n.toLocaleString();
+}
+
+// Hook into existing tool completion — track after any successful download
+const _origDlBytes = window.dlBytes;
+window.dlBytes = function(bytes, filename) {
+  if(_origDlBytes) _origDlBytes(bytes, filename);
+  trackPersonal();
+  // Find which tool is active
+  const active = document.querySelector('.panel.active');
+  if(active) {
+    const toolId = active.id?.replace('panel-','') || 'unknown';
+    trackGlobal(toolId);
+  }
+};
+
+// Init on page load
+document.addEventListener('DOMContentLoaded', () => {
+  loadPersonalStats();
+  loadGlobalStats();
+});
+
+// ── End Stats Bar ──
 
 </script>
 </body>
