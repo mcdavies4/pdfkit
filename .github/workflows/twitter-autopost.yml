@@ -1,0 +1,64 @@
+name: Twitter — Auto-post New Articles
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'blog/**.html'
+
+jobs:
+  tweet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Find new blog article
+        id: article
+        run: |
+          NEW_FILE=$(git diff --name-only HEAD~1 HEAD -- 'blog/*.html' | grep -v 'blog/index.html' | head -1 || true)
+          if [ -z "$NEW_FILE" ]; then
+            echo "No new article found"
+            echo "found=false" >> $GITHUB_OUTPUT
+          else
+            SLUG=$(basename "$NEW_FILE" .html)
+            URL="https://rightpdfkit.com/blog/$SLUG"
+            # Extract title from HTML
+            TITLE=$(grep -o '<title>[^<]*</title>' "$NEW_FILE" | sed 's/<title>//;s/ | RightPDFKit<\/title>//' | head -1)
+            echo "found=true" >> $GITHUB_OUTPUT
+            echo "url=$URL" >> $GITHUB_OUTPUT
+            echo "title=$TITLE" >> $GITHUB_OUTPUT
+            echo "slug=$SLUG" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Post tweet
+        if: steps.article.outputs.found == 'true'
+        run: |
+          pip install tweepy -q
+          python3 << 'EOF'
+          import tweepy
+          import os
+
+          client = tweepy.Client(
+              consumer_key=os.environ['TWITTER_API_KEY'],
+              consumer_secret=os.environ['TWITTER_API_SECRET'],
+              access_token=os.environ['TWITTER_ACCESS_TOKEN'],
+              access_token_secret=os.environ['TWITTER_ACCESS_TOKEN_SECRET']
+          )
+
+          title = os.environ['ARTICLE_TITLE']
+          url = os.environ['ARTICLE_URL']
+
+          tweet = f"{title}\n\n{url}\n\n#PDF #FreeTool #Productivity"
+
+          client.create_tweet(text=tweet)
+          print(f"Tweeted: {tweet}")
+          EOF
+        env:
+          TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
+          TWITTER_API_SECRET: ${{ secrets.TWITTER_API_SECRET }}
+          TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+          TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
+          ARTICLE_TITLE: ${{ steps.article.outputs.title }}
+          ARTICLE_URL: ${{ steps.article.outputs.url }}
