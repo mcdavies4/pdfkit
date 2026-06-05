@@ -1,13 +1,14 @@
 name: Twitter — Auto-post New Articles
 
 on:
-  push:
+  workflow_run:
+    workflows: ["Daily Blog Articles"]
+    types: [completed]
     branches: [main]
-    paths:
-      - 'blog/**.html'
 
 jobs:
   tweet:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,6 +20,7 @@ jobs:
         run: |
           NEW_FILE=$(git diff --name-only HEAD~1 HEAD -- 'blog/*.html' | grep -v 'blog/index.html' | head -1 || true)
           if [ -z "$NEW_FILE" ]; then
+            echo "No new article found"
             echo "found=false" >> $GITHUB_OUTPUT
           else
             SLUG=$(basename "$NEW_FILE" .html)
@@ -34,15 +36,23 @@ jobs:
         run: |
           pip install tweepy -q
           python3 << 'EOF'
-          import tweepy, os
+          import tweepy
+          import os
+
           client = tweepy.Client(
               consumer_key=os.environ['TWITTER_API_KEY'],
               consumer_secret=os.environ['TWITTER_API_SECRET'],
               access_token=os.environ['TWITTER_ACCESS_TOKEN'],
               access_token_secret=os.environ['TWITTER_ACCESS_TOKEN_SECRET']
           )
-          tweet = f"{os.environ['ARTICLE_TITLE']}\n\n{os.environ['ARTICLE_URL']}\n\n#PDF #FreeTool #Productivity"
+
+          title = os.environ['ARTICLE_TITLE']
+          url = os.environ['ARTICLE_URL']
+
+          tweet = f"{title}\n\n{url}\n\n#PDF #FreeTool #Productivity"
+
           client.create_tweet(text=tweet)
+          print(f"Tweeted: {tweet}")
           EOF
         env:
           TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}

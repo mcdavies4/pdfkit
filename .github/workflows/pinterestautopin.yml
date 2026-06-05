@@ -1,13 +1,14 @@
 name: Pinterest — Auto-pin New Articles
 
 on:
-  push:
+  workflow_run:
+    workflows: ["Daily Blog Articles"]
+    types: [completed]
     branches: [main]
-    paths:
-      - 'blog/**.html'
 
 jobs:
   pin:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,12 +20,13 @@ jobs:
         run: |
           NEW_FILE=$(git diff --name-only HEAD~1 HEAD -- 'blog/*.html' | grep -v 'blog/index.html' | head -1 || true)
           if [ -z "$NEW_FILE" ]; then
+            echo "No new article found"
             echo "found=false" >> $GITHUB_OUTPUT
           else
             SLUG=$(basename "$NEW_FILE" .html)
             URL="https://rightpdfkit.com/blog/$SLUG"
             TITLE=$(grep -o '<title>[^<]*</title>' "$NEW_FILE" | sed 's/<title>//;s/ | RightPDFKit<\/title>//' | head -1)
-            DESC=$(grep -m1 'name="description"' "$NEW_FILE" | grep -o 'content="[^"]*"' | sed 's/content="//;s/"//')
+            DESC=$(grep -o 'content="[^"]*"' "$NEW_FILE" | grep -A1 'name="description"' | head -2 | tail -1 | sed 's/content="//;s/"//')
             echo "found=true" >> $GITHUB_OUTPUT
             echo "url=$URL" >> $GITHUB_OUTPUT
             echo "title=$TITLE" >> $GITHUB_OUTPUT
@@ -56,3 +58,4 @@ jobs:
                 \"url\": \"https://rightpdfkit.com/og-image.png?v=52\"
               }
             }"
+          echo "Pinned: ${{ steps.article.outputs.title }}"
