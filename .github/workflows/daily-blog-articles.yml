@@ -26,6 +26,7 @@ jobs:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           mode: agent
+          allowed_tools: "Edit,MultiEdit,Glob,Grep,LS,Read,Write,Bash"
           direct_prompt: |
             You are writing SEO blog articles for RightPDFKit (rightpdfkit.com), a free browser-based PDF tool suite.
 
@@ -109,6 +110,7 @@ jobs:
 
             ALSO update blog/index.html — add the new article card at the TOP of the .grid div, matching the existing card style.
 
-            Commit with message: "blog: add article — {article-title}"
-
-            Then push to the current branch (main).
+            Then run these commands to commit and push:
+            git add blog/
+            git commit -m "blog: add article — {article-title}"
+            git push origin main
