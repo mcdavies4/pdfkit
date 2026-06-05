@@ -1972,7 +1972,7 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- End of Statcounter Code -->
 
 <!-- Vercel Web Analytics -->
-<script defer src="/_vercel/insights/script.js"></script>
+
 <!-- Google AdSense -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1271394816904174"
      crossorigin="anonymous"></script>
@@ -32618,18 +32618,6 @@ function showWhatsNext(toolId) {
 
 // Override showRes to also show whats-next
 const _originalShowRes = typeof showRes === 'function' ? showRes : null;
-function showRes(id, msg) {
-  // Call original
-  const el = document.getElementById(id);
-  if (el) {
-    el.classList.add('show');
-    const p = el.querySelector('p');
-    if (p) p.textContent = msg;
-  }
-  // Extract tool ID from result box ID (e.g. "merge-rb" → "merge")
-  const toolId = id.replace('-rb', '').replace('rb', '');
-  setTimeout(() => showWhatsNext(toolId), 300);
-}
 
 
 // ==========================================
@@ -34143,11 +34131,6 @@ function openProModal() { goToPro(); }
 
 
 
-function scrollToTop() {
-  const main = document.querySelector('.main');
-  if (main && main.scrollTop > 0) main.scrollTo({top:0, behavior:'smooth'});
-  else window.scrollTo({top:0, behavior:'smooth'});
-}
 function initScrollTop() {
   const btn = document.getElementById('scroll-top-btn');
   if (!btn) return;
@@ -34912,10 +34895,6 @@ function saveModalPrefs() {
   saveCookiePrefs(analytics);
 }
 
-function resetCookieConsent() {
-  localStorage.removeItem('rpk-cookie-consent');
-  openCookieSettings();
-}
 
 function loadClarity() {
   // Only load if not already loaded
