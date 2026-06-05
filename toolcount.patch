@@ -1,0 +1,39 @@
+From 4a46219980f398a7516d6a4876b18b8e7dabb07b Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 5 Jun 2026 19:26:14 +0000
+Subject: [PATCH] blog: update tool count from 45 to 52
+
+---
+ blog/how-to-edit-pdf-free.html | 2 +-
+ blog/index.html                | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/blog/how-to-edit-pdf-free.html b/blog/how-to-edit-pdf-free.html
+index 0f9f60b..da65ee3 100644
+--- a/blog/how-to-edit-pdf-free.html
++++ b/blog/how-to-edit-pdf-free.html
+@@ -62,7 +62,7 @@ details summary::-webkit-details-marker{display:none}
+     <div class="logo-icon">R</div>
+     <span class="logo-text">RightPDF<span>Kit</span></span>
+   </a>
+-  <a href="https://rightpdfkit.com" class="header-cta">Try 45 Tools Free →</a>
++  <a href="https://rightpdfkit.com" class="header-cta">Try 52 Tools Free →</a>
+ </header>
+ <article class="article-wrap">
+   <nav class="breadcrumb">
+diff --git a/blog/index.html b/blog/index.html
+index f397153..d271227 100644
+--- a/blog/index.html
++++ b/blog/index.html
+@@ -40,7 +40,7 @@ a{color:#E8450A;text-decoration:none}
+     <div class="logo-icon">R</div>
+     <span class="logo-text">RightPDF<span>Kit</span></span>
+   </a>
+-  <a href="https://rightpdfkit.com" class="header-cta">Try 45 Tools Free →</a>
++  <a href="https://rightpdfkit.com" class="header-cta">Try 52 Tools Free →</a>
+ </header>
+ <main class="wrap">
+   <div class="blog-hero">
+-- 
+2.43.0
+

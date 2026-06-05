@@ -1,0 +1,44 @@
+name: IndexNow — Submit New URLs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'blog/**.html'
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Find new blog articles
+        id: urls
+        run: |
+          NEW_FILES=$(git diff --name-only HEAD~1 HEAD -- 'blog/*.html' | grep -v 'blog/index.html' || true)
+          if [ -z "$NEW_FILES" ]; then
+            echo "No new articles found"
+            echo "urls=" >> $GITHUB_OUTPUT
+          else
+            URLS=""
+            for f in $NEW_FILES; do
+              SLUG=$(basename "$f" .html)
+              URLS="$URLS,\"https://rightpdfkit.com/blog/$SLUG\""
+            done
+            URLS="${URLS#,}"
+            echo "urls=$URLS" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Submit to IndexNow
+        if: steps.urls.outputs.urls != ''
+        run: |
+          curl -s -X POST "https://api.indexnow.org/indexnow" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d "{
+              \"host\": \"rightpdfkit.com\",
+              \"key\": \"b550efe9b4854369af4322a0ef7538c2\",
+              \"keyLocation\": \"https://rightpdfkit.com/b550efe9b4854369af4322a0ef7538c2.txt\",
+              \"urlList\": [${{ steps.urls.outputs.urls }}]
+            }"

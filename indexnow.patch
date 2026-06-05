@@ -1,0 +1,116 @@
+From 4a46219980f398a7516d6a4876b18b8e7dabb07b Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 5 Jun 2026 19:26:14 +0000
+Subject: [PATCH 1/2] blog: update tool count from 45 to 52
+
+---
+ blog/how-to-edit-pdf-free.html | 2 +-
+ blog/index.html                | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/blog/how-to-edit-pdf-free.html b/blog/how-to-edit-pdf-free.html
+index 0f9f60b..da65ee3 100644
+--- a/blog/how-to-edit-pdf-free.html
++++ b/blog/how-to-edit-pdf-free.html
+@@ -62,7 +62,7 @@ details summary::-webkit-details-marker{display:none}
+     <div class="logo-icon">R</div>
+     <span class="logo-text">RightPDF<span>Kit</span></span>
+   </a>
+-  <a href="https://rightpdfkit.com" class="header-cta">Try 45 Tools Free →</a>
++  <a href="https://rightpdfkit.com" class="header-cta">Try 52 Tools Free →</a>
+ </header>
+ <article class="article-wrap">
+   <nav class="breadcrumb">
+diff --git a/blog/index.html b/blog/index.html
+index f397153..d271227 100644
+--- a/blog/index.html
++++ b/blog/index.html
+@@ -40,7 +40,7 @@ a{color:#E8450A;text-decoration:none}
+     <div class="logo-icon">R</div>
+     <span class="logo-text">RightPDF<span>Kit</span></span>
+   </a>
+-  <a href="https://rightpdfkit.com" class="header-cta">Try 45 Tools Free →</a>
++  <a href="https://rightpdfkit.com" class="header-cta">Try 52 Tools Free →</a>
+ </header>
+ <main class="wrap">
+   <div class="blog-hero">
+-- 
+2.43.0
+
+
+From c84a3b9917054eb699c3a4fe7616fb35bf4ded70 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 5 Jun 2026 21:20:47 +0000
+Subject: [PATCH 2/2] feat: add IndexNow auto-submission on new blog articles
+
+---
+ .github/workflows/indexnow.yml       | 47 ++++++++++++++++++++++++++++
+ b550efe9b4854369af4322a0ef7538c2.txt |  1 +
+ 2 files changed, 48 insertions(+)
+ create mode 100644 .github/workflows/indexnow.yml
+ create mode 100644 b550efe9b4854369af4322a0ef7538c2.txt
+
+diff --git a/.github/workflows/indexnow.yml b/.github/workflows/indexnow.yml
+new file mode 100644
+index 0000000..352de7e
+--- /dev/null
++++ b/.github/workflows/indexnow.yml
+@@ -0,0 +1,47 @@
++name: IndexNow — Submit New URLs
++
++on:
++  push:
++    branches: [main]
++    paths:
++      - 'blog/**.html'
++
++jobs:
++  submit:
++    runs-on: ubuntu-latest
++    steps:
++      - uses: actions/checkout@v4
++        with:
++          fetch-depth: 2
++
++      - name: Find new blog articles
++        id: urls
++        run: |
++          # Get list of new or modified blog HTML files in this push
++          NEW_FILES=$(git diff --name-only HEAD~1 HEAD -- 'blog/*.html' | grep -v 'blog/index.html' || true)
++          if [ -z "$NEW_FILES" ]; then
++            echo "No new articles found"
++            echo "urls=" >> $GITHUB_OUTPUT
++          else
++            URLS=""
++            for f in $NEW_FILES; do
++              SLUG=$(basename "$f" .html)
++              URLS="$URLS,\"https://rightpdfkit.com/blog/$SLUG\""
++            done
++            URLS="${URLS#,}"
++            echo "urls=$URLS" >> $GITHUB_OUTPUT
++            echo "Found URLs: $URLS"
++          fi
++
++      - name: Submit to IndexNow
++        if: steps.urls.outputs.urls != ''
++        run: |
++          curl -s -X POST "https://api.indexnow.org/indexnow" \
++            -H "Content-Type: application/json; charset=utf-8" \
++            -d "{
++              \"host\": \"rightpdfkit.com\",
++              \"key\": \"b550efe9b4854369af4322a0ef7538c2\",
++              \"keyLocation\": \"https://rightpdfkit.com/b550efe9b4854369af4322a0ef7538c2.txt\",
++              \"urlList\": [${{ steps.urls.outputs.urls }}]
++            }"
++          echo "Submitted to IndexNow"
+diff --git a/b550efe9b4854369af4322a0ef7538c2.txt b/b550efe9b4854369af4322a0ef7538c2.txt
+new file mode 100644
+index 0000000..b876944
+--- /dev/null
++++ b/b550efe9b4854369af4322a0ef7538c2.txt
+@@ -0,0 +1 @@
++b550efe9b4854369af4322a0ef7538c2
+\ No newline at end of file
+-- 
+2.43.0
+
