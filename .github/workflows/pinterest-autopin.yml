@@ -1,0 +1,58 @@
+name: Pinterest — Auto-pin New Articles
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'blog/**.html'
+
+jobs:
+  pin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Find new blog article
+        id: article
+        run: |
+          NEW_FILE=$(git diff --name-only HEAD~1 HEAD -- 'blog/*.html' | grep -v 'blog/index.html' | head -1 || true)
+          if [ -z "$NEW_FILE" ]; then
+            echo "found=false" >> $GITHUB_OUTPUT
+          else
+            SLUG=$(basename "$NEW_FILE" .html)
+            URL="https://rightpdfkit.com/blog/$SLUG"
+            TITLE=$(grep -o '<title>[^<]*</title>' "$NEW_FILE" | sed 's/<title>//;s/ | RightPDFKit<\/title>//' | head -1)
+            DESC=$(grep -m1 'name="description"' "$NEW_FILE" | grep -o 'content="[^"]*"' | sed 's/content="//;s/"//')
+            echo "found=true" >> $GITHUB_OUTPUT
+            echo "url=$URL" >> $GITHUB_OUTPUT
+            echo "title=$TITLE" >> $GITHUB_OUTPUT
+            echo "desc=$DESC" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Get Pinterest Board ID
+        if: steps.article.outputs.found == 'true'
+        id: board
+        run: |
+          BOARD_ID=$(curl -s "https://api.pinterest.com/v5/boards/rightpdfkit/pdf-tips-guides" \
+            -H "Authorization: Bearer ${{ secrets.PINTEREST_ACCESS_TOKEN }}" \
+            | python3 -c "import sys,json; print(json.load(sys.stdin)['id'])")
+          echo "id=$BOARD_ID" >> $GITHUB_OUTPUT
+
+      - name: Create Pinterest pin
+        if: steps.article.outputs.found == 'true'
+        run: |
+          curl -s -X POST "https://api.pinterest.com/v5/pins" \
+            -H "Authorization: Bearer ${{ secrets.PINTEREST_ACCESS_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"board_id\": \"${{ steps.board.outputs.id }}\",
+              \"title\": \"${{ steps.article.outputs.title }}\",
+              \"description\": \"${{ steps.article.outputs.desc }} Free, no upload, works in your browser.\",
+              \"link\": \"${{ steps.article.outputs.url }}\",
+              \"media_source\": {
+                \"source_type\": \"image_url\",
+                \"url\": \"https://rightpdfkit.com/og-image.png?v=52\"
+              }
+            }"
