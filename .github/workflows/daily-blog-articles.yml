@@ -2,7 +2,6 @@ name: Daily Blog Articles
 
 on:
   schedule:
-    # 3 articles per day: 7am, 1pm, 7pm UTC
     - cron: '0 7 * * *'
     - cron: '0 13 * * *'
     - cron: '0 19 * * *'
@@ -17,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write
     steps:
       - uses: actions/checkout@v4
 
@@ -24,7 +24,8 @@ jobs:
         uses: anthropics/claude-code-action@beta
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          prompt: |
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          direct_prompt: |
             You are writing SEO blog articles for RightPDFKit (rightpdfkit.com), a free browser-based PDF tool suite.
 
             Look at the existing articles in blog/ to understand the format, style and topics already covered.
