@@ -1,0 +1,112 @@
+name: Daily Blog Articles
+
+on:
+  schedule:
+    # 3 articles per day: 7am, 1pm, 7pm UTC
+    - cron: '0 7 * * *'
+    - cron: '0 13 * * *'
+    - cron: '0 19 * * *'
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: 'Optional topic override (leave blank for scheduled topic)'
+        required: false
+
+jobs:
+  write-article:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Claude Code to write article
+        uses: anthropics/claude-code-action@beta
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            You are writing SEO blog articles for RightPDFKit (rightpdfkit.com), a free browser-based PDF tool suite.
+
+            Look at the existing articles in blog/ to understand the format, style and topics already covered.
+            Then pick the NEXT unwritten topic from this priority list (skip any already covered in blog/):
+
+            PRIORITY KEYWORD LIST (in order — write the first one not yet covered):
+            1. how-to-convert-pdf-to-powerpoint-free
+            2. pdf-to-png-free
+            3. how-to-crop-pdf-page-free
+            4. how-to-add-page-numbers-to-pdf-free
+            5. how-to-watermark-pdf-free
+            6. how-to-delete-pages-from-pdf-free
+            7. how-to-reorder-pdf-pages-free
+            8. how-to-add-image-to-pdf-free
+            9. pdf-to-text-free
+            10. how-to-flatten-pdf-free
+            11. how-to-convert-excel-to-pdf-free
+            12. how-to-convert-pdf-to-csv-free
+            13. how-to-repair-corrupted-pdf-free
+            14. how-to-add-hyperlink-to-pdf-free
+            15. how-to-convert-png-to-pdf-free
+            16. how-to-convert-pdf-to-epub-free
+            17. how-to-extract-images-from-pdf-free
+            18. pdf-form-creator-free
+            19. how-to-convert-html-to-pdf-free
+            20. how-to-linearize-pdf-free
+            21. smallpdf-alternative-free
+            22. adobe-acrobat-alternative-free
+            23. ilovepdf-vs-smallpdf
+            24. pdf24-alternative
+            25. best-pdf-compressor-free
+            26. best-pdf-merger-free
+            27. best-ocr-software-free
+            28. how-to-make-pdf-searchable-free
+            29. how-to-convert-pdf-to-audio-free
+            30. pdf-tools-for-students-free
+            31. pdf-tools-for-small-business-free
+            32. how-to-share-pdf-securely-free
+            33. how-to-reduce-pdf-size-for-email-free
+            34. how-to-print-pdf-as-booklet-free
+            35. best-free-pdf-tools-for-iphone
+            36. best-free-pdf-tools-for-android
+            37. how-to-sign-pdf-on-iphone-free
+            38. how-to-sign-pdf-on-android-free
+            39. how-to-edit-pdf-on-iphone-free
+            40. how-to-edit-pdf-on-android-free
+            41. how-to-merge-pdf-on-iphone-free
+            42. how-to-compress-pdf-on-iphone-free
+            43. free-pdf-tools-no-account-needed
+            44. how-to-work-with-pdfs-without-adobe
+            45. pdf-privacy-which-tools-are-safe
+            46. how-to-process-pdfs-offline-free
+            47. how-to-convert-pdf-to-google-docs-free
+            48. how-to-save-pdf-from-google-docs-free
+            49. how-to-export-pdf-from-word-free
+            50. how-to-convert-scanned-pdf-to-word-free
+            51. how-to-convert-pdf-invoice-to-excel-free
+            52. how-to-extract-tables-from-pdf-free
+            53. best-pdf-tools-for-lawyers-free
+            54. best-pdf-tools-for-accountants-free
+            55. best-pdf-tools-for-hr-free
+            56. pdf-tools-for-remote-workers-free
+            57. how-to-batch-convert-pdf-free
+            58. how-to-automate-pdf-processing-free
+            59. pdf-metadata-editor-free
+            60. how-to-remove-watermark-from-pdf-free
+
+            ARTICLE REQUIREMENTS:
+            - Use the EXACT same HTML structure as existing blog articles (dark theme, #0D0D1A bg, #E8450A accent)
+            - Copy the full CSS and header/footer from an existing article
+            - Include: proper <title>, meta description, canonical URL, OG tags, JSON-LD Article schema
+            - Canonical URL format: https://rightpdfkit.com/blog/{slug}
+            - CTA buttons link to https://rightpdfkit.com/#{relevant-tool}
+            - Include 2 CTA boxes (one near top, one near bottom)
+            - 4-6 sections with h2 headings
+            - 600-900 words
+            - Related articles section at bottom (3 cards linking to existing articles)
+            - Date: use today's date
+            - Save as blog/{slug}.html
+
+            ALSO update blog/index.html — add the new article card at the TOP of the .grid div, matching the existing card style.
+
+            Commit with message: "blog: add article — {article-title}"
+
+            Then push to the current branch (main).
