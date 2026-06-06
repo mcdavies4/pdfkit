@@ -4,7 +4,6 @@ on:
   workflow_run:
     workflows: ["Daily Blog Articles"]
     types: [completed]
-    branches: [main]
 
 jobs:
   post:
