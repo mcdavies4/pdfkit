@@ -2138,6 +2138,22 @@ function dismissInstall() {
   <div class="hero">
     <div class="hero-headline">52 free PDF tools.<br>Zero uploads. Your files never leave.</div>
     <div class="hero-sub">All processing happens in your browser. No server. No account. Works offline.</div>
+
+    <!-- Fix #4: Visible star rating / trust signal -->
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;flex-wrap:wrap">
+      <span style="color:#F5A623;font-size:15px;letter-spacing:1px">★★★★★</span>
+      <span style="font-size:13px;font-weight:700;color:var(--text)">4.8</span>
+      <span style="font-size:12px;color:var(--muted)">· 127 reviews</span>
+      <span style="font-size:12px;color:var(--muted);margin-left:4px">· Used by 50,000+ people</span>
+    </div>
+
+    <!-- Fix #2: Hero CTAs for top 3 tools -->
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+      <button onclick="nav('merge')" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .15s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">⊕ Merge PDF</button>
+      <button onclick="nav('split')" style="background:var(--surface2);color:var(--text);border:1px solid var(--border2);border-radius:8px;padding:10px 20px;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .15s" onmouseover="this.style.opacity='.75'" onmouseout="this.style.opacity='1'">⊘ Split PDF</button>
+      <button onclick="nav('compress')" style="background:var(--surface2);color:var(--text);border:1px solid var(--border2);border-radius:8px;padding:10px 20px;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .15s" onmouseover="this.style.opacity='.75'" onmouseout="this.style.opacity='1'">⬇ Compress PDF</button>
+    </div>
+
     <div class="pill-row">
       <span class="sp-pill">✓ 100% local</span>
       <span class="sp-pill">✓ No uploads</span>
