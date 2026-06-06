@@ -33,23 +33,29 @@ jobs:
             echo "desc=$DESC" >> $GITHUB_OUTPUT
           fi
 
-      - name: Get Pinterest Board ID
-        if: steps.article.outputs.found == 'true'
-        id: board
-        run: |
-          BOARD_ID=$(curl -s "https://api.pinterest.com/v5/boards/rightpdfkit/pdf-tips-guides" \
-            -H "Authorization: Bearer ${{ secrets.PINTEREST_ACCESS_TOKEN }}" \
-            | python3 -c "import sys,json; print(json.load(sys.stdin)['id'])")
-          echo "id=$BOARD_ID" >> $GITHUB_OUTPUT
-
       - name: Create Pinterest pin
         if: steps.article.outputs.found == 'true'
         run: |
+          RESPONSE=$(curl -s "https://api.pinterest.com/v5/boards" \
+            -H "Authorization: Bearer ${{ secrets.PINTEREST_ACCESS_TOKEN }}")
+          BOARD_ID=$(echo "$RESPONSE" | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          boards = data.get('items', [])
+          for b in boards:
+              if 'pdf-tips' in b.get('name','').lower() or 'pdf' in b.get('name','').lower():
+                  print(b['id'])
+                  break
+          else:
+              if boards:
+                  print(boards[0]['id'])
+          ")
+          echo "Board ID: $BOARD_ID"
           curl -s -X POST "https://api.pinterest.com/v5/pins" \
             -H "Authorization: Bearer ${{ secrets.PINTEREST_ACCESS_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d "{
-              \"board_id\": \"${{ steps.board.outputs.id }}\",
+              \"board_id\": \"$BOARD_ID\",
               \"title\": \"${{ steps.article.outputs.title }}\",
               \"description\": \"${{ steps.article.outputs.desc }} Free, no upload, works in your browser.\",
               \"link\": \"${{ steps.article.outputs.url }}\",
