@@ -633,6 +633,33 @@ input[type=range]{width:100%;accent-color:var(--accent)}
   .bnav-item{min-width:48px;padding:5px 8px}
 }
 
+
+/* ── PDF GROUPS ── */
+.groups-input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 14px;color:var(--text);font-size:13px;font-family:var(--font);outline:none;flex:1;min-width:0}
+.groups-input:focus{border-color:var(--accent)}
+.groups-select{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:var(--text);font-size:12px;font-family:var(--font);outline:none;cursor:pointer;max-width:180px}
+.groups-create{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px}
+.group-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-bottom:10px;transition:border-color .15s}
+.group-card:hover{border-color:var(--accent-border)}
+.group-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.group-card-name{font-size:15px;font-weight:800;color:var(--text);display:flex;align-items:center;gap:8px}
+.group-card-actions{display:flex;gap:6px}
+.group-action-btn{background:none;border:1px solid var(--border);border-radius:7px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);color:var(--muted);transition:all .15s}
+.group-action-btn:hover{border-color:var(--accent-border);color:var(--accent)}
+.group-action-btn.danger:hover{border-color:rgba(239,68,68,.4);color:#ef4444}
+.group-action-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.group-files-list{display:flex;flex-direction:column;gap:4px}
+.group-file-item{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border-radius:8px;padding:7px 12px;font-size:12px}
+.group-file-name{color:var(--muted);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px}
+.group-file-size{color:rgba(240,239,255,0.3);font-size:11px;flex-shrink:0;margin-left:8px}
+.group-file-load{background:none;border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:11px;cursor:pointer;color:var(--muted);font-family:var(--font)}
+.group-file-load:hover{border-color:var(--accent-border);color:var(--accent)}
+.group-file-del{background:none;border:none;cursor:pointer;color:rgba(240,239,255,0.25);font-size:14px;padding:0 4px}
+.group-file-del:hover{color:#ef4444}
+.group-meta{font-size:11px;color:rgba(240,239,255,0.3);margin-top:8px}
+.save-group-bar{background:var(--surface);border-top:1px solid var(--border);padding:10px 20px;display:none;align-items:center;justify-content:space-between;gap:12px;position:sticky;bottom:0;z-index:20}
+.save-group-bar.visible{display:flex}
+
 /* ── Cookie Banner ── */
 #cookie-banner{
   position:fixed;bottom:0;left:0;right:0;
@@ -2075,6 +2102,8 @@ function dismissInstall() {
   <!-- Favourites section -->
   <div class="sb-sec sb-favs" id="sb-favs-section">⭐ Favourites</div>
   <div id="sb-favs-list"></div>
+  <!-- PDF Groups -->
+  <div class="nav" data-t="groups" id="nav-groups"><span class="nav-label" onclick="nav('groups')"><span class="ni">📁</span>PDF Groups</span></div>
   <!-- Search -->
   <div class="search-wrap"><div class="search-box"><span class="search-icon">🔍</span><input type="text" class="search-input" id="tool-search" placeholder="Search 52 tools…" oninput="filterTools(this.value)" autocomplete="off"><button class="search-clear" onclick="clearSearch()" tabindex="-1">✕</button></div></div>
   <div class="nav-no-results" id="nav-no-results">No tools found</div>
@@ -2138,6 +2167,34 @@ function dismissInstall() {
   <button id="sidebar-close-btn" onclick="closeSidebar()" style="display:none;position:absolute;top:10px;right:10px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px">✕</button>
 </nav>
 <div class="main" id="main-content">
+
+<div class="panel" id="panel-groups">
+  <div class="panel-header">
+    <div class="panel-title">📁 PDF Groups</div>
+    <div class="panel-desc">Save sets of PDFs by project. Switch between them instantly — files stay in your browser, never uploaded anywhere.</div>
+  </div>
+
+  <!-- Create new group -->
+  <div class="groups-create" id="groups-create-box">
+    <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px">Create a new group</div>
+    <div style="display:flex;gap:8px">
+      <input type="text" id="group-name-input" placeholder="e.g. Job A, Q2 Reports, Tax 2026..." 
+        class="groups-input" onkeydown="if(event.key==='Enter')createGroup()" maxlength="40">
+      <button class="btn-accent" onclick="createGroup()">+ Create</button>
+    </div>
+  </div>
+
+  <!-- Groups list -->
+  <div id="groups-list" style="margin-top:20px"></div>
+
+  <!-- Empty state -->
+  <div id="groups-empty" style="text-align:center;padding:48px 24px;color:var(--muted)">
+    <div style="font-size:40px;margin-bottom:12px">📁</div>
+    <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px">No groups yet</div>
+    <div style="font-size:13px;line-height:1.7">Create a group, load your PDFs into any tool,<br>then save them to the group for quick access later.</div>
+  </div>
+</div>
+
 <div class="home active" id="panel-home">
   <div class="hero">
     <div class="hero-headline">52 free PDF tools.<br>Zero uploads. Your files never leave.</div>
@@ -2153,6 +2210,21 @@ function dismissInstall() {
     <a href="https://www.listbulb.com/tools/rightpdfkit" target="_blank" rel="noopener" style="display:inline-block;opacity:0.75;transition:opacity .2s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">
       <img src="https://www.listbulb.com/featured-on-listbulb-light.svg" alt="Featured on ListBulb" height="28" style="display:block">
     </a>
+    <!-- tinystartups · Launched on Tiny Startups -->
+<a href="https://www.tinystartups.com/startup/rightpdfkit" target="_blank" rel="noopener"
+   style="display:inline-flex;align-items:center;gap:14px;padding:14px 22px 14px 18px;border-radius:14px;text-decoration:none;font-family:'Inter',system-ui,sans-serif;background:linear-gradient(#fff,#fff) padding-box,linear-gradient(90deg,#3525E6,#D81FE0,#22B8F0) border-box;border:2px solid transparent;color:#0E0B1F">
+  <svg width="56" height="56" viewBox="0 0 100 100">
+    <defs><linearGradient id="tsg" x1=".1" y1="0" x2=".9" y2="1">
+      <stop offset="0%" stop-color="#3525E6"/><stop offset="55%" stop-color="#D81FE0"/><stop offset="100%" stop-color="#22B8F0"/>
+    </linearGradient></defs>
+    <path d="M50 6C52 32 68 48 94 50C68 52 52 68 50 94C48 68 32 52 6 50C32 48 48 32 50 6Z" fill="url(#tsg)"/>
+  </svg>
+  <span style="display:flex;flex-direction:column;line-height:1.15">
+    <span style="font-family:monospace;font-size:9px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#6A6585">Launched on</span>
+    <span style="font-size:22px;font-weight:800;letter-spacing:-0.025em">Tiny Startups</span>
+    <span style="font-size:11px;color:#6A6585;margin-top:4px">tinystartups.com</span>
+  </span>
+</a>
   </div>
 
   </div>
@@ -37203,11 +37275,253 @@ async function run_aireview() {
   );
 }
 
+
+
+
+
+
+// PDF GROUPS
+const GROUPS_DB='rpk-groups-v1', GSTORE='groups', FSTORE='files'
+let _gDB=null
+function _openDB(){
+  if(_gDB) return Promise.resolve(_gDB)
+  return new Promise(function(res,rej){
+    var r=indexedDB.open(GROUPS_DB,1)
+    r.onupgradeneeded=function(e){
+      var db=e.target.result
+      if(!db.objectStoreNames.contains(GSTORE)) db.createObjectStore(GSTORE,{keyPath:'id'})
+      if(!db.objectStoreNames.contains(FSTORE)){
+        var s=db.createObjectStore(FSTORE,{keyPath:'id'})
+        s.createIndex('gid','groupId',{unique:false})
+      }
+    }
+    r.onsuccess=function(e){_gDB=e.target.result;res(_gDB)}
+    r.onerror=function(e){rej(e.target.error)}
+  })
+}
+function _dbGetAll(store){
+  return _openDB().then(function(db){
+    return new Promise(function(res,rej){
+      var r=db.transaction(store,'readonly').objectStore(store).getAll()
+      r.onsuccess=function(e){res(e.target.result)}
+      r.onerror=function(e){rej(e.target.error)}
+    })
+  })
+}
+function _dbPut(store,obj){
+  return _openDB().then(function(db){
+    return new Promise(function(res,rej){
+      var r=db.transaction(store,'readwrite').objectStore(store).put(obj)
+      r.onsuccess=function(e){res(e.target.result)}
+      r.onerror=function(e){rej(e.target.error)}
+    })
+  })
+}
+function _dbDel(store,key){
+  return _openDB().then(function(db){
+    return new Promise(function(res,rej){
+      var r=db.transaction(store,'readwrite').objectStore(store).delete(key)
+      r.onsuccess=function(e){res(e.target.result)}
+      r.onerror=function(e){rej(e.target.error)}
+    })
+  })
+}
+function _dbIdx(store,idx,val){
+  return _openDB().then(function(db){
+    return new Promise(function(res,rej){
+      var r=db.transaction(store,'readonly').objectStore(store).index(idx).getAll(val)
+      r.onsuccess=function(e){res(e.target.result)}
+      r.onerror=function(e){rej(e.target.error)}
+    })
+  })
+}
+function _xe(s){return String(s).replace(/[&<>"']/g,function(m){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
+function _xb(b){if(!b)return '';if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(1)+'KB';return(b/1048576).toFixed(2)+'MB'}
+
+function createGroup(){
+  var inp=document.getElementById('group-name-input')
+  var name=inp?inp.value.trim():''
+  if(!name){if(inp)inp.focus();return}
+  var id='g'+Date.now()
+  _dbPut(GSTORE,{id:id,name:name,created:Date.now()}).then(function(){
+    inp.value=''
+    toast('Group "'+name+'" created')
+    renderGroupsList()
+    updateGroupSelect()
+  })
+}
+
+function renderGroupsList(){
+  var list=document.getElementById('groups-list')
+  var empty=document.getElementById('groups-empty')
+  if(!list) return
+  _dbGetAll(GSTORE).then(function(groups){
+    if(!groups||!groups.length){
+      list.innerHTML=''
+      if(empty) empty.style.display='block'
+      return
+    }
+    if(empty) empty.style.display='none'
+    groups.sort(function(a,b){return b.created-a.created})
+    var pending=groups.length, html=new Array(groups.length)
+    groups.forEach(function(g,gi){
+      _dbIdx(FSTORE,'gid',g.id).then(function(files){
+        var fi_html=''
+        files.forEach(function(f){
+          fi_html+='<div class="group-file-item">'+
+            '<span class="group-file-name">'+_xe(f.name)+'</span>'+
+            '<span class="group-file-size">'+_xb(f.size)+'</span>'+
+            '<button class="group-file-load" data-id="'+f.id+'" onclick="loadGrpFile(this.dataset.id)">Load</button>'+
+            '<button class="group-file-del" data-id="'+f.id+'" data-gid="'+g.id+'" onclick="delGrpFile(this.dataset.id,this.dataset.gid)">×</button>'+
+          '</div>'
+        })
+        if(!fi_html) fi_html='<div style="font-size:12px;color:var(--muted);padding:6px 0">No files yet — load a PDF and click Save to Group below.</div>'
+        html[gi]='<div class="group-card">'+
+          '<div class="group-card-header">'+
+            '<div class="group-card-name">📁 '+_xe(g.name)+' <span style="font-size:11px;font-weight:400;color:var(--muted)">'+files.length+' file'+(files.length!==1?'s':'')+'</span></div>'+
+            '<div class="group-card-actions"><button class="group-action-btn danger" data-id="'+g.id+'" data-name="'+_xe(g.name)+'" onclick="delGrp(this.dataset.id,this.dataset.name)">Delete</button></div>'+
+          '</div>'+
+          '<div class="group-files-list">'+fi_html+'</div>'+
+          '<div class="group-meta">'+new Date(g.created).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})+'</div>'+
+        '</div>'
+        pending--
+        if(pending===0) list.innerHTML=html.join('')
+      })
+    })
+  })
+}
+
+function updateGroupSelect(){
+  _dbGetAll(GSTORE).then(function(groups){
+    var sel=document.getElementById('save-group-select')
+    if(!sel) return
+    groups.sort(function(a,b){return b.created-a.created})
+    sel.innerHTML='<option value="">Select group...</option>'+
+      groups.map(function(g){return'<option value="'+g.id+'">'+_xe(g.name)+'</option>'}).join('')
+  })
+}
+
+function saveCurrentToGroup(){
+  var sel=document.getElementById('save-group-select')
+  var gid=sel?sel.value:''
+  if(!gid){toast('Select a group first');return}
+  var file=_getGrpFile()
+  if(!file){toast('No PDF loaded — open a PDF tool first');return}
+  _dbGetAll(GSTORE).then(function(grps){
+    var grp=grps.find(function(g){return g.id===gid})
+    file.arrayBuffer().then(function(ab){
+      _dbPut(FSTORE,{id:'f'+Date.now(),groupId:gid,name:file.name,size:file.size,type:file.type||'application/pdf',data:ab}).then(function(){
+        toast('Saved to "'+(grp?grp.name:'group')+'"')
+        renderGroupsList()
+      })
+    })
+  })
+}
+
+function loadGrpFile(fid){
+  _openDB().then(function(db){
+    var r=db.transaction(FSTORE,'readonly').objectStore(FSTORE).get(fid)
+    r.onsuccess=function(e){
+      var rec=e.target.result
+      if(!rec){toast('File not found');return}
+      var blob=new Blob([rec.data],{type:rec.type||'application/pdf'})
+      var file=new File([blob],rec.name,{type:rec.type||'application/pdf'})
+      nav('merge')
+      setTimeout(function(){
+        var inp=document.getElementById('merge-in')
+        if(inp){
+          var dt=new DataTransfer()
+          dt.items.add(file)
+          Object.defineProperty(inp,'files',{value:dt.files,configurable:true})
+          inp.dispatchEvent(new Event('change',{bubbles:true}))
+        }
+        toast(rec.name+' loaded')
+      },400)
+    }
+  })
+}
+
+function delGrpFile(fid,gid){
+  _dbDel(FSTORE,fid).then(function(){toast('Removed');renderGroupsList()})
+}
+
+function delGrp(gid,name){
+  if(!confirm('Delete "'+name+'" and all its files?')) return
+  _dbIdx(FSTORE,'gid',gid).then(function(files){
+    var ps=files.map(function(f){return _dbDel(FSTORE,f.id)})
+    Promise.all(ps).then(function(){
+      _dbDel(GSTORE,gid).then(function(){
+        toast('Group deleted')
+        renderGroupsList()
+        updateGroupSelect()
+      })
+    })
+  })
+}
+
+function _getGrpFile(){
+  var tools=['MERGE','SPLIT','COMPRESS','REORDER','EXTRACT','DELETE','ROTATE','CROP',
+    'ADDIMG','ANNOTATE','REDACT','HEADERFOOTER','WATERMARK','PAGENUMS','PROTECT',
+    'UNLOCK','OCR','INFO','PREVIEW','PDF2IMG']
+  for(var i=0;i<tools.length;i++){
+    var t=window[tools[i]]
+    if(t&&t.file instanceof File) return t.file
+    if(t&&t.files&&t.files[0] instanceof File) return t.files[0]
+  }
+  return null
+}
+
+setInterval(function(){
+  var f=_getGrpFile()
+  var bar=document.getElementById('save-group-bar')
+  var fn=document.getElementById('save-bar-filename')
+  if(!bar) return
+  if(f){
+    bar.classList.add('visible')
+    if(fn&&fn.textContent!=='📄 '+f.name){fn.textContent='📄 '+f.name;updateGroupSelect()}
+  } else {
+    bar.classList.remove('visible')
+  }
+},1000)
+
+;(function(){
+  var _on=window.nav
+  if(typeof _on==='function'){
+    window.nav=function(id){
+      _on(id)
+      if(id==='groups'){renderGroupsList();updateGroupSelect()}
+    }
+  }
+})()
+
+// ── End PDF Groups ──
+
+
 // ── End AI Tools ──
 
 
 
 
 </script>
+
+<div class="save-group-bar" id="save-group-bar">
+  <div style="font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px" id="save-bar-filename">No file loaded</div>
+  <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
+    <select id="save-group-select" class="groups-select">
+      <option value="">Select group...</option>
+    </select>
+    <button class="btn-accent" onclick="saveCurrentToGroup()" style="font-size:12px;padding:7px 14px;white-space:nowrap">💾 Save to Group</button>
+  </div>
+</div>
 </body>
 </html>
+  <div style="font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px" id="save-bar-filename">No file loaded</div>
+  <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
+    <select id="save-group-select" class="groups-select">
+      <option value="">Select group...</option>
+    </select>
+    <button class="btn-accent" onclick="saveCurrentToGroup()" style="font-size:12px;padding:7px 14px;white-space:nowrap">💾 Save to Group</button>
+  </div>
+</div>
+
+>
