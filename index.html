@@ -2078,6 +2078,25 @@ function dismissInstall() {
 <meta name="admaven-placement" content="Bqjg6rTkH">
 </head>
 <body>
+
+<!-- Ad notice bar -->
+<div id="ad-notice" style="display:none;background:linear-gradient(135deg,rgba(232,69,10,0.08),rgba(13,13,26,0.5));border-bottom:1px solid rgba(232,69,10,0.2);padding:8px 20px;display:none;align-items:center;justify-content:space-between;gap:12px;font-size:12px;flex-wrap:wrap">
+  <span style="color:rgba(240,239,255,0.6)">🔒 This site is ad-supported for free users. Upgrade to Pro for a completely ad-free experience.</span>
+  <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
+    <button onclick="(typeof showUpgradeModal==='function'?showUpgradeModal():window.location.href='#pricing')" style="background:#E8450A;color:#fff;border:none;border-radius:7px;padding:5px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">Upgrade — No Ads</button>
+    <button onclick="document.getElementById('ad-notice').style.display='none';localStorage.setItem('rpk-ad-notice-dismissed','1')" style="background:none;border:none;color:rgba(240,239,255,0.3);cursor:pointer;font-size:16px;line-height:1;padding:0 4px" title="Dismiss">×</button>
+  </div>
+</div>
+<script>
+(function(){
+  var isPaid = typeof isPro==='function' ? isPro() : localStorage.getItem('pdfkit-pro')==='true'
+  var dismissed = localStorage.getItem('rpk-ad-notice-dismissed')==='1'
+  if(!isPaid && !dismissed){
+    var el = document.getElementById('ad-notice')
+    if(el) el.style.display='flex'
+  }
+})()
+</script>
 <h1 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">PDFKit — Free Online PDF Editor, No Uploads Required</h1>
 <header>
   <div class="logo" onclick="nav('home')" style="cursor:pointer" title="Go to home">
