@@ -1844,8 +1844,9 @@ html,body{overflow-x:hidden;max-width:100vw}
 
 
 @media(max-width:768px){
-  footer { bottom: 58px !important; font-size:11px; padding: 8px 14px !important; }
-  .main { padding-bottom: 120px !important; }
+  footer { position: static !important; font-size:11px; padding: 8px 14px !important; margin-bottom: 0; }
+  .main { padding-bottom: 72px !important; }
+  .panel, .home { padding-bottom: 90px !important; }
 }
 
 
@@ -35423,7 +35424,7 @@ document.addEventListener('change', function(e) {
 
 
 
-<footer style="background:var(--surface);border-top:1px solid var(--border);padding:11px 24px;position:fixed;bottom:0;left:0;right:0;z-index:100;width:100%;box-sizing:border-box;">
+<footer style="background:var(--surface);border-top:1px solid var(--border);padding:11px 24px;position:static;width:100%;box-sizing:border-box;">
   <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;width:100%">
     <div style="display:flex;align-items:center;gap:8px">
       <div style="width:22px;height:22px;background:#E8450A;border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:#fff;flex-shrink:0">R</div>
