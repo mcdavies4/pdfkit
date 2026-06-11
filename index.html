@@ -230,7 +230,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:14p
 .privacy-pill{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--hint);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:4px 10px}
 .dot-green{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0}
 .app{display:flex;flex:1;overflow:hidden}
-.sidebar{width:200px;border-right:1px solid var(--border);padding:16px 10px;display:flex;flex-direction:column;gap:2px;flex-shrink:0;overflow-y:auto}
+.sidebar{width:192px;border-right:1px solid var(--border);padding:16px 10px;display:flex;flex-direction:column;gap:2px;flex-shrink:0;overflow-y:auto}
 .sidebar-section{font-size:10px;color:var(--hint);letter-spacing:.1em;text-transform:uppercase;padding:10px 10px 6px;font-weight:600}
 .nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;color:var(--muted);font-size:13px;transition:all .15s;user-select:none}
 .nav-item:hover{background:var(--surface2);color:var(--text)}
@@ -447,7 +447,28 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 
 
 /* ── Restored missing component CSS ── */
-.nav{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;cursor:pointer;color:var(--muted);font-size:12.5px;transition:all .13s;user-select:none;border:1px solid transparent}
+
+/* ── Collapsible sidebar groups ── */
+
+.home-card-hidden { display: none !important }
+
+.sb-group { margin-bottom: 2px }
+.sb-group-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 10px; cursor: pointer; border-radius: 8px;
+  font-size: 10px; font-weight: 800; color: var(--hint);
+  text-transform: uppercase; letter-spacing: .1em;
+  user-select: none; transition: background .12s;
+}
+.sb-group-header:hover { background: rgba(255,255,255,.04) }
+.sb-group-header .sb-chevron {
+  font-size: 9px; color: var(--hint); transition: transform .2s; margin-left: 4px;
+}
+.sb-group-header.open .sb-chevron { transform: rotate(180deg) }
+.sb-group-body { overflow: hidden; transition: max-height .2s ease }
+.sb-group-body.collapsed { max-height: 0 !important }
+
+.nav{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:7px;cursor:pointer;color:var(--muted);font-size:12.5px;transition:all .13s;user-select:none;border:1px solid transparent}
 .nav:hover{background:var(--surface2);color:var(--text)}
 .nav.active{background:var(--accent-bg);color:var(--accent);font-weight:600;border-color:var(--accent-border)}
 .ni{font-size:14px;width:17px;text-align:center;flex-shrink:0}
@@ -34875,6 +34896,160 @@ window.runQrStamp = async function() {
 
 
 ;(function(){try{localStorage.removeItem('rpk-cookie-consent')}catch(e){}}())
+
+
+// ── Sidebar grouping ──
+const TOOL_GROUPS = {
+  'My Files':  ['groups','bulkextract'],
+  'Organise':  ['merge','split','reorder','extract','delete','rotate','crop','blankpage','dupepage','nup'],
+  'Annotate':  ['annotate','addimage','headfoot','watermark','pagenums','redact','pdftext','qrstamp','bates'],
+  'Convert':   ['word2pdf','img2pdf','scan','pdftoword','images','pdftocsv','ocr'],
+  'Optimise':  ['compress','grayscale','flatten','resize','repair'],
+  'Security':  ['protect','unlock','pwcheck','sign','fillform','redline'],
+  'Info & Preview': ['info','preview','metadata','compare'],
+}
+
+// Start all groups collapsed except first
+const _openGroups = new Set(['My Files','Organise'])
+
+function buildSidebarGroups() {
+  const sidebar = document.getElementById('main-sidebar')
+  if (!sidebar) return
+
+  // Collect all current nav items
+  const allNavs = Array.from(sidebar.querySelectorAll('.nav[data-t]'))
+  const navMap  = {}
+  allNavs.forEach(el => { navMap[el.dataset.t] = el })
+
+  // Remove from sidebar (we'll re-add in groups)
+  allNavs.forEach(el => el.remove())
+
+  // Build grouped structure after search box
+  const searchWrap = sidebar.querySelector('.search-wrap')
+  const insertAfter = searchWrap || sidebar.querySelector('#sb-favs-list')
+
+  // Ungrouped tools (not in any group)
+  const groupedIds = new Set(Object.values(TOOL_GROUPS).flat())
+
+  Object.entries(TOOL_GROUPS).forEach(([groupName, ids]) => {
+    const groupEl = document.createElement('div')
+    groupEl.className = 'sb-group'
+    groupEl.dataset.group = groupName
+
+    const header = document.createElement('div')
+    const isOpen = _openGroups.has(groupName)
+    header.className = 'sb-group-header' + (isOpen ? ' open' : '')
+    header.innerHTML = '<span>' + groupName + '</span><span class="sb-chevron">▼</span>'
+
+    const body = document.createElement('div')
+    body.className = 'sb-group-body' + (isOpen ? '' : ' collapsed')
+
+    ids.forEach(id => {
+      const el = navMap[id]
+      if (el) {
+        body.appendChild(el)
+        // Calculate natural height after layout
+      }
+    })
+
+    header.onclick = function() {
+      const open = header.classList.toggle('open')
+      if (open) {
+        body.classList.remove('collapsed')
+        body.style.maxHeight = body.scrollHeight + 'px'
+        _openGroups.add(groupName)
+      } else {
+        body.style.maxHeight = body.scrollHeight + 'px'
+        requestAnimationFrame(() => {
+          body.style.maxHeight = '0'
+          body.classList.add('collapsed')
+          _openGroups.delete(groupName)
+        })
+      }
+    }
+
+    // Set initial max-height for open groups
+    if (isOpen) {
+      body.style.maxHeight = '600px'
+    }
+
+    groupEl.appendChild(header)
+    groupEl.appendChild(body)
+    sidebar.appendChild(groupEl)
+  })
+
+  // When a tool becomes active, open its group
+  const _origNavFn = window.nav
+  window.nav = function(id) {
+    _origNavFn(id)
+    // Find and open the group containing this tool
+    Object.entries(TOOL_GROUPS).forEach(([groupName, ids]) => {
+      if (ids.includes(id)) {
+        _openGroups.add(groupName)
+        const groupEl = sidebar.querySelector('[data-group="' + groupName + '"]')
+        if (groupEl) {
+          const hdr  = groupEl.querySelector('.sb-group-header')
+          const body = groupEl.querySelector('.sb-group-body')
+          if (hdr && !hdr.classList.contains('open')) {
+            hdr.classList.add('open')
+            body.classList.remove('collapsed')
+            body.style.maxHeight = body.scrollHeight + 'px'
+          }
+        }
+      }
+    })
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  buildSidebarGroups()
+})
+
+
+// ── Home: progressive disclosure ──
+function initHomeGrid() {
+  const panel = document.getElementById('panel-home')
+  if (!panel) return
+
+  const allCards = Array.from(panel.querySelectorAll('.tool-card'))
+  if (allCards.length <= 12) return
+
+  const TOP = 12
+  // Hide cards beyond first 12
+  allCards.forEach((card, i) => {
+    if (i >= TOP) card.classList.add('home-card-hidden')
+  })
+
+  // Find or create the toggle button area
+  const grids = panel.querySelectorAll('.tool-grid')
+  const lastGrid = grids[grids.length - 1]
+
+  const toggleWrap = document.createElement('div')
+  toggleWrap.style.cssText = 'text-align:center;padding:4px 0 16px'
+  toggleWrap.id = 'home-grid-toggle'
+
+  const btn = document.createElement('button')
+  btn.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 20px;font-size:12px;font-weight:700;color:var(--hint);cursor:pointer;font-family:var(--font)'
+  btn.textContent = 'Show all ' + allCards.length + ' tools ↓'
+
+  let expanded = false
+  btn.onclick = function() {
+    expanded = !expanded
+    allCards.forEach((card, i) => {
+      if (i >= TOP) {
+        if (expanded) card.classList.remove('home-card-hidden')
+        else card.classList.add('home-card-hidden')
+      }
+    })
+    btn.textContent = expanded ? 'Show less ↑' : 'Show all ' + allCards.length + ' tools ↓'
+  }
+
+  toggleWrap.appendChild(btn)
+  if (lastGrid && lastGrid.parentNode) {
+    lastGrid.parentNode.insertBefore(toggleWrap, lastGrid.nextSibling)
+  }
+}
+document.addEventListener('DOMContentLoaded', initHomeGrid)
 
 // ── Cookie Consent removed ──
 
