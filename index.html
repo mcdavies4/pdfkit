@@ -32123,12 +32123,6 @@ async function submitFeedback(){
 
 
 // ── Cookie consent reset ──
- catch(e){}
-  if(b){
-    b.style.display = '';
-    setTimeout(() => b.classList.add('show'), 100);
-  }
-}
 
 </script>
 
@@ -34878,18 +34872,7 @@ window.runQrStamp = async function() {
 
 
 
-// ── Cookie Consent ──
-  const consent = localStorage.getItem('rpk-cookie-consent');
-  if (!consent) {
-    // First visit — show banner after 1 second
-    setTimeout(() => {
-      if (banner) banner.classList.add('show');
-    }, 1000);
-  } else if (consent === 'true') {
-    // Previously accepted — load Clarity
-    loadClarity();
-  }
-}
+// ── Cookie Consent removed ──
 
 function saveCookiePrefs(analytics) {
   localStorage.setItem('rpk-cookie-consent', analytics ? 'true' : 'false');
