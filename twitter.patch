@@ -1,0 +1,1180 @@
+From 1258a4325ed753db94747698d953a098d39d8cff Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 5 Jun 2026 19:07:40 +0000
+Subject: [PATCH 1/4] =?UTF-8?q?ci:=20add=20daily=20blog=20article=20workfl?=
+ =?UTF-8?q?ow=20=E2=80=94=203=20articles/day=20via=20Claude=20Code?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .github/workflows/daily-blog-articles.yml | 112 ++++++++++++++++++++++
+ 1 file changed, 112 insertions(+)
+ create mode 100644 .github/workflows/daily-blog-articles.yml
+
+diff --git a/.github/workflows/daily-blog-articles.yml b/.github/workflows/daily-blog-articles.yml
+new file mode 100644
+index 0000000..8ede73c
+--- /dev/null
++++ b/.github/workflows/daily-blog-articles.yml
+@@ -0,0 +1,112 @@
++name: Daily Blog Articles
++
++on:
++  schedule:
++    # 3 articles per day: 7am, 1pm, 7pm UTC
++    - cron: '0 7 * * *'
++    - cron: '0 13 * * *'
++    - cron: '0 19 * * *'
++  workflow_dispatch:
++    inputs:
++      topic:
++        description: 'Optional topic override (leave blank for scheduled topic)'
++        required: false
++
++jobs:
++  write-article:
++    runs-on: ubuntu-latest
++    permissions:
++      contents: write
++    steps:
++      - uses: actions/checkout@v4
++
++      - name: Run Claude Code to write article
++        uses: anthropics/claude-code-action@beta
++        with:
++          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
++          prompt: |
++            You are writing SEO blog articles for RightPDFKit (rightpdfkit.com), a free browser-based PDF tool suite.
++
++            Look at the existing articles in blog/ to understand the format, style and topics already covered.
++            Then pick the NEXT unwritten topic from this priority list (skip any already covered in blog/):
++
++            PRIORITY KEYWORD LIST (in order — write the first one not yet covered):
++            1. how-to-convert-pdf-to-powerpoint-free
++            2. pdf-to-png-free
++            3. how-to-crop-pdf-page-free
++            4. how-to-add-page-numbers-to-pdf-free
++            5. how-to-watermark-pdf-free
++            6. how-to-delete-pages-from-pdf-free
++            7. how-to-reorder-pdf-pages-free
++            8. how-to-add-image-to-pdf-free
++            9. pdf-to-text-free
++            10. how-to-flatten-pdf-free
++            11. how-to-convert-excel-to-pdf-free
++            12. how-to-convert-pdf-to-csv-free
++            13. how-to-repair-corrupted-pdf-free
++            14. how-to-add-hyperlink-to-pdf-free
++            15. how-to-convert-png-to-pdf-free
++            16. how-to-convert-pdf-to-epub-free
++            17. how-to-extract-images-from-pdf-free
++            18. pdf-form-creator-free
++            19. how-to-convert-html-to-pdf-free
++            20. how-to-linearize-pdf-free
++            21. smallpdf-alternative-free
++            22. adobe-acrobat-alternative-free
++            23. ilovepdf-vs-smallpdf
++            24. pdf24-alternative
++            25. best-pdf-compressor-free
++            26. best-pdf-merger-free
++            27. best-ocr-software-free
++            28. how-to-make-pdf-searchable-free
++            29. how-to-convert-pdf-to-audio-free
++            30. pdf-tools-for-students-free
++            31. pdf-tools-for-small-business-free
++            32. how-to-share-pdf-securely-free
++            33. how-to-reduce-pdf-size-for-email-free
++            34. how-to-print-pdf-as-booklet-free
++            35. best-free-pdf-tools-for-iphone
++            36. best-free-pdf-tools-for-android
++            37. how-to-sign-pdf-on-iphone-free
++            38. how-to-sign-pdf-on-android-free
++            39. how-to-edit-pdf-on-iphone-free
++            40. how-to-edit-pdf-on-android-free
++            41. how-to-merge-pdf-on-iphone-free
++            42. how-to-compress-pdf-on-iphone-free
++            43. free-pdf-tools-no-account-needed
++            44. how-to-work-with-pdfs-without-adobe
++            45. pdf-privacy-which-tools-are-safe
++            46. how-to-process-pdfs-offline-free
++            47. how-to-convert-pdf-to-google-docs-free
++            48. how-to-save-pdf-from-google-docs-free
++            49. how-to-export-pdf-from-word-free
++            50. how-to-convert-scanned-pdf-to-word-free
++            51. how-to-convert-pdf-invoice-to-excel-free
++            52. how-to-extract-tables-from-pdf-free
++            53. best-pdf-tools-for-lawyers-free
++            54. best-pdf-tools-for-accountants-free
++            55. best-pdf-tools-for-hr-free
++            56. pdf-tools-for-remote-workers-free
++            57. how-to-batch-convert-pdf-free
++            58. how-to-automate-pdf-processing-free
++            59. pdf-metadata-editor-free
++            60. how-to-remove-watermark-from-pdf-free
++
++            ARTICLE REQUIREMENTS:
++            - Use the EXACT same HTML structure as existing blog articles (dark theme, #0D0D1A bg, #E8450A accent)
++            - Copy the full CSS and header/footer from an existing article
++            - Include: proper <title>, meta description, canonical URL, OG tags, JSON-LD Article schema
++            - Canonical URL format: https://rightpdfkit.com/blog/{slug}
++            - CTA buttons link to https://rightpdfkit.com/#{relevant-tool}
++            - Include 2 CTA boxes (one near top, one near bottom)
++            - 4-6 sections with h2 headings
++            - 600-900 words
++            - Related articles section at bottom (3 cards linking to existing articles)
++            - Date: use today's date
++            - Save as blog/{slug}.html
++
++            ALSO update blog/index.html — add the new article card at the TOP of the .grid div, matching the existing card style.
++
++            Commit with message: "blog: add article — {article-title}"
++
++            Then push to the current branch (main).
+-- 
+2.43.0
+
+
+From 7a169367e3bd456352f6991abee3bc54a5f1bef9 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 5 Jun 2026 19:26:14 +0000
+Subject: [PATCH 2/4] blog: update tool count from 45 to 52
+
+---
+ blog/how-to-edit-pdf-free.html | 2 +-
+ blog/index.html                | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/blog/how-to-edit-pdf-free.html b/blog/how-to-edit-pdf-free.html
+index 0f9f60b..da65ee3 100644
+--- a/blog/how-to-edit-pdf-free.html
++++ b/blog/how-to-edit-pdf-free.html
+@@ -62,7 +62,7 @@ details summary::-webkit-details-marker{display:none}
+     <div class="logo-icon">R</div>
+     <span class="logo-text">RightPDF<span>Kit</span></span>
+   </a>
+-  <a href="https://rightpdfkit.com" class="header-cta">Try 45 Tools Free →</a>
++  <a href="https://rightpdfkit.com" class="header-cta">Try 52 Tools Free →</a>
+ </header>
+ <article class="article-wrap">
+   <nav class="breadcrumb">
+diff --git a/blog/index.html b/blog/index.html
+index f397153..d271227 100644
+--- a/blog/index.html
++++ b/blog/index.html
+@@ -40,7 +40,7 @@ a{color:#E8450A;text-decoration:none}
+     <div class="logo-icon">R</div>
+     <span class="logo-text">RightPDF<span>Kit</span></span>
+   </a>
+-  <a href="https://rightpdfkit.com" class="header-cta">Try 45 Tools Free →</a>
++  <a href="https://rightpdfkit.com" class="header-cta">Try 52 Tools Free →</a>
+ </header>
+ <main class="wrap">
+   <div class="blog-hero">
+-- 
+2.43.0
+
+
+From 91edc0a4604de6a6668d9ab4cf3123965b5f9c7c Mon Sep 17 00:00:00 2001
+From: mcdavies4 <azubuikedavies@gmail.com>
+Date: Fri, 5 Jun 2026 22:31:12 +0100
+Subject: [PATCH 3/4] feat: add IndexNow auto-submission
+
+---
+ .github/workflows/indexnow.yml       |  44 +++
+ b550efe9b4854369af4322a0ef7538c2.txt |   1 +
+ blogarticles.patch                   | 523 +++++++++++++++++++++++++++
+ indexnow.patch                       | 116 ++++++
+ toolcount.patch                      |  39 ++
+ workflow.patch                       | 135 +++++++
+ 6 files changed, 858 insertions(+)
+ create mode 100644 .github/workflows/indexnow.yml
+ create mode 100644 b550efe9b4854369af4322a0ef7538c2.txt
+ create mode 100644 blogarticles.patch
+ create mode 100644 indexnow.patch
+ create mode 100644 toolcount.patch
+ create mode 100644 workflow.patch
+
+diff --git a/.github/workflows/indexnow.yml b/.github/workflows/indexnow.yml
+new file mode 100644
+index 0000000..5e573ea
+--- /dev/null
++++ b/.github/workflows/indexnow.yml
+@@ -0,0 +1,44 @@
++name: IndexNow — Submit New URLs
++
++on:
++  push:
++    branches: [main]
++    paths:
++      - 'blog/**.html'
++
++jobs:
++  submit:
++    runs-on: ubuntu-latest
++    steps:
++      - uses: actions/checkout@v4
++        with:
++          fetch-depth: 2
++
++      - name: Find new blog articles
++        id: urls
++        run: |
++          NEW_FILES=$(git diff --name-only HEAD~1 HEAD -- 'blog/*.html' | grep -v 'blog/index.html' || true)
++          if [ -z "$NEW_FILES" ]; then
++            echo "No new articles found"
++            echo "urls=" >> $GITHUB_OUTPUT
++          else
++            URLS=""
++            for f in $NEW_FILES; do
++              SLUG=$(basename "$f" .html)
++              URLS="$URLS,\"https://rightpdfkit.com/blog/$SLUG\""
++            done
++            URLS="${URLS#,}"
++            echo "urls=$URLS" >> $GITHUB_OUTPUT
++          fi
++
++      - name: Submit to IndexNow
++        if: steps.urls.outputs.urls != ''
++        run: |
++          curl -s -X POST "https://api.indexnow.org/indexnow" \
++            -H "Content-Type: application/json; charset=utf-8" \
++            -d "{
++              \"host\": \"rightpdfkit.com\",
++              \"key\": \"b550efe9b4854369af4322a0ef7538c2\",
++              \"keyLocation\": \"https://rightpdfkit.com/b550efe9b4854369af4322a0ef7538c2.txt\",
++              \"urlList\": [${{ steps.urls.outputs.urls }}]
++            }"
+\ No newline at end of file
+diff --git a/b550efe9b4854369af4322a0ef7538c2.txt b/b550efe9b4854369af4322a0ef7538c2.txt
+new file mode 100644
+index 0000000..b876944
+--- /dev/null
++++ b/b550efe9b4854369af4322a0ef7538c2.txt
+@@ -0,0 +1 @@
++b550efe9b4854369af4322a0ef7538c2
+\ No newline at end of file
+diff --git a/blogarticles.patch b/blogarticles.patch
+new file mode 100644
+index 0000000..49e26c8
+--- /dev/null
++++ b/blogarticles.patch
+@@ -0,0 +1,523 @@
++From eed426015673e48f73ac77d620f95b1d385278d9 Mon Sep 17 00:00:00 2001
++From: Claude <noreply@anthropic.com>
++Date: Fri, 5 Jun 2026 16:28:56 +0000
++Subject: [PATCH] =?UTF-8?q?blog:=20add=203=20new=20articles=20=E2=80=94=20?=
++ =?UTF-8?q?split=20PDF,=20PDF=20to=20Excel,=20rotate=20pages?=
++MIME-Version: 1.0
++Content-Type: text/plain; charset=UTF-8
++Content-Transfer-Encoding: 8bit
++
++New guides for today (2026-06-05):
++- how-to-split-pdf-free.html
++- pdf-to-excel-free.html
++- how-to-rotate-pdf-pages.html
++- blog/index.html updated with 3 new cards
++---
++ blog/how-to-rotate-pdf-pages.html | 145 +++++++++++++++++++++++++++
++ blog/how-to-split-pdf-free.html   | 148 ++++++++++++++++++++++++++++
++ blog/index.html                   |  18 ++++
++ blog/pdf-to-excel-free.html       | 156 ++++++++++++++++++++++++++++++
++ 4 files changed, 467 insertions(+)
++ create mode 100644 blog/how-to-rotate-pdf-pages.html
++ create mode 100644 blog/how-to-split-pdf-free.html
++ create mode 100644 blog/pdf-to-excel-free.html
++
++diff --git a/blog/how-to-rotate-pdf-pages.html b/blog/how-to-rotate-pdf-pages.html
++new file mode 100644
++index 0000000..0d0245f
++--- /dev/null
+++++ b/blog/how-to-rotate-pdf-pages.html
++@@ -0,0 +1,145 @@
+++<!DOCTYPE html>
+++<html lang="en">
+++<head>
+++<meta charset="UTF-8">
+++<meta name="viewport" content="width=device-width,initial-scale=1">
+++<title>How to Rotate PDF Pages Free — Fix Upside-Down or Sideways Pages | RightPDFKit</title>
+++<meta name="description" content="Rotate one page or every page in a PDF — free, instant, no upload. Fix upside-down scans and sideways pages in seconds.">
+++<meta name="keywords" content="rotate pdf, rotate pdf pages, fix upside down pdf, rotate pdf free, turn pdf page">
+++<meta name="author" content="RightPDFKit">
+++<meta name="robots" content="index,follow">
+++<link rel="canonical" href="https://rightpdfkit.com/blog/how-to-rotate-pdf-pages">
+++<meta property="og:type" content="article">
+++<meta property="og:title" content="How to Rotate PDF Pages Free — Fix Upside-Down or Sideways Pages">
+++<meta property="og:description" content="Rotate one page or every page in a PDF — free, instant, no upload. Fix upside-down scans and sideways pages in seconds.">
+++<meta property="og:url" content="https://rightpdfkit.com/blog/how-to-rotate-pdf-pages">
+++<meta property="og:image" content="https://rightpdfkit.com/og-image.png?v=52">
+++<meta property="og:site_name" content="RightPDFKit">
+++<meta name="twitter:card" content="summary_large_image">
+++<meta name="twitter:title" content="How to Rotate PDF Pages Free — Fix Upside-Down or Sideways Pages">
+++<meta name="twitter:description" content="Rotate one page or every page in a PDF — free, instant, no upload.">
+++<meta name="twitter:image" content="https://rightpdfkit.com/og-image.png?v=52">
+++<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How to Rotate PDF Pages Free — Fix Upside-Down or Sideways Pages","description":"Rotate one page or every page in a PDF — free, instant, no upload. Fix upside-down scans and sideways pages in seconds.","author":{"@type":"Organization","name":"RightPDFKit"},"publisher":{"@type":"Organization","name":"RightPDFKit","url":"https://rightpdfkit.com"},"datePublished":"2026-06-05","dateModified":"2026-06-05","url":"https://rightpdfkit.com/blog/how-to-rotate-pdf-pages","mainEntityOfPage":"https://rightpdfkit.com/blog/how-to-rotate-pdf-pages"}</script>
+++<style>
+++*{box-sizing:border-box;margin:0;padding:0}
+++body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0D0D1A;color:#F2F0EB;line-height:1.7;min-height:100vh}
+++a{color:#E8450A;text-decoration:none}
+++a:hover{text-decoration:underline}
+++.site-header{background:rgba(13,13,26,.95);border-bottom:1px solid rgba(255,255,255,0.08);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+++.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+++.logo-icon{width:28px;height:28px;background:#E8450A;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#fff}
+++.logo-text{font-size:15px;font-weight:700;color:#F2F0EB}
+++.logo-text span{color:#E8450A}
+++.header-cta{background:#E8450A;color:#fff;border:none;border-radius:7px;padding:8px 16px;font-size:13px;font-weight:700;text-decoration:none;display:inline-block}
+++.header-cta:hover{text-decoration:none;opacity:.9}
+++.article-wrap{max-width:720px;margin:0 auto;padding:40px 24px 80px}
+++.breadcrumb{font-size:12px;color:rgba(242,240,235,0.55);margin-bottom:24px}
+++.breadcrumb a{color:rgba(242,240,235,0.55)}
+++.breadcrumb a:hover{color:#E8450A}
+++.article-meta{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+++.article-cat{font-size:11px;font-weight:700;color:#E8450A;text-transform:uppercase;letter-spacing:.08em;background:rgba(232,69,10,.1);border:1px solid rgba(232,69,10,.2);border-radius:20px;padding:3px 10px}
+++.article-time,.article-date{font-size:12px;color:rgba(242,240,235,0.55)}
+++h1{font-size:28px;font-weight:800;color:#F2F0EB;line-height:1.3;margin-bottom:16px;letter-spacing:-.02em}
+++h2{font-size:19px;font-weight:700;color:#F2F0EB;margin:28px 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.08)}
+++p{color:rgba(242,240,235,0.55);font-size:15px;margin-bottom:14px;line-height:1.8}
+++ul,ol{color:rgba(242,240,235,0.55);font-size:15px;margin-bottom:14px;padding-left:22px;line-height:1.8}
+++li{margin-bottom:6px}
+++strong{color:#F2F0EB}
+++.cta-box{background:rgba(232,69,10,.07);border:1.5px solid rgba(232,69,10,.25);border-radius:14px;padding:20px 24px;margin:28px 0;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+++.cta-box p{margin:0;color:#F2F0EB;font-size:14px;font-weight:600}
+++.cta-btn{background:#E8450A;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;text-decoration:none;display:inline-block;white-space:nowrap}
+++.cta-btn:hover{text-decoration:none;opacity:.9}
+++.site-footer{background:#161625;border-top:1px solid rgba(255,255,255,0.08);padding:20px 24px;text-align:center;font-size:12px;color:rgba(242,240,235,0.55)}
+++.site-footer a{color:rgba(242,240,235,0.55);margin:0 8px}
+++.site-footer a:hover{color:#E8450A}
+++.related{margin-top:40px;padding-top:32px;border-top:1px solid rgba(255,255,255,0.08)}
+++.related h2{font-size:16px;border:none;padding:0;margin-bottom:16px}
+++.related-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+++.related-card{background:#161625;border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:14px;text-decoration:none;display:block;transition:border-color .15s}
+++.related-card:hover{border-color:#E8450A;text-decoration:none}
+++.related-card-title{font-size:13px;font-weight:600;color:#F2F0EB;line-height:1.4;margin-bottom:4px}
+++.related-card-meta{font-size:11px;color:rgba(242,240,235,0.55)}
+++@media(max-width:600px){h1{font-size:22px}.article-wrap{padding:24px 16px 60px}.cta-box{flex-direction:column}}
+++</style>
+++</head>
+++<body>
+++<header class="site-header">
+++  <a href="https://rightpdfkit.com" class="logo">
+++    <div class="logo-icon">R</div>
+++    <span class="logo-text">RightPDF<span>Kit</span></span>
+++  </a>
+++  <a href="https://rightpdfkit.com/#rotate" class="header-cta">Try Rotate PDF Free →</a>
+++</header>
+++<article class="article-wrap">
+++  <nav class="breadcrumb">
+++    <a href="https://rightpdfkit.com">Home</a> › <a href="https://rightpdfkit.com/blog/">Blog</a> › How to Rotate PDF Pages Free
+++  </nav>
+++  <div class="article-meta">
+++    <span class="article-cat">Guide</span>
+++    <span class="article-time">⏱ 3 min read</span>
+++    <span class="article-date">📅 2026-06-05</span>
+++  </div>
+++
+++<h1>How to Rotate PDF Pages Free — Fix Upside-Down or Sideways Pages</h1>
+++<p>Scanned a document the wrong way up? Got a PDF where some pages are landscape and others are portrait? Rotating PDF pages takes seconds — no software needed, no upload required.</p>
+++
+++<div class="cta-box"><p>Rotate PDF pages free — no upload, no account</p><a href="https://rightpdfkit.com/#rotate" class="cta-btn">Rotate PDF Free →</a></div>
+++
+++<h2>How to rotate PDF pages — step by step</h2>
+++<ol>
+++  <li>Open the <strong>Rotate PDF</strong> tool on RightPDFKit.</li>
+++  <li>Upload your PDF by dragging it in or clicking to browse.</li>
+++  <li>A thumbnail view of all pages appears. Click any page to select it, or use <strong>Select All</strong> to rotate every page at once.</li>
+++  <li>Choose your rotation: <strong>90° clockwise</strong>, <strong>90° counter-clockwise</strong>, or <strong>180° (flip upside-down)</strong>.</li>
+++  <li>Click <strong>Save &amp; Download</strong>.</li>
+++</ol>
+++
+++<h2>Can I rotate just one page?</h2>
+++<p>Yes. Click the thumbnail of the specific page you want to rotate, apply the rotation, and the rest of the document stays unchanged. This is useful when a scan has one portrait page in the middle of a landscape document.</p>
+++
+++<h2>Does rotation permanently fix the PDF?</h2>
+++<p>Yes. The rotation is written into the PDF file — it's not just a view setting. When you download and open the file in any PDF reader (Adobe Reader, Preview, Chrome, your phone), the pages will be correctly oriented.</p>
+++<p>This is different from rotating a page in your browser's PDF viewer, which only adjusts the view temporarily and reverts when you close the tab.</p>
+++
+++<h2>Why do PDFs have rotated pages?</h2>
+++<ul>
+++  <li><strong>Phone or scanner orientation</strong> — photographing a document while holding your phone sideways</li>
+++  <li><strong>Mixed-orientation documents</strong> — a wide table scanned in landscape inserted into a portrait document</li>
+++  <li><strong>Incorrect export settings</strong> — some Word or LibreOffice exports flip the orientation</li>
+++  <li><strong>Merged PDFs</strong> — combining files that were created in different orientations</li>
+++</ul>
+++
+++<h2>Rotate before sharing or uploading</h2>
+++<p>If you're submitting a document to a government portal, HR system or university application, always check page orientation first. Upside-down pages can cause automatic document processing systems to fail or reject the upload entirely.</p>
+++
+++<div class="cta-box"><p>Fix your PDF orientation now — free and private</p><a href="https://rightpdfkit.com/#rotate" class="cta-btn">Open Rotate PDF →</a></div>
+++
+++  <div class="related">
+++  <h2>Related articles</h2>
+++  <div class="related-grid">
+++    <a href="how-to-merge-pdfs-free.html" class="related-card">
+++      <div class="related-card-title">How to Merge PDFs Free</div>
+++      <div class="related-card-meta">Guide · 5 min</div>
+++    </a>
+++    <a href="how-to-split-pdf-free.html" class="related-card">
+++      <div class="related-card-title">How to Split a PDF Free</div>
+++      <div class="related-card-meta">Guide · 4 min</div>
+++    </a>
+++    <a href="how-to-compress-pdf.html" class="related-card">
+++      <div class="related-card-title">How to Compress a PDF</div>
+++      <div class="related-card-meta">Guide · 4 min</div>
+++    </a>
+++  </div>
+++  </div>
+++</article>
+++<footer class="site-footer">
+++  <div style="margin-bottom:8px">
+++    <a href="https://rightpdfkit.com">Home</a>
+++    <a href="https://rightpdfkit.com/blog/">Blog</a>
+++    <a href="https://rightpdfkit.com/#pricing">Pricing</a>
+++    <a href="mailto:support@rightpdfkit.com">Contact</a>
+++  </div>
+++  <div>© 2026 RightPDFKit · The 36th Company Ltd · London · Your files never leave your device.</div>
+++</footer>
+++</body>
+++</html>
++diff --git a/blog/how-to-split-pdf-free.html b/blog/how-to-split-pdf-free.html
++new file mode 100644
++index 0000000..5a2b05e
++--- /dev/null
+++++ b/blog/how-to-split-pdf-free.html
++@@ -0,0 +1,148 @@
+++<!DOCTYPE html>
+++<html lang="en">
+++<head>
+++<meta charset="UTF-8">
+++<meta name="viewport" content="width=device-width,initial-scale=1">
+++<title>How to Split a PDF Free — Extract Pages Without Uploading | RightPDFKit</title>
+++<meta name="description" content="Split any PDF into separate pages or page ranges — free, private, no upload needed. Works in your browser on desktop and mobile.">
+++<meta name="keywords" content="split pdf, extract pages from pdf, split pdf free, divide pdf, pdf splitter">
+++<meta name="author" content="RightPDFKit">
+++<meta name="robots" content="index,follow">
+++<link rel="canonical" href="https://rightpdfkit.com/blog/how-to-split-pdf-free">
+++<meta property="og:type" content="article">
+++<meta property="og:title" content="How to Split a PDF Free — Extract Pages Without Uploading">
+++<meta property="og:description" content="Split any PDF into separate pages or page ranges — free, private, no upload needed.">
+++<meta property="og:url" content="https://rightpdfkit.com/blog/how-to-split-pdf-free">
+++<meta property="og:image" content="https://rightpdfkit.com/og-image.png?v=52">
+++<meta property="og:site_name" content="RightPDFKit">
+++<meta name="twitter:card" content="summary_large_image">
+++<meta name="twitter:title" content="How to Split a PDF Free — Extract Pages Without Uploading">
+++<meta name="twitter:description" content="Split any PDF into separate pages or page ranges — free, private, no upload needed.">
+++<meta name="twitter:image" content="https://rightpdfkit.com/og-image.png?v=52">
+++<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How to Split a PDF Free — Extract Pages Without Uploading","description":"Split any PDF into separate pages or page ranges — free, private, no upload needed.","author":{"@type":"Organization","name":"RightPDFKit"},"publisher":{"@type":"Organization","name":"RightPDFKit","url":"https://rightpdfkit.com"},"datePublished":"2026-06-05","dateModified":"2026-06-05","url":"https://rightpdfkit.com/blog/how-to-split-pdf-free","mainEntityOfPage":"https://rightpdfkit.com/blog/how-to-split-pdf-free"}</script>
+++<style>
+++*{box-sizing:border-box;margin:0;padding:0}
+++body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0D0D1A;color:#F2F0EB;line-height:1.7;min-height:100vh}
+++a{color:#E8450A;text-decoration:none}
+++a:hover{text-decoration:underline}
+++.site-header{background:rgba(13,13,26,.95);border-bottom:1px solid rgba(255,255,255,0.08);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+++.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+++.logo-icon{width:28px;height:28px;background:#E8450A;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#fff}
+++.logo-text{font-size:15px;font-weight:700;color:#F2F0EB}
+++.logo-text span{color:#E8450A}
+++.header-cta{background:#E8450A;color:#fff;border:none;border-radius:7px;padding:8px 16px;font-size:13px;font-weight:700;text-decoration:none;display:inline-block}
+++.header-cta:hover{text-decoration:none;opacity:.9}
+++.article-wrap{max-width:720px;margin:0 auto;padding:40px 24px 80px}
+++.breadcrumb{font-size:12px;color:rgba(242,240,235,0.55);margin-bottom:24px}
+++.breadcrumb a{color:rgba(242,240,235,0.55)}
+++.breadcrumb a:hover{color:#E8450A}
+++.article-meta{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+++.article-cat{font-size:11px;font-weight:700;color:#E8450A;text-transform:uppercase;letter-spacing:.08em;background:rgba(232,69,10,.1);border:1px solid rgba(232,69,10,.2);border-radius:20px;padding:3px 10px}
+++.article-time,.article-date{font-size:12px;color:rgba(242,240,235,0.55)}
+++h1{font-size:28px;font-weight:800;color:#F2F0EB;line-height:1.3;margin-bottom:16px;letter-spacing:-.02em}
+++h2{font-size:19px;font-weight:700;color:#F2F0EB;margin:28px 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.08)}
+++p{color:rgba(242,240,235,0.55);font-size:15px;margin-bottom:14px;line-height:1.8}
+++ul,ol{color:rgba(242,240,235,0.55);font-size:15px;margin-bottom:14px;padding-left:22px;line-height:1.8}
+++li{margin-bottom:6px}
+++strong{color:#F2F0EB}
+++.cta-box{background:rgba(232,69,10,.07);border:1.5px solid rgba(232,69,10,.25);border-radius:14px;padding:20px 24px;margin:28px 0;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+++.cta-box p{margin:0;color:#F2F0EB;font-size:14px;font-weight:600}
+++.cta-btn{background:#E8450A;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;text-decoration:none;display:inline-block;white-space:nowrap}
+++.cta-btn:hover{text-decoration:none;opacity:.9}
+++.site-footer{background:#161625;border-top:1px solid rgba(255,255,255,0.08);padding:20px 24px;text-align:center;font-size:12px;color:rgba(242,240,235,0.55)}
+++.site-footer a{color:rgba(242,240,235,0.55);margin:0 8px}
+++.site-footer a:hover{color:#E8450A}
+++.related{margin-top:40px;padding-top:32px;border-top:1px solid rgba(255,255,255,0.08)}
+++.related h2{font-size:16px;border:none;padding:0;margin-bottom:16px}
+++.related-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+++.related-card{background:#161625;border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:14px;text-decoration:none;display:block;transition:border-color .15s}
+++.related-card:hover{border-color:#E8450A;text-decoration:none}
+++.related-card-title{font-size:13px;font-weight:600;color:#F2F0EB;line-height:1.4;margin-bottom:4px}
+++.related-card-meta{font-size:11px;color:rgba(242,240,235,0.55)}
+++@media(max-width:600px){h1{font-size:22px}.article-wrap{padding:24px 16px 60px}.cta-box{flex-direction:column}}
+++</style>
+++</head>
+++<body>
+++<header class="site-header">
+++  <a href="https://rightpdfkit.com" class="logo">
+++    <div class="logo-icon">R</div>
+++    <span class="logo-text">RightPDF<span>Kit</span></span>
+++  </a>
+++  <a href="https://rightpdfkit.com/#split" class="header-cta">Try Split PDF Free →</a>
+++</header>
+++<article class="article-wrap">
+++  <nav class="breadcrumb">
+++    <a href="https://rightpdfkit.com">Home</a> › <a href="https://rightpdfkit.com/blog/">Blog</a> › How to Split a PDF Free
+++  </nav>
+++  <div class="article-meta">
+++    <span class="article-cat">Guide</span>
+++    <span class="article-time">⏱ 4 min read</span>
+++    <span class="article-date">📅 2026-06-05</span>
+++  </div>
+++
+++<h1>How to Split a PDF Free — Extract Pages Without Uploading</h1>
+++<p>Need to pull a few pages out of a large PDF, or break a 50-page document into individual files? You can split any PDF right in your browser — no upload, no account, no software to install.</p>
+++
+++<div class="cta-box"><p>Split any PDF free — no upload, no account</p><a href="https://rightpdfkit.com/#split" class="cta-btn">Split PDF Free →</a></div>
+++
+++<h2>How to split a PDF — step by step</h2>
+++<ol>
+++  <li>Open the <strong>Split PDF</strong> tool on RightPDFKit.</li>
+++  <li>Upload your PDF by dragging it in or clicking to browse.</li>
+++  <li>Choose your split mode: <strong>Extract all pages</strong> (one file per page), <strong>Split by range</strong> (e.g. pages 1–5, 6–10), or <strong>Extract specific pages</strong> (e.g. pages 2, 5, 9).</li>
+++  <li>Click <strong>Split &amp; Download</strong>. You'll get a ZIP file if multiple pages are extracted.</li>
+++</ol>
+++
+++<h2>When do you need to split a PDF?</h2>
+++<ul>
+++  <li><strong>Email size limits</strong> — extract the pages you need instead of sending the whole document</li>
+++  <li><strong>Sharing only part of a document</strong> — send an invoice page without the rest of the contract</li>
+++  <li><strong>Breaking up a scanned book</strong> — split a multi-chapter scan into individual chapters</li>
+++  <li><strong>Uploading to portals with page limits</strong> — many government and HR portals cap uploads at 5–10 pages</li>
+++</ul>
+++
+++<h2>Split vs extract — what's the difference?</h2>
+++<p><strong>Splitting</strong> divides a PDF at a certain point (e.g. every 5 pages), producing multiple sequentially chunked files. <strong>Extracting</strong> lets you pick specific pages regardless of order — more flexible for pulling out an appendix or signature page.</p>
+++
+++<h2>Does splitting affect PDF quality?</h2>
+++<p>No. Splitting is a structural operation — the tool separates pages without re-encoding them. Text stays sharp, images stay at their original resolution, and embedded fonts are preserved.</p>
+++
+++<h2>Why split without uploading?</h2>
+++<p>Most PDF splitters (iLovePDF, Smallpdf, Adobe Split) upload your file to a server. If your PDF contains contracts, pay slips, medical records or anything private, that data is travelling to someone else's system. RightPDFKit runs entirely in your browser — your file never leaves your device.</p>
+++
+++<h2>Common questions</h2>
+++<p><strong>Can I split a password-protected PDF?</strong> You'll need to remove the password first. Use the <a href="how-to-remove-password-from-pdf.html">Remove Password from PDF</a> tool, then split.</p>
+++<p><strong>Is there a page limit?</strong> No. RightPDFKit handles PDFs of any length — 1 page or 1,000 pages.</p>
+++<p><strong>Can I split on mobile?</strong> Yes. The tool works on iPhone and Android in any modern browser.</p>
+++
+++<div class="cta-box"><p>Split your PDF now — free and private</p><a href="https://rightpdfkit.com/#split" class="cta-btn">Open Split PDF →</a></div>
+++
+++  <div class="related">
+++  <h2>Related articles</h2>
+++  <div class="related-grid">
+++    <a href="how-to-merge-pdfs-free.html" class="related-card">
+++      <div class="related-card-title">How to Merge PDFs Free</div>
+++      <div class="related-card-meta">Guide · 5 min</div>
+++    </a>
+++    <a href="how-to-compress-pdf.html" class="related-card">
+++      <div class="related-card-title">How to Compress a PDF</div>
+++      <div class="related-card-meta">Guide · 4 min</div>
+++    </a>
+++    <a href="how-to-remove-password-from-pdf.html" class="related-card">
+++      <div class="related-card-title">Remove Password from PDF</div>
+++      <div class="related-card-meta">Security · 5 min</div>
+++    </a>
+++  </div>
+++  </div>
+++</article>
+++<footer class="site-footer">
+++  <div style="margin-bottom:8px">
+++    <a href="https://rightpdfkit.com">Home</a>
+++    <a href="https://rightpdfkit.com/blog/">Blog</a>
+++    <a href="https://rightpdfkit.com/#pricing">Pricing</a>
+++    <a href="mailto:support@rightpdfkit.com">Contact</a>
+++  </div>
+++  <div>© 2026 RightPDFKit · The 36th Company Ltd · London · Your files never leave your device.</div>
+++</footer>
+++</body>
+++</html>
++diff --git a/blog/index.html b/blog/index.html
++index fce7286..f397153 100644
++--- a/blog/index.html
+++++ b/blog/index.html
++@@ -48,6 +48,24 @@ a{color:#E8450A;text-decoration:none}
++     <p>Free PDF guides, tips and tutorials. All tools process your files locally — no uploads, no accounts.</p>
++   </div>
++   <div class="grid">
+++      <a href="how-to-split-pdf-free.html" style="background:#161625;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:22px;text-decoration:none;display:block;transition:border-color .15s" onmouseover="this.style.borderColor='#E8450A'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
+++        <div style="font-size:10px;font-weight:700;color:#E8450A;text-transform:uppercase;letter-spacing:.08em;background:rgba(232,69,10,.1);border:1px solid rgba(232,69,10,.2);border-radius:20px;padding:2px 9px;display:inline-block;margin-bottom:10px">Guide</div>
+++        <div style="font-size:16px;font-weight:700;color:#F2F0EB;line-height:1.35;margin-bottom:8px">How to Split a PDF Free — Extract Pages Without Uploading</div>
+++        <div style="font-size:13px;color:rgba(242,240,235,0.55);line-height:1.6;margin-bottom:12px">Split any PDF into separate pages or custom ranges. No upload, no account. Works on iPhone and Android.</div>
+++        <div style="font-size:11px;color:rgba(242,240,235,0.55)">⏱ 4 min read · 📅 June 2026</div>
+++      </a>
+++      <a href="pdf-to-excel-free.html" style="background:#161625;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:22px;text-decoration:none;display:block;transition:border-color .15s" onmouseover="this.style.borderColor='#E8450A'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
+++        <div style="font-size:10px;font-weight:700;color:#E8450A;text-transform:uppercase;letter-spacing:.08em;background:rgba(232,69,10,.1);border:1px solid rgba(232,69,10,.2);border-radius:20px;padding:2px 9px;display:inline-block;margin-bottom:10px">Guide</div>
+++        <div style="font-size:16px;font-weight:700;color:#F2F0EB;line-height:1.35;margin-bottom:8px">How to Convert PDF to Excel Free — No Upload, No Account</div>
+++        <div style="font-size:13px;color:rgba(242,240,235,0.55);line-height:1.6;margin-bottom:12px">Extract tables from any PDF into editable Excel or CSV. Private, instant, free. Works on desktop and mobile.</div>
+++        <div style="font-size:11px;color:rgba(242,240,235,0.55)">⏱ 5 min read · 📅 June 2026</div>
+++      </a>
+++      <a href="how-to-rotate-pdf-pages.html" style="background:#161625;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:22px;text-decoration:none;display:block;transition:border-color .15s" onmouseover="this.style.borderColor='#E8450A'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
+++        <div style="font-size:10px;font-weight:700;color:#E8450A;text-transform:uppercase;letter-spacing:.08em;background:rgba(232,69,10,.1);border:1px solid rgba(232,69,10,.2);border-radius:20px;padding:2px 9px;display:inline-block;margin-bottom:10px">Guide</div>
+++        <div style="font-size:16px;font-weight:700;color:#F2F0EB;line-height:1.35;margin-bottom:8px">How to Rotate PDF Pages Free — Fix Upside-Down or Sideways Pages</div>
+++        <div style="font-size:13px;color:rgba(242,240,235,0.55);line-height:1.6;margin-bottom:12px">Rotate one page or all pages in a PDF in seconds. No upload, no account. Works on iPhone and Android.</div>
+++        <div style="font-size:11px;color:rgba(242,240,235,0.55)">⏱ 3 min read · 📅 June 2026</div>
+++      </a>
++       <a href="how-to-annotate-pdf-free.html" style="background:#161625;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:22px;text-decoration:none;display:block;transition:border-color .15s" onmouseover="this.style.borderColor='#E8450A'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
++         <div style="font-size:10px;font-weight:700;color:#E8450A;text-transform:uppercase;letter-spacing:.08em;background:rgba(232,69,10,.1);border:1px solid rgba(232,69,10,.2);border-radius:20px;padding:2px 9px;display:inline-block;margin-bottom:10px">Guide</div>
++         <div style="font-size:16px;font-weight:700;color:#F2F0EB;line-height:1.35;margin-bottom:8px">How to Annotate a PDF Free — Highlight, Comment, Draw Without Adobe</div>
++diff --git a/blog/pdf-to-excel-free.html b/blog/pdf-to-excel-free.html
++new file mode 100644
++index 0000000..95d836c
++--- /dev/null
+++++ b/blog/pdf-to-excel-free.html
++@@ -0,0 +1,156 @@
+++<!DOCTYPE html>
+++<html lang="en">
+++<head>
+++<meta charset="UTF-8">
+++<meta name="viewport" content="width=device-width,initial-scale=1">
+++<title>How to Convert PDF to Excel Free — No Upload, No Account | RightPDFKit</title>
+++<meta name="description" content="Convert PDF tables to editable Excel or CSV in your browser. Free, private, no upload. Works on desktop and mobile.">
+++<meta name="keywords" content="pdf to excel, convert pdf to excel free, pdf to spreadsheet, pdf to csv, extract table from pdf">
+++<meta name="author" content="RightPDFKit">
+++<meta name="robots" content="index,follow">
+++<link rel="canonical" href="https://rightpdfkit.com/blog/pdf-to-excel-free">
+++<meta property="og:type" content="article">
+++<meta property="og:title" content="How to Convert PDF to Excel Free — No Upload, No Account">
+++<meta property="og:description" content="Convert PDF tables to editable Excel or CSV in your browser. Free, private, no upload.">
+++<meta property="og:url" content="https://rightpdfkit.com/blog/pdf-to-excel-free">
+++<meta property="og:image" content="https://rightpdfkit.com/og-image.png?v=52">
+++<meta property="og:site_name" content="RightPDFKit">
+++<meta name="twitter:card" content="summary_large_image">
+++<meta name="twitter:title" content="How to Convert PDF to Excel Free — No Upload, No Account">
+++<meta name="twitter:description" content="Convert PDF tables to editable Excel or CSV in your browser. Free, private, no upload.">
+++<meta name="twitter:image" content="https://rightpdfkit.com/og-image.png?v=52">
+++<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How to Convert PDF to Excel Free — No Upload, No Account","description":"Convert PDF tables to editable Excel or CSV in your browser. Free, private, no upload.","author":{"@type":"Organization","name":"RightPDFKit"},"publisher":{"@type":"Organization","name":"RightPDFKit","url":"https://rightpdfkit.com"},"datePublished":"2026-06-05","dateModified":"2026-06-05","url":"https://rightpdfkit.com/blog/pdf-to-excel-free","mainEntityOfPage":"https://rightpdfkit.com/blog/pdf-to-excel-free"}</script>
+++<style>
+++*{box-sizing:border-box;margin:0;padding:0}
+++body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0D0D1A;color:#F2F0EB;line-height:1.7;min-height:100vh}
+++a{color:#E8450A;text-decoration:none}
+++a:hover{text-decoration:underline}
+++.site-header{background:rgba(13,13,26,.95);border-bottom:1px solid rgba(255,255,255,0.08);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+++.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+++.logo-icon{width:28px;height:28px;background:#E8450A;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#fff}
+++.logo-text{font-size:15px;font-weight:700;color:#F2F0EB}
+++.logo-text span{color:#E8450A}
+++.header-cta{background:#E8450A;color:#fff;border:none;border-radius:7px;padding:8px 16px;font-size:13px;font-weight:700;text-decoration:none;display:inline-block}
+++.header-cta:hover{text-decoration:none;opacity:.9}
+++.article-wrap{max-width:720px;margin:0 auto;padding:40px 24px 80px}
+++.breadcrumb{font-size:12px;color:rgba(242,240,235,0.55);margin-bottom:24px}
+++.breadcrumb a{color:rgba(242,240,235,0.55)}
+++.breadcrumb a:hover{color:#E8450A}
+++.article-meta{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+++.article-cat{font-size:11px;font-weight:700;color:#E8450A;text-transform:uppercase;letter-spacing:.08em;background:rgba(232,69,10,.1);border:1px solid rgba(232,69,10,.2);border-radius:20px;padding:3px 10px}
+++.article-time,.article-date{font-size:12px;color:rgba(242,240,235,0.55)}
+++h1{font-size:28px;font-weight:800;color:#F2F0EB;line-height:1.3;margin-bottom:16px;letter-spacing:-.02em}
+++h2{font-size:19px;font-weight:700;color:#F2F0EB;margin:28px 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.08)}
+++p{color:rgba(242,240,235,0.55);font-size:15px;margin-bottom:14px;line-height:1.8}
+++ul,ol{color:rgba(242,240,235,0.55);font-size:15px;margin-bottom:14px;padding-left:22px;line-height:1.8}
+++li{margin-bottom:6px}
+++strong{color:#F2F0EB}
+++table{width:100%;border-collapse:collapse;font-size:14px;margin:16px 0}
+++th{text-align:left;padding:10px 12px;color:rgba(242,240,235,0.55);font-weight:700;border-bottom:2px solid rgba(255,255,255,0.08)}
+++td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.08);color:#F2F0EB}
+++.good{color:#2ECC71;font-weight:700}
+++.bad{color:#e74c3c}
+++.cta-box{background:rgba(232,69,10,.07);border:1.5px solid rgba(232,69,10,.25);border-radius:14px;padding:20px 24px;margin:28px 0;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+++.cta-box p{margin:0;color:#F2F0EB;font-size:14px;font-weight:600}
+++.cta-btn{background:#E8450A;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;text-decoration:none;display:inline-block;white-space:nowrap}
+++.cta-btn:hover{text-decoration:none;opacity:.9}
+++.site-footer{background:#161625;border-top:1px solid rgba(255,255,255,0.08);padding:20px 24px;text-align:center;font-size:12px;color:rgba(242,240,235,0.55)}
+++.site-footer a{color:rgba(242,240,235,0.55);margin:0 8px}
+++.site-footer a:hover{color:#E8450A}
+++.related{margin-top:40px;padding-top:32px;border-top:1px solid rgba(255,255,255,0.08)}
+++.related h2{font-size:16px;border:none;padding:0;margin-bottom:16px}
+++.related-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+++.related-card{background:#161625;border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:14px;text-decoration:none;display:block;transition:border-color .15s}
+++.related-card:hover{border-color:#E8450A;text-decoration:none}
+++.related-card-title{font-size:13px;font-weight:600;color:#F2F0EB;line-height:1.4;margin-bottom:4px}
+++.related-card-meta{font-size:11px;color:rgba(242,240,235,0.55)}
+++@media(max-width:600px){h1{font-size:22px}.article-wrap{padding:24px 16px 60px}.cta-box{flex-direction:column}}
+++</style>
+++</head>
+++<body>
+++<header class="site-header">
+++  <a href="https://rightpdfkit.com" class="logo">
+++    <div class="logo-icon">R</div>
+++    <span class="logo-text">RightPDF<span>Kit</span></span>
+++  </a>
+++  <a href="https://rightpdfkit.com/#pdf-to-excel" class="header-cta">Try PDF to Excel Free →</a>
+++</header>
+++<article class="article-wrap">
+++  <nav class="breadcrumb">
+++    <a href="https://rightpdfkit.com">Home</a> › <a href="https://rightpdfkit.com/blog/">Blog</a> › How to Convert PDF to Excel Free
+++  </nav>
+++  <div class="article-meta">
+++    <span class="article-cat">Guide</span>
+++    <span class="article-time">⏱ 5 min read</span>
+++    <span class="article-date">📅 2026-06-05</span>
+++  </div>
+++
+++<h1>How to Convert PDF to Excel Free — No Upload, No Account</h1>
+++<p>Stuck with a PDF full of tables you need to edit in a spreadsheet? You can extract tables directly from a PDF and get an editable Excel or CSV file — without uploading your document anywhere.</p>
+++
+++<div class="cta-box"><p>Convert PDF to Excel free — no upload, no account</p><a href="https://rightpdfkit.com/#pdf-to-excel" class="cta-btn">PDF to Excel Free →</a></div>
+++
+++<h2>How to convert PDF to Excel — step by step</h2>
+++<ol>
+++  <li>Open the <strong>PDF to Excel</strong> tool on RightPDFKit.</li>
+++  <li>Upload your PDF — drag it in or click to browse.</li>
+++  <li>The tool detects tables automatically. Preview the extracted data before downloading.</li>
+++  <li>Choose your output format: <strong>.xlsx</strong> for Excel, or <strong>.csv</strong> for Google Sheets or any other tool.</li>
+++  <li>Click <strong>Download</strong>.</li>
+++</ol>
+++
+++<h2>What types of PDF tables convert well?</h2>
+++<table>
+++  <tr><th>PDF type</th><th>Conversion quality</th></tr>
+++  <tr><td>Born-digital PDF (exported from Word, Excel, accounting software)</td><td class="good">✓ Excellent</td></tr>
+++  <tr><td>PDF with simple, clean grid tables</td><td class="good">✓ Very good</td></tr>
+++  <tr><td>PDF with merged cells or complex headers</td><td style="color:#e67e22;font-weight:700">◎ Good, may need minor cleanup</td></tr>
+++  <tr><td>Scanned PDF (image of a document)</td><td class="bad">✗ Needs OCR first</td></tr>
+++</table>
+++<p>For scanned PDFs, use the <a href="ocr-extract-text-scanned-pdf.html">OCR tool</a> first to make the text selectable, then convert to Excel.</p>
+++
+++<h2>PDF to Excel vs copying and pasting</h2>
+++<p>Manually copying tables from a PDF into Excel is tedious and error-prone — especially for multi-page tables or documents with dozens of rows. The converter extracts all tables at once, preserving row and column structure, so you don't have to reformat anything.</p>
+++
+++<h2>Common use cases</h2>
+++<ul>
+++  <li><strong>Financial statements and bank statements</strong> — import figures directly into your spreadsheet model</li>
+++  <li><strong>Invoices and purchase orders</strong> — extract line items for reconciliation</li>
+++  <li><strong>Research data and reports</strong> — pull tables into Excel for further analysis</li>
+++  <li><strong>Government data PDFs</strong> — census tables, budget documents, statistical releases</li>
+++</ul>
+++
+++<h2>Why convert without uploading?</h2>
+++<p>Financial documents contain sensitive data — account numbers, transaction history, personal details. Tools that upload your PDF to a server expose that data unnecessarily. RightPDFKit converts entirely in your browser using client-side JavaScript. Nothing is ever sent to a server.</p>
+++
+++<div class="cta-box"><p>Convert your PDF to Excel now — free and private</p><a href="https://rightpdfkit.com/#pdf-to-excel" class="cta-btn">Open PDF to Excel →</a></div>
+++
+++  <div class="related">
+++  <h2>Related articles</h2>
+++  <div class="related-grid">
+++    <a href="how-to-convert-pdf-to-word-free.html" class="related-card">
+++      <div class="related-card-title">Convert PDF to Word Free</div>
+++      <div class="related-card-meta">Guide · 5 min</div>
+++    </a>
+++    <a href="ocr-extract-text-scanned-pdf.html" class="related-card">
+++      <div class="related-card-title">OCR: Extract Text from Scanned PDF</div>
+++      <div class="related-card-meta">OCR · 5 min</div>
+++    </a>
+++    <a href="how-to-edit-pdf-free.html" class="related-card">
+++      <div class="related-card-title">How to Edit a PDF Free</div>
+++      <div class="related-card-meta">Guide · 6 min</div>
+++    </a>
+++  </div>
+++  </div>
+++</article>
+++<footer class="site-footer">
+++  <div style="margin-bottom:8px">
+++    <a href="https://rightpdfkit.com">Home</a>
+++    <a href="https://rightpdfkit.com/blog/">Blog</a>
+++    <a href="https://rightpdfkit.com/#pricing">Pricing</a>
+++    <a href="mailto:support@rightpdfkit.com">Contact</a>
+++  </div>
+++  <div>© 2026 RightPDFKit · The 36th Company Ltd · London · Your files never leave your device.</div>
+++</footer>
+++</body>
+++</html>
++-- 
++2.43.0
++
+diff --git a/indexnow.patch b/indexnow.patch
+new file mode 100644
+index 0000000..43faa16
+--- /dev/null
++++ b/indexnow.patch
+@@ -0,0 +1,116 @@
++From 4a46219980f398a7516d6a4876b18b8e7dabb07b Mon Sep 17 00:00:00 2001
++From: Claude <noreply@anthropic.com>
++Date: Fri, 5 Jun 2026 19:26:14 +0000
++Subject: [PATCH 1/2] blog: update tool count from 45 to 52
++
++---
++ blog/how-to-edit-pdf-free.html | 2 +-
++ blog/index.html                | 2 +-
++ 2 files changed, 2 insertions(+), 2 deletions(-)
++
++diff --git a/blog/how-to-edit-pdf-free.html b/blog/how-to-edit-pdf-free.html
++index 0f9f60b..da65ee3 100644
++--- a/blog/how-to-edit-pdf-free.html
+++++ b/blog/how-to-edit-pdf-free.html
++@@ -62,7 +62,7 @@ details summary::-webkit-details-marker{display:none}
++     <div class="logo-icon">R</div>
++     <span class="logo-text">RightPDF<span>Kit</span></span>
++   </a>
++-  <a href="https://rightpdfkit.com" class="header-cta">Try 45 Tools Free →</a>
+++  <a href="https://rightpdfkit.com" class="header-cta">Try 52 Tools Free →</a>
++ </header>
++ <article class="article-wrap">
++   <nav class="breadcrumb">
++diff --git a/blog/index.html b/blog/index.html
++index f397153..d271227 100644
++--- a/blog/index.html
+++++ b/blog/index.html
++@@ -40,7 +40,7 @@ a{color:#E8450A;text-decoration:none}
++     <div class="logo-icon">R</div>
++     <span class="logo-text">RightPDF<span>Kit</span></span>
++   </a>
++-  <a href="https://rightpdfkit.com" class="header-cta">Try 45 Tools Free →</a>
+++  <a href="https://rightpdfkit.com" class="header-cta">Try 52 Tools Free →</a>
++ </header>
++ <main class="wrap">
++   <div class="blog-hero">
++-- 
++2.43.0
++
++
++From c84a3b9917054eb699c3a4fe7616fb35bf4ded70 Mon Sep 17 00:00:00 2001
++From: Claude <noreply@anthropic.com>
++Date: Fri, 5 Jun 2026 21:20:47 +0000
++Subject: [PATCH 2/2] feat: add IndexNow auto-submission on new blog articles
++
++---
++ .github/workflows/indexnow.yml       | 47 ++++++++++++++++++++++++++++
++ b550efe9b4854369af4322a0ef7538c2.txt |  1 +
++ 2 files changed, 48 insertions(+)
++ create mode 100644 .github/workflows/indexnow.yml
++ create mode 100644 b550efe9b4854369af4322a0ef7538c2.txt
++
++diff --git a/.github/workflows/indexnow.yml b/.github/workflows/indexnow.yml
++new file mode 100644
++index 0000000..352de7e
++--- /dev/null
+++++ b/.github/workflows/indexnow.yml
++@@ -0,0 +1,47 @@
+++name: IndexNow — Submit New URLs
+++
+++on:
+++  push:
+++    branches: [main]
+++    paths:
+++      - 'blog/**.html'
+++
+++jobs:
+++  submit:
+++    runs-on: ubuntu-latest
+++    steps:
+++      - uses: actions/checkout@v4
+++        with:
+++          fetch-depth: 2
+++
+++      - name: Find new blog articles
+++        id: urls
+++        run: |
+++          # Get list of new or modified blog HTML files in this push
+++          NEW_FILES=$(git diff --name-only HEAD~1 HEAD -- 'blog/*.html' | grep -v 'blog/index.html' || true)
+++          if [ -z "$NEW_FILES" ]; then
+++            echo "No new articles found"
+++            echo "urls=" >> $GITHUB_OUTPUT
+++          else
+++            URLS=""
+++            for f in $NEW_FILES; do
+++              SLUG=$(basename "$f" .html)
+++              URLS="$URLS,\"https://rightpdfkit.com/blog/$SLUG\""
+++            done
+++            URLS="${URLS#,}"
+++            echo "urls=$URLS" >> $GITHUB_OUTPUT
+++            echo "Found URLs: $URLS"
+++          fi
+++
+++      - name: Submit to IndexNow
+++        if: steps.urls.outputs.urls != ''
+++        run: |
+++          curl -s -X POST "https://api.indexnow.org/indexnow" \
+++            -H "Content-Type: application/json; charset=utf-8" \
+++            -d "{
+++              \"host\": \"rightpdfkit.com\",
+++              \"key\": \"b550efe9b4854369af4322a0ef7538c2\",
+++              \"keyLocation\": \"https://rightpdfkit.com/b550efe9b4854369af4322a0ef7538c2.txt\",
+++              \"urlList\": [${{ steps.urls.outputs.urls }}]
+++            }"
+++          echo "Submitted to IndexNow"
++diff --git a/b550efe9b4854369af4322a0ef7538c2.txt b/b550efe9b4854369af4322a0ef7538c2.txt
++new file mode 100644
++index 0000000..b876944
++--- /dev/null
+++++ b/b550efe9b4854369af4322a0ef7538c2.txt
++@@ -0,0 +1 @@
+++b550efe9b4854369af4322a0ef7538c2
++\ No newline at end of file
++-- 
++2.43.0
++
+diff --git a/toolcount.patch b/toolcount.patch
+new file mode 100644
+index 0000000..7a0e641
+--- /dev/null
++++ b/toolcount.patch
+@@ -0,0 +1,39 @@
++From 4a46219980f398a7516d6a4876b18b8e7dabb07b Mon Sep 17 00:00:00 2001
++From: Claude <noreply@anthropic.com>
++Date: Fri, 5 Jun 2026 19:26:14 +0000
++Subject: [PATCH] blog: update tool count from 45 to 52
++
++---
++ blog/how-to-edit-pdf-free.html | 2 +-
++ blog/index.html                | 2 +-
++ 2 files changed, 2 insertions(+), 2 deletions(-)
++
++diff --git a/blog/how-to-edit-pdf-free.html b/blog/how-to-edit-pdf-free.html
++index 0f9f60b..da65ee3 100644
++--- a/blog/how-to-edit-pdf-free.html
+++++ b/blog/how-to-edit-pdf-free.html
++@@ -62,7 +62,7 @@ details summary::-webkit-details-marker{display:none}
++     <div class="logo-icon">R</div>
++     <span class="logo-text">RightPDF<span>Kit</span></span>
++   </a>
++-  <a href="https://rightpdfkit.com" class="header-cta">Try 45 Tools Free →</a>
+++  <a href="https://rightpdfkit.com" class="header-cta">Try 52 Tools Free →</a>
++ </header>
++ <article class="article-wrap">
++   <nav class="breadcrumb">
++diff --git a/blog/index.html b/blog/index.html
++index f397153..d271227 100644
++--- a/blog/index.html
+++++ b/blog/index.html
++@@ -40,7 +40,7 @@ a{color:#E8450A;text-decoration:none}
++     <div class="logo-icon">R</div>
++     <span class="logo-text">RightPDF<span>Kit</span></span>
++   </a>
++-  <a href="https://rightpdfkit.com" class="header-cta">Try 45 Tools Free →</a>
+++  <a href="https://rightpdfkit.com" class="header-cta">Try 52 Tools Free →</a>
++ </header>
++ <main class="wrap">
++   <div class="blog-hero">
++-- 
++2.43.0
++
+diff --git a/workflow.patch b/workflow.patch
+new file mode 100644
+index 0000000..cc3d07d
+--- /dev/null
++++ b/workflow.patch
+@@ -0,0 +1,135 @@
++From 16c52b6c5d155208d1691a5742c79e1a8c5114e1 Mon Sep 17 00:00:00 2001
++From: Claude <noreply@anthropic.com>
++Date: Fri, 5 Jun 2026 19:07:40 +0000
++Subject: [PATCH] =?UTF-8?q?ci:=20add=20daily=20blog=20article=20workflow?=
++ =?UTF-8?q?=20=E2=80=94=203=20articles/day=20via=20Claude=20Code?=
++MIME-Version: 1.0
++Content-Type: text/plain; charset=UTF-8
++Content-Transfer-Encoding: 8bit
++
++---
++ .github/workflows/daily-blog-articles.yml | 112 ++++++++++++++++++++++
++ 1 file changed, 112 insertions(+)
++ create mode 100644 .github/workflows/daily-blog-articles.yml
++
++diff --git a/.github/workflows/daily-blog-articles.yml b/.github/workflows/daily-blog-articles.yml
++new file mode 100644
++index 0000000..8ede73c
++--- /dev/null
+++++ b/.github/workflows/daily-blog-articles.yml
++@@ -0,0 +1,112 @@
+++name: Daily Blog Articles
+++
+++on:
+++  schedule:
+++    # 3 articles per day: 7am, 1pm, 7pm UTC
+++    - cron: '0 7 * * *'
+++    - cron: '0 13 * * *'
+++    - cron: '0 19 * * *'
+++  workflow_dispatch:
+++    inputs:
+++      topic:
+++        description: 'Optional topic override (leave blank for scheduled topic)'
+++        required: false
+++
+++jobs:
+++  write-article:
+++    runs-on: ubuntu-latest
+++    permissions:
+++      contents: write
+++    steps:
+++      - uses: actions/checkout@v4
+++
+++      - name: Run Claude Code to write article
+++        uses: anthropics/claude-code-action@beta
+++        with:
+++          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+++          prompt: |
+++            You are writing SEO blog articles for RightPDFKit (rightpdfkit.com), a free browser-based PDF tool suite.
+++
+++            Look at the existing articles in blog/ to understand the format, style and topics already covered.
+++            Then pick the NEXT unwritten topic from this priority list (skip any already covered in blog/):
+++
+++            PRIORITY KEYWORD LIST (in order — write the first one not yet covered):
+++            1. how-to-convert-pdf-to-powerpoint-free
+++            2. pdf-to-png-free
+++            3. how-to-crop-pdf-page-free
+++            4. how-to-add-page-numbers-to-pdf-free
+++            5. how-to-watermark-pdf-free
+++            6. how-to-delete-pages-from-pdf-free
+++            7. how-to-reorder-pdf-pages-free
+++            8. how-to-add-image-to-pdf-free
+++            9. pdf-to-text-free
+++            10. how-to-flatten-pdf-free
+++            11. how-to-convert-excel-to-pdf-free
+++            12. how-to-convert-pdf-to-csv-free
+++            13. how-to-repair-corrupted-pdf-free
+++            14. how-to-add-hyperlink-to-pdf-free
+++            15. how-to-convert-png-to-pdf-free
+++            16. how-to-convert-pdf-to-epub-free
+++            17. how-to-extract-images-from-pdf-free
+++            18. pdf-form-creator-free
+++            19. how-to-convert-html-to-pdf-free
+++            20. how-to-linearize-pdf-free
+++            21. smallpdf-alternative-free
+++            22. adobe-acrobat-alternative-free
+++            23. ilovepdf-vs-smallpdf
+++            24. pdf24-alternative
+++            25. best-pdf-compressor-free
+++            26. best-pdf-merger-free
+++            27. best-ocr-software-free
+++            28. how-to-make-pdf-searchable-free
+++            29. how-to-convert-pdf-to-audio-free
+++            30. pdf-tools-for-students-free
+++            31. pdf-tools-for-small-business-free
+++            32. how-to-share-pdf-securely-free
+++            33. how-to-reduce-pdf-size-for-email-free
+++            34. how-to-print-pdf-as-booklet-free
+++            35. best-free-pdf-tools-for-iphone
+++            36. best-free-pdf-tools-for-android
+++            37. how-to-sign-pdf-on-iphone-free
+++            38. how-to-sign-pdf-on-android-free
+++            39. how-to-edit-pdf-on-iphone-free
+++            40. how-to-edit-pdf-on-android-free
+++            41. how-to-merge-pdf-on-iphone-free
+++            42. how-to-compress-pdf-on-iphone-free
+++            43. free-pdf-tools-no-account-needed
+++            44. how-to-work-with-pdfs-without-adobe
+++            45. pdf-privacy-which-tools-are-safe
+++            46. how-to-process-pdfs-offline-free
+++            47. how-to-convert-pdf-to-google-docs-free
+++            48. how-to-save-pdf-from-google-docs-free
+++            49. how-to-export-pdf-from-word-free
+++            50. how-to-convert-scanned-pdf-to-word-free
+++            51. how-to-convert-pdf-invoice-to-excel-free
+++            52. how-to-extract-tables-from-pdf-free
+++            53. best-pdf-tools-for-lawyers-free
+++            54. best-pdf-tools-for-accountants-free
+++            55. best-pdf-tools-for-hr-free
+++            56. pdf-tools-for-remote-workers-free
+++            57. how-to-batch-convert-pdf-free
+++            58. how-to-automate-pdf-processing-free
+++            59. pdf-metadata-editor-free
+++            60. how-to-remove-watermark-from-pdf-free
+++
+++            ARTICLE REQUIREMENTS:
+++            - Use the EXACT same HTML structure as existing blog articles (dark theme, #0D0D1A bg, #E8450A accent)
+++            - Copy the full CSS and header/footer from an existing article
+++            - Include: proper <title>, meta description, canonical URL, OG tags, JSON-LD Article schema
+++            - Canonical URL format: https://rightpdfkit.com/blog/{slug}
+++            - CTA buttons link to https://rightpdfkit.com/#{relevant-tool}
+++            - Include 2 CTA boxes (one near top, one near bottom)
+++            - 4-6 sections with h2 headings
+++            - 600-900 words
+++            - Related articles section at bottom (3 cards linking to existing articles)
+++            - Date: use today's date
+++            - Save as blog/{slug}.html
+++
+++            ALSO update blog/index.html — add the new article card at the TOP of the .grid div, matching the existing card style.
+++
+++            Commit with message: "blog: add article — {article-title}"
+++
+++            Then push to the current branch (main).
++-- 
++2.43.0
++
+-- 
+2.43.0
+
+
+From d40e89cb4ea795b82f23ede72ed0e9001f0a5b73 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 5 Jun 2026 21:47:55 +0000
+Subject: [PATCH 4/4] feat: add Twitter auto-post workflow for new blog
+ articles
+
+---
+ .github/workflows/twitter-autopost.yml | 64 ++++++++++++++++++++++++++
+ 1 file changed, 64 insertions(+)
+ create mode 100644 .github/workflows/twitter-autopost.yml
+
+diff --git a/.github/workflows/twitter-autopost.yml b/.github/workflows/twitter-autopost.yml
+new file mode 100644
+index 0000000..899cfc8
+--- /dev/null
++++ b/.github/workflows/twitter-autopost.yml
+@@ -0,0 +1,64 @@
++name: Twitter — Auto-post New Articles
++
++on:
++  push:
++    branches: [main]
++    paths:
++      - 'blog/**.html'
++
++jobs:
++  tweet:
++    runs-on: ubuntu-latest
++    steps:
++      - uses: actions/checkout@v4
++        with:
++          fetch-depth: 2
++
++      - name: Find new blog article
++        id: article
++        run: |
++          NEW_FILE=$(git diff --name-only HEAD~1 HEAD -- 'blog/*.html' | grep -v 'blog/index.html' | head -1 || true)
++          if [ -z "$NEW_FILE" ]; then
++            echo "No new article found"
++            echo "found=false" >> $GITHUB_OUTPUT
++          else
++            SLUG=$(basename "$NEW_FILE" .html)
++            URL="https://rightpdfkit.com/blog/$SLUG"
++            # Extract title from HTML
++            TITLE=$(grep -o '<title>[^<]*</title>' "$NEW_FILE" | sed 's/<title>//;s/ | RightPDFKit<\/title>//' | head -1)
++            echo "found=true" >> $GITHUB_OUTPUT
++            echo "url=$URL" >> $GITHUB_OUTPUT
++            echo "title=$TITLE" >> $GITHUB_OUTPUT
++            echo "slug=$SLUG" >> $GITHUB_OUTPUT
++          fi
++
++      - name: Post tweet
++        if: steps.article.outputs.found == 'true'
++        run: |
++          pip install tweepy -q
++          python3 << 'EOF'
++          import tweepy
++          import os
++
++          client = tweepy.Client(
++              consumer_key=os.environ['TWITTER_API_KEY'],
++              consumer_secret=os.environ['TWITTER_API_SECRET'],
++              access_token=os.environ['TWITTER_ACCESS_TOKEN'],
++              access_token_secret=os.environ['TWITTER_ACCESS_TOKEN_SECRET']
++          )
++
++          title = os.environ['ARTICLE_TITLE']
++          url = os.environ['ARTICLE_URL']
++
++          tweet = f"{title}\n\n{url}\n\n#PDF #FreeTool #Productivity"
++
++          client.create_tweet(text=tweet)
++          print(f"Tweeted: {tweet}")
++          EOF
++        env:
++          TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
++          TWITTER_API_SECRET: ${{ secrets.TWITTER_API_SECRET }}
++          TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
++          TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
++          ARTICLE_TITLE: ${{ steps.article.outputs.title }}
++          ARTICLE_URL: ${{ steps.article.outputs.url }}
+-- 
+2.43.0
+
