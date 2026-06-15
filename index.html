@@ -2073,7 +2073,6 @@ function dismissInstall() {
   }
 })()
 </script>
-<h1 class="hero-headline">Edit PDFs in your browser —<br>nothing uploaded, nothing stored.</h1>
 <header>
   <div class="logo" onclick="nav('home')" style="cursor:pointer" title="Go to home">
     <div class="logo-mark">R</div>
@@ -36591,7 +36590,7 @@ function markdownToHtml(md) {
     .replace(/^#### (.+)$/gm, '<h4>$1</h4>')
     .replace(/^### (.+)$/gm, '<h3>$1</h3>')
     .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    .replace(/^# (.+)$/gm, '')
     // Blockquotes
     .replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>')
     // Bold + italic
