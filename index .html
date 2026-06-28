@@ -2249,13 +2249,6 @@ function dismissInstall() {
     <span style="font-size:11px;color:#6A6585;margin-top:4px">tinystartups.com</span>
   </span>
 </a>
-<<<<<<< HEAD
-    <!-- Orynth badge -->
-    <a href="https://orynth.dev/projects/right-pdf-kit" target="_blank" rel="noopener" style="display:inline-block;opacity:0.75;transition:opacity .2s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">
-      <img src="https://orynth.dev/api/badge/right-pdf-kit?theme=light&style=default" alt="Featured on Orynth" width="260" height="80" style="display:block;border-radius:8px">
-    </a>
-=======
->>>>>>> f4982e96d4ce3762a874e70f8ec745abb76f629e
   </div>
 
   </div>
@@ -34240,41 +34233,17 @@ else initScrollTop();
 
 function filterHomeTools(query) {
   const q = query.toLowerCase().trim();
-  const toggleBtn = document.querySelector('#home-grid-toggle button');
-
-  const allCards = Array.from(document.querySelectorAll('.tool-card'));
-  allCards.forEach((card, i) => {
+  document.querySelectorAll('.tool-card').forEach(card => {
     const name = card.querySelector('.tc-name')?.textContent?.toLowerCase() || '';
     const hint = card.querySelector('.tc-hint')?.textContent?.toLowerCase() || '';
     const show = !q || name.includes(q) || hint.includes(q);
     card.classList.toggle('hidden', !show);
-
-    if (q && show) {
-      // While actively searching, lift the collapse limit so matching
-      // tools beyond the default visible set are reachable from search.
-      card.classList.remove('home-card-hidden');
-    } else if (!q && !window.__homeGridExpanded) {
-      // Search cleared and user never manually expanded — restore
-      // the original collapsed state (top N tools only).
-      const TOP = 12;
-      if (i >= TOP) card.classList.add('home-card-hidden');
-    }
   });
-
   // Hide empty sections
   document.querySelectorAll('.tool-section').forEach(section => {
     const visible = section.querySelectorAll('.tool-card:not(.hidden)').length > 0;
     section.style.display = visible ? '' : 'none';
   });
-
-  // Update toggle button label while searching to avoid confusion
-  if (toggleBtn && q) {
-    toggleBtn.style.opacity = '0.4';
-    toggleBtn.style.pointerEvents = 'none';
-  } else if (toggleBtn) {
-    toggleBtn.style.opacity = '';
-    toggleBtn.style.pointerEvents = '';
-  }
 }
 
 
@@ -35096,10 +35065,8 @@ function initHomeGrid() {
   btn.textContent = 'Show all ' + allCards.length + ' tools ↓'
 
   let expanded = false
-  window.__homeGridExpanded = false
   btn.onclick = function() {
     expanded = !expanded
-    window.__homeGridExpanded = expanded
     allCards.forEach((card, i) => {
       if (i >= TOP) {
         if (expanded) card.classList.remove('home-card-hidden')
