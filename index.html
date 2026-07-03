@@ -13,6 +13,7 @@
 
 
 <meta charset="UTF-8">
+<meta name="ory-verify" content="orynth-6ca1559c23d5486c8b28cecb9a378ccb" />
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -88,7 +89,7 @@
       "name": "Is PDFKit free to use?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. PDFKit is completely free with no account, subscription or credit card required. All 67 PDF tools are available at no cost."
+        "text": "Yes. PDFKit is completely free with no account, subscription or credit card required. All 50 PDF tools are available at no cost."
       }
     },
     {
@@ -2101,11 +2102,11 @@ function dismissInstall() {
   <div class="nav" data-t="pdfaudio"><span class="nav-label" onclick="nav('pdfaudio')"><span class="ni">🔊</span>PDF to Audio</span></div>
   <div class="nav" data-t="batchconvert"><span class="nav-label" onclick="nav('batchconvert')"><span class="ni">⚡</span>Batch Convert</span></div>
   <div class="nav" data-t="pdftohtml"><span class="nav-label" onclick="nav('pdftohtml')"><span class="ni">🌐</span>PDF to HTML</span></div>
-  <div class="nav" data-t="comparepdf"><span class="nav-label" onclick="nav('comparepdf')"><span class="ni">🔀</span>Compare PDFs</span></div>
-  <div class="nav" data-t="flattenpdf"><span class="nav-label" onclick="nav('flattenpdf')"><span class="ni">📄</span>Flatten PDF</span></div>
-  <div class="nav" data-t="pagenumbers"><span class="nav-label" onclick="nav('pagenumbers')"><span class="ni">🔢</span>Page Numbers</span></div>
-  <div class="nav" data-t="headerfooter"><span class="nav-label" onclick="nav('headerfooter')"><span class="ni">📝</span>Header / Footer</span></div>
-  <div class="nav" data-t="grayscalepdf"><span class="nav-label" onclick="nav('grayscalepdf')"><span class="ni">🖤</span>Grayscale PDF</span></div>
+  <div class="nav" data-t="comparepdf"><span class="nav-label" onclick="nav('compare-pdf')"><span class="ni">🔀</span>Compare PDFs</span></div>
+  <div class="nav" data-t="flattenpdf"><span class="nav-label" onclick="nav('flatten')"><span class="ni">📄</span>Flatten PDF</span></div>
+  <div class="nav" data-t="pagenumbers"><span class="nav-label" onclick="nav('pagenums')"><span class="ni">🔢</span>Page Numbers</span></div>
+  <div class="nav" data-t="headerfooter"><span class="nav-label" onclick="nav('headfoot')"><span class="ni">📝</span>Header / Footer</span></div>
+  <div class="nav" data-t="grayscalepdf"><span class="nav-label" onclick="nav('grayscale')"><span class="ni">🖤</span>Grayscale PDF</span></div>
   <div class="nav" data-t="reversepdf"><span class="nav-label" onclick="nav('reversepdf')"><span class="ni">🔄</span>Reverse PDF</span></div>
   <div class="nav" data-t="bookmarks"><span class="nav-label" onclick="nav('bookmarks')"><span class="ni">📑</span>PDF Bookmarks</span></div>
   <div class="nav" data-t="pdftomd"><span class="nav-label" onclick="nav('pdftomd')"><span class="ni">#️⃣</span>PDF to Markdown <span style="font-size:9px;background:var(--accent);color:#fff;border-radius:3px;padding:1px 4px;margin-left:3px">PRO</span></span></div>
@@ -2179,6 +2180,10 @@ function dismissInstall() {
   <div style="display:flex;align-items:center;gap:10px;margin:4px 0 8px;flex-wrap:wrap">
     <a href="https://www.listbulb.com/tools/rightpdfkit" target="_blank" rel="noopener" style="display:inline-block;opacity:0.75;transition:opacity .2s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">
       <img src="https://www.listbulb.com/featured-on-listbulb-light.svg" alt="Featured on ListBulb" height="28" style="display:block">
+    </a>
+    <!-- Orynth badge -->
+    <a href="https://orynth.dev/projects/right-pdf-kit" target="_blank" rel="noopener" style="display:inline-block;opacity:0.75;transition:opacity .2s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">
+      <img src="https://orynth.dev/api/badge/right-pdf-kit?theme=light&style=default" alt="Featured on Orynth" width="260" height="80" style="display:block;border-radius:8px">
     </a>
   </div>
 
@@ -2415,27 +2420,27 @@ function dismissInstall() {
       <span class="tc-name">PDF to HTML</span>
       <span class="tc-hint">PDF → webpage</span>
     </div>
-    <div class="tool-card" onclick="nav('comparepdf')" data-t="comparepdf">
+    <div class="tool-card" onclick="nav('compare-pdf')" data-t="comparepdf">
       <span class="tc-icon">🔀</span>
       <span class="tc-name">Compare PDFs</span>
       <span class="tc-hint">Side-by-side diff</span>
     </div>
-    <div class="tool-card" onclick="nav('flattenpdf')" data-t="flattenpdf">
+    <div class="tool-card" onclick="nav('flatten')" data-t="flattenpdf">
       <span class="tc-icon">📄</span>
       <span class="tc-name">Flatten PDF</span>
       <span class="tc-hint">Lock forms & notes</span>
     </div>
-    <div class="tool-card" onclick="nav('pagenumbers')" data-t="pagenumbers">
+    <div class="tool-card" onclick="nav('pagenums')" data-t="pagenumbers">
       <span class="tc-icon">🔢</span>
-      <span class="tc-name">Page Numbers</span>
-      <span class="tc-hint">Add numbering</span>
+      <span class="tc-name">Page Numbers Pro</span>
+            <span class="tc-hint">Add numbering</span>
     </div>
-    <div class="tool-card" onclick="nav('headerfooter')" data-t="headerfooter">
+    <div class="tool-card" onclick="nav('headfoot')" data-t="headerfooter">
       <span class="tc-icon">📝</span>
-      <span class="tc-name">Header / Footer</span>
-      <span class="tc-hint">Custom text</span>
+      <span class="tc-name">Header / Footer Pro</span>
+            <span class="tc-hint">Custom text</span>
     </div>
-    <div class="tool-card" onclick="nav('grayscalepdf')" data-t="grayscalepdf">
+    <div class="tool-card" onclick="nav('grayscale')" data-t="grayscalepdf">
       <span class="tc-icon">🖤</span>
       <span class="tc-name">Grayscale PDF</span>
       <span class="tc-hint">Color → B&W</span>
@@ -2507,8 +2512,8 @@ function dismissInstall() {
     </div>
     <div class="tool-card" onclick="nav('compare-pdf')" data-t="compare-pdf">
       <span class="tc-icon">⊟</span>
-      <span class="tc-name">Compare PDFs</span>
-      <span class="tc-hint">Diff two files</span>
+      <span class="tc-name">Compare PDFs Pro</span>
+            <span class="tc-hint">Diff two files</span>
     </div>
     <div class="tool-card" onclick="nav('qrstamp')" data-t="qrstamp">
       <span class="tc-icon">⊟</span>
@@ -39177,10 +39182,10 @@ function renderRecentlyUsed() {
 }
 
 // Patch nav to track + show nudge
-const _origNav = window.nav;
+const _origNav2 = window.nav;
 window.nav = function(t) {
   trackRecentTool(t);
-  _origNav(t);
+  _origNav2(t);
   if(t==='home') renderRecentlyUsed();
 };
 
