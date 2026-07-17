@@ -13,7 +13,6 @@
 
 
 <meta charset="UTF-8">
-<meta name="ory-verify" content="orynth-6ca1559c23d5486c8b28cecb9a378ccb" />
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -2048,6 +2047,13 @@ function dismissInstall() {
 </script>
 </head>
 <body>
+<script>
+// Safety guards to prevent ReferenceError if functions load out of order
+if(typeof window.closeUpgradeModal==='undefined') window.closeUpgradeModal=function(){var m=document.getElementById('upgrade-modal');if(m)m.classList.remove('show');document.body.style.overflow='';};
+if(typeof window.showUpgradeModal==='undefined') window.showUpgradeModal=function(){};
+if(typeof window.trackEvent==='undefined') window.trackEvent=function(){};
+</script>
+
 <h1 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">PDFKit — Free Online PDF Editor, No Uploads Required</h1>
 <header>
   <div class="logo" onclick="nav('home')" style="cursor:pointer" title="Go to home">
@@ -2180,10 +2186,6 @@ function dismissInstall() {
   <div style="display:flex;align-items:center;gap:10px;margin:4px 0 8px;flex-wrap:wrap">
     <a href="https://www.listbulb.com/tools/rightpdfkit" target="_blank" rel="noopener" style="display:inline-block;opacity:0.75;transition:opacity .2s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">
       <img src="https://www.listbulb.com/featured-on-listbulb-light.svg" alt="Featured on ListBulb" height="28" style="display:block">
-    </a>
-    <!-- Orynth badge -->
-    <a href="https://orynth.dev/projects/right-pdf-kit" target="_blank" rel="noopener" style="display:inline-block;opacity:0.75;transition:opacity .2s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'">
-      <img src="https://orynth.dev/api/badge/right-pdf-kit?theme=light&style=default" alt="Featured on Orynth" width="260" height="80" style="display:block;border-radius:8px">
     </a>
   </div>
 
@@ -2432,13 +2434,13 @@ function dismissInstall() {
     </div>
     <div class="tool-card" onclick="nav('pagenums')" data-t="pagenumbers">
       <span class="tc-icon">🔢</span>
-      <span class="tc-name">Page Numbers Pro</span>
-            <span class="tc-hint">Add numbering</span>
+      <span class="tc-name">Page Numbers</span>
+      <span class="tc-hint">Add numbering</span>
     </div>
     <div class="tool-card" onclick="nav('headfoot')" data-t="headerfooter">
       <span class="tc-icon">📝</span>
-      <span class="tc-name">Header / Footer Pro</span>
-            <span class="tc-hint">Custom text</span>
+      <span class="tc-name">Header / Footer</span>
+      <span class="tc-hint">Custom text</span>
     </div>
     <div class="tool-card" onclick="nav('grayscale')" data-t="grayscalepdf">
       <span class="tc-icon">🖤</span>
@@ -2512,8 +2514,8 @@ function dismissInstall() {
     </div>
     <div class="tool-card" onclick="nav('compare-pdf')" data-t="compare-pdf">
       <span class="tc-icon">⊟</span>
-      <span class="tc-name">Compare PDFs Pro</span>
-            <span class="tc-hint">Diff two files</span>
+      <span class="tc-name">Compare PDFs</span>
+      <span class="tc-hint">Diff two files</span>
     </div>
     <div class="tool-card" onclick="nav('qrstamp')" data-t="qrstamp">
       <span class="tc-icon">⊟</span>
@@ -39274,5 +39276,13 @@ function addShareButtons() {
 setTimeout(addShareButtons, 800);
 </script>
 
+
+<div class="panel" id="panel-htmltopdf"><div class="ph"><h2>📄 HTML to PDF</h2><p>Convert a webpage or HTML file into a clean PDF document.</p></div><div style="display:flex;flex-direction:column;align-items:center;padding:60px 24px;text-align:center;gap:14px"><div style="font-size:40px">🚧</div><h3 style="color:var(--text);font-size:17px;font-weight:800">Coming Soon</h3><p style="color:var(--hint);font-size:14px;max-width:320px">Convert a webpage or HTML file into a clean PDF document. This tool is in development.</p><button onclick="nav('home')" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer">Back to Home</button></div></div>
+<div class="panel" id="panel-pdfa"><div class="ph"><h2>📦 PDF/A Convert</h2><p>Convert any PDF to the PDF/A long-term archiving standard.</p></div><div style="display:flex;flex-direction:column;align-items:center;padding:60px 24px;text-align:center;gap:14px"><div style="font-size:40px">🚧</div><h3 style="color:var(--text);font-size:17px;font-weight:800">Coming Soon</h3><p style="color:var(--hint);font-size:14px;max-width:320px">Convert any PDF to the PDF/A long-term archiving standard. This tool is in development.</p><button onclick="nav('home')" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer">Back to Home</button></div></div>
+<div class="panel" id="panel-pdfaudio"><div class="ph"><h2>🔊 PDF to Audio</h2><p>Listen to your PDF read aloud using text-to-speech.</p></div><div style="display:flex;flex-direction:column;align-items:center;padding:60px 24px;text-align:center;gap:14px"><div style="font-size:40px">🚧</div><h3 style="color:var(--text);font-size:17px;font-weight:800">Coming Soon</h3><p style="color:var(--hint);font-size:14px;max-width:320px">Listen to your PDF read aloud using text-to-speech. This tool is in development.</p><button onclick="nav('home')" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer">Back to Home</button></div></div>
+<div class="panel" id="panel-batchconvert"><div class="ph"><h2>⚡ Batch Convert</h2><p>Convert multiple PDF files in one go.</p></div><div style="display:flex;flex-direction:column;align-items:center;padding:60px 24px;text-align:center;gap:14px"><div style="font-size:40px">🚧</div><h3 style="color:var(--text);font-size:17px;font-weight:800">Coming Soon</h3><p style="color:var(--hint);font-size:14px;max-width:320px">Convert multiple PDF files in one go. This tool is in development.</p><button onclick="nav('home')" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer">Back to Home</button></div></div>
+<div class="panel" id="panel-pdftohtml"><div class="ph"><h2>🌐 PDF to HTML</h2><p>Export a PDF as structured HTML markup.</p></div><div style="display:flex;flex-direction:column;align-items:center;padding:60px 24px;text-align:center;gap:14px"><div style="font-size:40px">🚧</div><h3 style="color:var(--text);font-size:17px;font-weight:800">Coming Soon</h3><p style="color:var(--hint);font-size:14px;max-width:320px">Export a PDF as structured HTML markup. This tool is in development.</p><button onclick="nav('home')" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer">Back to Home</button></div></div>
+<div class="panel" id="panel-reversepdf"><div class="ph"><h2>🔄 Reverse Page Order</h2><p>Flip your PDF so the last page becomes the first.</p></div><div style="display:flex;flex-direction:column;align-items:center;padding:60px 24px;text-align:center;gap:14px"><div style="font-size:40px">🚧</div><h3 style="color:var(--text);font-size:17px;font-weight:800">Coming Soon</h3><p style="color:var(--hint);font-size:14px;max-width:320px">Flip your PDF so the last page becomes the first. This tool is in development.</p><button onclick="nav('home')" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer">Back to Home</button></div></div>
+<div class="panel" id="panel-bookmarks"><div class="ph"><h2>🔖 PDF Bookmarks</h2><p>Add a clickable table of contents to any PDF.</p></div><div style="display:flex;flex-direction:column;align-items:center;padding:60px 24px;text-align:center;gap:14px"><div style="font-size:40px">🚧</div><h3 style="color:var(--text);font-size:17px;font-weight:800">Coming Soon</h3><p style="color:var(--hint);font-size:14px;max-width:320px">Add a clickable table of contents to any PDF. This tool is in development.</p><button onclick="nav('home')" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer">Back to Home</button></div></div>
 </body>
 </html>
