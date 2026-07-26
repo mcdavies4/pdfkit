@@ -122,6 +122,37 @@ td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.08);color:#F2F0E
 <h2>Is merged PDF quality maintained?</h2>
 <p>Yes. The merge operation preserves all content — text, images, fonts, annotations, form fields and bookmarks — at full quality with no recompression.</p>
 
+
+  <h2>Merging PDFs vs combining files — what's the difference?</h2>
+  <p>Merging creates one continuous PDF from multiple source files. Combining is a broader term that can mean merging, appending or interleaving. In practice most people want a simple merge — all pages from file 1, then all pages from file 2, and so on. RightPDFKit merges in the order you specify with drag-to-reorder.</p>
+
+  <h2>How to merge PDFs in the correct order every time</h2>
+  <p>The most common mistake when merging is page order. A few habits that save time:</p>
+  <ul>
+    <li><strong>Rename files with a number prefix before uploading</strong> — "01-cover.pdf", "02-body.pdf", "03-appendix.pdf" sorts predictably in any file browser</li>
+    <li><strong>Preview page thumbnails</strong> — RightPDFKit shows a visual preview of each file. Confirm the order visually before clicking Merge</li>
+    <li><strong>Merge in small batches</strong> — if combining 10+ files, merge into groups of 3–4 first, then merge those results. Easier to catch order errors at each stage</li>
+    <li><strong>Check the first and last page</strong> — after downloading, verify page 1 is correct and the final page is your intended last page</li>
+  </ul>
+
+  <h2>Merging PDFs of different sizes and orientations</h2>
+  <p>RightPDFKit handles mixed PDF sources without any conversion step:</p>
+  <ul>
+    <li><strong>Mixed page sizes</strong> — A4 and US Letter pages merge cleanly. Each page retains its original dimensions. Most PDF readers handle mixed page sizes without issue.</li>
+    <li><strong>Portrait and landscape pages</strong> — both orientations are preserved exactly as they appear in the source files.</li>
+    <li><strong>Scanned and digital pages</strong> — scanned image-based pages merge seamlessly with digitally created PDF pages.</li>
+    <li><strong>Protected PDFs</strong> — unlock using <a href="https://rightpdfkit.com/blog/how-to-remove-password-from-pdf.html">RightPDFKit's Unlock tool</a> first, then merge.</li>
+  </ul>
+
+  <h2>After merging — what to do next</h2>
+  <ol>
+    <li><strong>Check the file size</strong> — if the merged PDF is too large to email, run it through <a href="https://rightpdfkit.com/blog/how-to-compress-a-pdf-free.html">Compress PDF</a> to shrink it</li>
+    <li><strong>Add page numbers</strong> — merged documents often benefit from unified page numbering using the Page Numbers tool</li>
+    <li><strong>Sign the result</strong> — if the merged document requires a signature, use <a href="https://rightpdfkit.com/blog/how-to-sign-pdf-online-free.html">Sign PDF</a> before sending</li>
+    <li><strong>Password protect</strong> — if the content is sensitive, add a password using <a href="https://rightpdfkit.com/blog/how-to-password-protect-a-pdf-free.html">Protect PDF</a></li>
+  </ol>
+
+
 <div class="cta-box"><p>Ready to merge your PDFs?</p><a href="https://rightpdfkit.com/#merge" class="cta-btn">Open Merge PDF Tool →</a></div>
 
   <div class="related">

@@ -127,6 +127,55 @@ td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.08);color:#F2F0E
 <h2>Is my scanned document sent to a server?</h2>
 <p>No. Tesseract.js runs entirely inside your browser. Your scanned document is processed on your device — nothing is uploaded anywhere. This is critical for sensitive documents like medical records, legal papers or financial statements.</p>
 
+
+  <h2>OCR vs copy-paste — when each works</h2>
+  <p>If you can select and copy text from a PDF already, you don't need OCR — the document already has a text layer. OCR is only needed when the PDF is a flat image, which happens when:</p>
+  <ul>
+    <li>The document was physically scanned with a scanner or photocopier</li>
+    <li>A PDF was created by photographing pages with a phone camera</li>
+    <li>The PDF was deliberately flattened to remove selectable text (common for signed documents)</li>
+    <li>The PDF was created from a fax transmission</li>
+  </ul>
+  <p>A quick test: try selecting text on the page. If your cursor turns into a text cursor and highlights words, the document already has a text layer. If it only lets you draw a rectangle (image selection), you need OCR.</p>
+
+  <h2>Getting better OCR results — scan quality checklist</h2>
+  <p>OCR accuracy is almost entirely determined by the quality of the original scan. Here's what matters most:</p>
+  <ul>
+    <li><strong>Resolution</strong> — scan at 300 DPI minimum. 150 DPI scans produce significantly more errors. 600 DPI is ideal for small text.</li>
+    <li><strong>Contrast</strong> — the sharper the difference between text and background, the more accurately Tesseract identifies characters. Avoid pale or faded documents.</li>
+    <li><strong>Alignment</strong> — pages should be straight. A 5-degree skew noticeably reduces accuracy. Use a flatbed scanner rather than a handheld phone photo where possible.</li>
+    <li><strong>Clean originals</strong> — coffee stains, pen marks and creases are interpreted as characters and produce errors.</li>
+    <li><strong>Font type</strong> — standard serif and sans-serif fonts (Times, Arial, Calibri) OCR very accurately. Decorative, script or hand-lettered fonts do not.</li>
+  </ul>
+
+  <h2>What to do after OCR</h2>
+  <p>OCR output always needs a proofread. Common error patterns to look for:</p>
+  <ul>
+    <li><strong>1 vs l vs I</strong> — these characters look identical at low resolution and OCR regularly confuses them</li>
+    <li><strong>0 vs O</strong> — zero and capital O are frequently swapped, especially in numbers</li>
+    <li><strong>rn vs m</strong> — the pair "rn" at small sizes looks identical to "m"</li>
+    <li><strong>Punctuation</strong> — commas, periods and apostrophes are often missed or doubled</li>
+    <li><strong>Line breaks</strong> — hyphenated words at line ends may appear as two separate words</li>
+  </ul>
+  <p>For legal, financial or medical documents where accuracy is critical, always verify OCR output against the original before relying on it.</p>
+
+  <h2>OCR for different document types</h2>
+  <table style="width:100%;border-collapse:collapse;font-size:14px;margin:20px 0">
+    <thead><tr>
+      <th style="text-align:left;padding:10px 12px;color:rgba(240,239,255,0.55);font-weight:700;border-bottom:2px solid rgba(255,255,255,0.07);font-size:12px;text-transform:uppercase">Document type</th>
+      <th style="text-align:left;padding:10px 12px;color:rgba(240,239,255,0.55);font-weight:700;border-bottom:2px solid rgba(255,255,255,0.07);font-size:12px;text-transform:uppercase">Expected accuracy</th>
+      <th style="text-align:left;padding:10px 12px;color:rgba(240,239,255,0.55);font-weight:700;border-bottom:2px solid rgba(255,255,255,0.07);font-size:12px;text-transform:uppercase">Notes</th>
+    </tr></thead>
+    <tbody>
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.07)"><td style="padding:10px 12px">Typed letter (300 DPI)</td><td style="padding:10px 12px" style="color:#22c55e">98%+</td><td style="padding:10px 12px">Minimal errors expected</td></tr>
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.07)"><td style="padding:10px 12px">Invoice or receipt</td><td style="padding:10px 12px">90–97%</td><td style="padding:10px 12px">Check numbers carefully</td></tr>
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.07)"><td style="padding:10px 12px">Newspaper or book page</td><td style="padding:10px 12px">85–95%</td><td style="padding:10px 12px">Columns and small fonts reduce accuracy</td></tr>
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.07)"><td style="padding:10px 12px">Phone photo of document</td><td style="padding:10px 12px">70–90%</td><td style="padding:10px 12px">Lighting and angle critical</td></tr>
+      <tr><td style="padding:10px 12px">Handwritten notes</td><td style="padding:10px 12px">20–60%</td><td style="padding:10px 12px">Unreliable — manual transcription better</td></tr>
+    </tbody>
+  </table>
+
+
 <div class="cta-box"><p>Extract text from your scanned PDF now</p><a href="https://rightpdfkit.com/#ocr" class="cta-btn">Open Free OCR Tool →</a></div>
 
   <div class="related">
