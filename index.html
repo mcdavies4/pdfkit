@@ -39308,12 +39308,164 @@ setTimeout(addShareButtons, 800);
 </script>
 
 
-<div class="panel" id="panel-htmltopdf"><div class="ph"><h2>📄 HTML to PDF</h2><p>Convert a webpage or HTML file into a clean PDF document.</p></div><div style="display:flex;flex-direction:column;align-items:center;padding:60px 24px;text-align:center;gap:14px"><div style="font-size:40px">🚧</div><h3 style="color:var(--text);font-size:17px;font-weight:800">Coming Soon</h3><p style="color:var(--hint);font-size:14px;max-width:320px">Convert a webpage or HTML file into a clean PDF document. This tool is in development.</p><button onclick="nav('home')" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer">Back to Home</button></div></div>
-<div class="panel" id="panel-pdfa"><div class="ph"><h2>📦 PDF/A Convert</h2><p>Convert any PDF to the PDF/A long-term archiving standard.</p></div><div style="display:flex;flex-direction:column;align-items:center;padding:60px 24px;text-align:center;gap:14px"><div style="font-size:40px">🚧</div><h3 style="color:var(--text);font-size:17px;font-weight:800">Coming Soon</h3><p style="color:var(--hint);font-size:14px;max-width:320px">Convert any PDF to the PDF/A long-term archiving standard. This tool is in development.</p><button onclick="nav('home')" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer">Back to Home</button></div></div>
-<div class="panel" id="panel-pdfaudio"><div class="ph"><h2>🔊 PDF to Audio</h2><p>Listen to your PDF read aloud using text-to-speech.</p></div><div style="display:flex;flex-direction:column;align-items:center;padding:60px 24px;text-align:center;gap:14px"><div style="font-size:40px">🚧</div><h3 style="color:var(--text);font-size:17px;font-weight:800">Coming Soon</h3><p style="color:var(--hint);font-size:14px;max-width:320px">Listen to your PDF read aloud using text-to-speech. This tool is in development.</p><button onclick="nav('home')" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer">Back to Home</button></div></div>
-<div class="panel" id="panel-batchconvert"><div class="ph"><h2>⚡ Batch Convert</h2><p>Convert multiple PDF files in one go.</p></div><div style="display:flex;flex-direction:column;align-items:center;padding:60px 24px;text-align:center;gap:14px"><div style="font-size:40px">🚧</div><h3 style="color:var(--text);font-size:17px;font-weight:800">Coming Soon</h3><p style="color:var(--hint);font-size:14px;max-width:320px">Convert multiple PDF files in one go. This tool is in development.</p><button onclick="nav('home')" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer">Back to Home</button></div></div>
-<div class="panel" id="panel-pdftohtml"><div class="ph"><h2>🌐 PDF to HTML</h2><p>Export a PDF as structured HTML markup.</p></div><div style="display:flex;flex-direction:column;align-items:center;padding:60px 24px;text-align:center;gap:14px"><div style="font-size:40px">🚧</div><h3 style="color:var(--text);font-size:17px;font-weight:800">Coming Soon</h3><p style="color:var(--hint);font-size:14px;max-width:320px">Export a PDF as structured HTML markup. This tool is in development.</p><button onclick="nav('home')" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer">Back to Home</button></div></div>
-<div class="panel" id="panel-reversepdf"><div class="ph"><h2>🔄 Reverse Page Order</h2><p>Flip your PDF so the last page becomes the first.</p></div><div style="display:flex;flex-direction:column;align-items:center;padding:60px 24px;text-align:center;gap:14px"><div style="font-size:40px">🚧</div><h3 style="color:var(--text);font-size:17px;font-weight:800">Coming Soon</h3><p style="color:var(--hint);font-size:14px;max-width:320px">Flip your PDF so the last page becomes the first. This tool is in development.</p><button onclick="nav('home')" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer">Back to Home</button></div></div>
-<div class="panel" id="panel-bookmarks"><div class="ph"><h2>🔖 PDF Bookmarks</h2><p>Add a clickable table of contents to any PDF.</p></div><div style="display:flex;flex-direction:column;align-items:center;padding:60px 24px;text-align:center;gap:14px"><div style="font-size:40px">🚧</div><h3 style="color:var(--text);font-size:17px;font-weight:800">Coming Soon</h3><p style="color:var(--hint);font-size:14px;max-width:320px">Add a clickable table of contents to any PDF. This tool is in development.</p><button onclick="nav('home')" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer">Back to Home</button></div></div>
+<div class="panel" id="panel-htmltopdf">
+  <div class="ph"><h2>📄 HTML to PDF</h2><p>Paste HTML markup and convert it to a downloadable PDF.</p></div>
+  <div class="card">
+    <div class="fcol">
+      <div><label class="lbl">Paste your HTML</label>
+        <textarea id="h2p-ta" rows="10" style="width:100%;background:var(--input-bg,#1a1a2e);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:10px;font-family:monospace;font-size:13px;resize:vertical" placeholder="&lt;h1&gt;Hello World&lt;/h1&gt;&lt;p&gt;Your content here&lt;/p&gt;"></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="eb" id="h2p-err"></div>
+  <button class="btn btn-p btn-blk" id="h2p-btn" onclick="runHtmlToPdf()">Convert to PDF</button>
+  <div class="pw" id="h2p-progress" style="display:none"><div class="pb"><div class="pf" id="h2p-pf"></div></div><div class="pl"><span id="h2p-prog-label">Converting…</span><span class="pp" id="h2p-pp">0%</span></div></div>
+  <div class="rb" id="h2p-rb"><h4>✓ PDF created</h4><p id="h2p-rm"></p></div>
+</div>
+<div class="panel" id="panel-pdfa">
+  <div class="ph"><h2>📦 PDF/A Convert</h2><p>Convert any PDF to the PDF/A archiving standard for long-term preservation.</p></div>
+  <div class="dz" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="this.classList.remove('drag');pdfaLoad(event)">
+    <input type="file" id="pdfa-in" accept=".pdf" onchange="pdfaLoad(event)" onclick="event.stopPropagation()" style="display:none">
+    <div id="pdfa-prompt" onclick="document.getElementById('pdfa-in').click()" style="cursor:pointer;text-align:center;padding:32px">
+      <div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p>
+    </div>
+    <div id="pdfa-info" style="display:none;padding:12px"></div>
+  </div>
+  <div class="card" id="pdfa-opts" style="margin-top:12px">
+    <div class="fcol">
+      <div><label class="lbl">PDF/A Version</label>
+        <div class="segs">
+          <button class="seg on" onclick="PDFA_S.version='1b';setSegActive(this)">PDF/A-1b</button>
+          <button class="seg" onclick="PDFA_S.version='2b';setSegActive(this)">PDF/A-2b</button>
+          <button class="seg" onclick="PDFA_S.version='3b';setSegActive(this)">PDF/A-3b</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="eb" id="pdfa-err"></div>
+  <button class="btn btn-p btn-blk" id="pdfa-btn" onclick="runPdfA()">Convert to PDF/A</button>
+  <div class="pw" id="pdfa-progress" style="display:none"><div class="pb"><div class="pf" id="pdfa-pf"></div></div><div class="pl"><span id="pdfa-prog-label">Converting…</span><span class="pp" id="pdfa-pp">0%</span></div></div>
+  <div class="rb" id="pdfa-rb"><h4>✓ Converted to PDF/A</h4><p id="pdfa-rm"></p></div>
+</div>
+<div class="panel" id="panel-pdfaudio">
+  <div class="ph"><h2>🔊 PDF to Audio</h2><p>Listen to your PDF read aloud using browser text-to-speech.</p></div>
+  <div class="dz" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="this.classList.remove('drag');pdfaudioLoad(event)">
+    <input type="file" id="pdfaudio-in" accept=".pdf" onchange="pdfaudioLoad(event)" onclick="event.stopPropagation()" style="display:none">
+    <div id="pdfaudio-prompt" onclick="document.getElementById('pdfaudio-in').click()" style="cursor:pointer;text-align:center;padding:32px">
+      <div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p>
+    </div>
+    <div id="pdfaudio-info" style="display:none;padding:12px"></div>
+  </div>
+  <div class="card" id="pdfaudio-opts" style="margin-top:12px">
+    <div class="fcol">
+      <div><label class="lbl">Voice speed</label>
+        <input type="range" id="pdfaudio-rate" min="0.5" max="2" step="0.1" value="1" style="width:100%">
+        <span id="pdfaudio-rate-lbl" style="font-size:12px;color:var(--muted)">1× normal</span>
+      </div>
+      <div><label class="lbl">Pages to read</label>
+        <div class="segs">
+          <button class="seg on" onclick="AUDIO_S.pageMode='all';setSegActive(this)">All pages</button>
+          <button class="seg" onclick="AUDIO_S.pageMode='custom';setSegActive(this)">Custom range</button>
+        </div>
+      </div>
+      <div id="pdfaudio-range-wrap" style="display:none">
+        <input type="text" id="pdfaudio-range" placeholder="e.g. 1-3, 5" style="width:100%;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--input-bg,#1a1a2e);color:var(--text)">
+      </div>
+    </div>
+  </div>
+  <div class="eb" id="pdfaudio-err"></div>
+  <button class="btn btn-p btn-blk" id="pdfaudio-btn" onclick="runPdfAudio()">Read PDF Aloud</button>
+  <div class="pw" id="pdfaudio-progress" style="display:none"><div class="pb"><div class="pf" id="pdfaudio-pf"></div></div><div class="pl"><span id="pdfaudio-prog-label">Extracting text…</span><span class="pp" id="pdfaudio-pp">0%</span></div></div>
+  <div id="pdfaudio-controls" style="display:none;margin-top:12px;padding:16px;background:var(--surface);border-radius:12px;text-align:center">
+    <button class="btn" id="pdfaudio-play" onclick="AUDIO_S.utterance&&speechSynthesis.speak(AUDIO_S.utterance)">▶ Play</button>
+    <button class="btn" onclick="speechSynthesis.pause()" style="margin-left:8px">⏸ Pause</button>
+    <button class="btn" onclick="speechSynthesis.cancel()" style="margin-left:8px">⏹ Stop</button>
+  </div>
+  <div class="rb" id="pdfaudio-rb"><h4>✓ Ready to play</h4><p id="pdfaudio-rm"></p></div>
+</div>
+<div class="panel" id="panel-batchconvert">
+  <div class="ph"><h2>⚡ Batch Convert</h2><p>Convert multiple PDF files at once. Select a format and process them all in one go.</p></div>
+  <div class="dz" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="this.classList.remove('drag');batchLoad(event)" onclick="document.getElementById('batch-in').click()" style="cursor:pointer">
+    <input type="file" id="batch-in" accept=".pdf" multiple onchange="batchLoad(event)" onclick="event.stopPropagation()" style="display:none">
+    <div class="di">⬆</div><h3>Drop PDFs here</h3><p>Multiple files supported — click to browse</p>
+  </div>
+  <div id="batch-list" style="margin-top:10px"></div>
+  <div class="card" style="margin-top:12px">
+    <div class="fcol">
+      <div><label class="lbl">Convert to</label>
+        <select id="batch-fmt" style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:14px">
+          <option value="txt">Plain Text (.txt)</option>
+          <option value="jpg">Images — JPG (.zip)</option>
+          <option value="png">Images — PNG (.zip)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="eb" id="batch-err"></div>
+  <button class="btn btn-p btn-blk" id="batch-btn" onclick="runBatchConvert()" disabled>Convert All &amp; Download</button>
+  <div class="pw" id="batch-progress" style="display:none"><div class="pb"><div class="pf" id="batch-pf"></div></div><div class="pl"><span id="batch-prog-label">Processing…</span><span class="pp" id="batch-pp">0%</span></div></div>
+  <div class="rb" id="batch-rb"><h4>✓ Batch complete</h4><p id="batch-rm"></p></div>
+</div>
+<div class="panel" id="panel-pdftohtml">
+  <div class="ph"><h2>🌐 PDF to HTML</h2><p>Export a PDF as structured HTML — useful for web publishing or editing.</p></div>
+  <div class="dz" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="this.classList.remove('drag');p2hLoad(event)">
+    <input type="file" id="p2h-in" accept=".pdf" onchange="p2hLoad(event)" onclick="event.stopPropagation()" style="display:none">
+    <div id="p2h-prompt" onclick="document.getElementById('p2h-in').click()" style="cursor:pointer;text-align:center;padding:32px">
+      <div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p>
+    </div>
+    <div id="p2h-info" style="display:none;padding:12px"></div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <div class="fcol">
+      <div><label class="lbl">Output style</label>
+        <div class="segs">
+          <button class="seg on" onclick="P2H_S.style='clean';setSegActive(this)">Clean HTML</button>
+          <button class="seg" onclick="P2H_S.style='styled';setSegActive(this)">Styled page</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="eb" id="p2h-err"></div>
+  <button class="btn btn-p btn-blk" id="p2h-btn" onclick="runPdfToHtml()">Export as HTML</button>
+  <div class="pw" id="p2h-progress" style="display:none"><div class="pb"><div class="pf" id="p2h-pf"></div></div><div class="pl"><span id="p2h-prog-label">Extracting…</span><span class="pp" id="p2h-pp">0%</span></div></div>
+  <div class="rb" id="p2h-rb"><h4>✓ HTML exported</h4><p id="p2h-rm"></p></div>
+</div>
+<div class="panel" id="panel-reversepdf">
+  <div class="ph"><h2>🔄 Reverse Page Order</h2><p>Flip your PDF so the last page becomes the first — useful for scanning workflows.</p></div>
+  <div class="dz" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="this.classList.remove('drag');revLoad(event)">
+    <input type="file" id="rev-in" accept=".pdf" onchange="revLoad(event)" onclick="event.stopPropagation()" style="display:none">
+    <div id="rev-prompt" onclick="document.getElementById('rev-in').click()" style="cursor:pointer;text-align:center;padding:32px">
+      <div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p>
+    </div>
+    <div id="rev-info" style="display:none;padding:12px"></div>
+  </div>
+  <div class="eb" id="rev-err"></div>
+  <button class="btn btn-p btn-blk" id="rev-btn" onclick="runReversePdf()">Reverse &amp; Download</button>
+  <div class="pw" id="rev-progress" style="display:none"><div class="pb"><div class="pf" id="rev-pf"></div></div><div class="pl"><span id="rev-prog-label">Reversing pages…</span><span class="pp" id="rev-pp">0%</span></div></div>
+  <div class="rb" id="rev-rb"><h4>✓ Page order reversed</h4><p id="rev-rm"></p></div>
+</div>
+<div class="panel" id="panel-bookmarks">
+  <div class="ph"><h2>🔖 PDF Bookmarks</h2><p>Add a clickable table of contents to any PDF for easy navigation.</p></div>
+  <div class="dz" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="this.classList.remove('drag');bkmLoad(event)">
+    <input type="file" id="bkm-in" accept=".pdf" onchange="bkmLoad(event)" onclick="event.stopPropagation()" style="display:none">
+    <div id="bkm-prompt" onclick="document.getElementById('bkm-in').click()" style="cursor:pointer;text-align:center;padding:32px">
+      <div class="di">⬆</div><h3>Drop a PDF here</h3><p>Click to browse</p>
+    </div>
+    <div id="bkm-info" style="display:none;padding:12px"></div>
+  </div>
+  <div class="card" id="bkm-opts" style="margin-top:12px">
+    <div class="fcol">
+      <div>
+        <label class="lbl">Bookmark entries</label>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:6px">Format: <code style="background:rgba(255,255,255,.08);padding:1px 6px;border-radius:4px">Title | page number</code> — one per line</div>
+        <textarea id="bkm-entries" rows="8" style="width:100%;background:var(--input-bg,#1a1a2e);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:10px;font-family:monospace;font-size:13px;resize:vertical" placeholder="Introduction | 1&#10;Chapter 1 — Overview | 3&#10;Chapter 2 — Details | 8&#10;Conclusion | 15"></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="eb" id="bkm-err"></div>
+  <button class="btn btn-p btn-blk" id="bkm-btn" onclick="runBookmarks()" disabled>Add Bookmarks &amp; Download</button>
+  <div class="pw" id="bkm-progress" style="display:none"><div class="pb"><div class="pf" id="bkm-pf"></div></div><div class="pl"><span id="bkm-prog-label">Adding bookmarks…</span><span class="pp" id="bkm-pp">0%</span></div></div>
+  <div class="rb" id="bkm-rb"><h4>✓ Bookmarks added</h4><p id="bkm-rm"></p></div>
+</div>
 </body>
 </html>
