@@ -62,7 +62,7 @@
     "@type": "Offer",
     "price": "0",
     "priceCurrency": "GBP",
-    "description": "25 tools free forever. Pro plan from \u00a34.99/month."
+    "description": "All 67 tools free forever. No account, no limits."
   },
   "featureList": "Merge PDF, Split PDF, Compress PDF, Sign PDF, OCR PDF, AI Summarize PDF, Edit PDF Text, PDF to Word, Markdown to PDF, Remove Blank Pages, Protect PDF, Unlock PDF, Redact PDF, Annotate PDF, Watermark PDF",
   "screenshot": "https://rightpdfkit.com/og-image.png",
@@ -4509,8 +4509,8 @@ if(typeof window.trackEvent==='undefined') window.trackEvent=function(){};
           <td><span class="tick">✕ No</span></td>
         </tr>
         <tr>
-          <td>Pro plan price</td>
-          <td class="us"><span class="neutral">Coming soon</span></td>
+          <td>Price</td>
+          <td class="us"><span class="tick">✓ Free</span></td>
           <td><span class="neutral">$9/mo</span></td>
           <td><span class="neutral">$12/mo</span></td>
           <td><span class="neutral">$14.99/mo</span></td>
@@ -30786,7 +30786,7 @@ function nav(t){
   if(t!=='home'&&t!=='privacy'&&t!=='compare'&&typeof trackEvent==='function') trackEvent('tool_open',{tool:t});
   if(t==='compare'&&typeof trackEvent==='function') trackEvent('compare_page_view');
   // Show upload hint for tool panels
-  if(t!=='home'&&t!=='pricing'&&t!=='compare'&&t!=='privacy') setTimeout(()=>showUploadHint(t), 100);
+  if(t!=='home'&&t!=='compare'&&t!=='privacy') setTimeout(()=>showUploadHint(t), 100);
 }
 window.nav = nav; // export for global access
 
@@ -31813,7 +31813,6 @@ const SECTIONS=[
   {id:'pwcheck',icon:'⊛',label:'Password'},
 
   {id:'compare',icon:'⚖',label:'Compare'},
-  {id:'pricing',icon:'❆',label:'Pricing'},
 ];
 const PILL_SECTIONS=[
   {label:'All',filter:null},
@@ -34388,7 +34387,7 @@ async function runComparePdf() {
     fin(()=>{ showRes('cpdf-rb','Comparison complete'); toast('Compared!'); btn.disabled=false; });
   } catch(e){ fin(()=>{}); showErr('cpdf-err',e.message); btn.disabled=false; }
 }
-async function runFillForm() { if (!S.ffFile) return toast('Upload a PDF first'); showRes('ff-rb','AI Smart Form Fill will populate this form. Upgrade to Pro for full access.'); }
+async function runFillForm() { if (!S.ffFile) return toast('Upload a PDF first'); showRes('ff-rb','Form ready to fill.'); }
 async function runQrStamp() {
   if (!S.qrFile) return toast('Upload a PDF first');
   if (typeof qrcode === 'undefined') {
@@ -36286,8 +36285,8 @@ const BLOG_ARTICLES = {
               <td style="text-align:center;padding:10px;color:#e74c3c">~2 tasks/day</td>
             </tr>
             <tr style="border-bottom:1px solid var(--border)">
-              <td style="padding:10px;color:var(--text)">Pro price</td>
-              <td style="text-align:center;padding:10px;color:#2ECC71;font-weight:700">£4.99/mo</td>
+              <td style="padding:10px;color:var(--text)">Price</td>
+              <td style="text-align:center;padding:10px;color:#2ECC71;font-weight:700">Free</td>
               <td style="text-align:center;padding:10px;color:var(--muted)">£6.61/mo</td>
               <td style="text-align:center;padding:10px;color:var(--muted)">£9/mo</td>
             </tr>
@@ -39004,7 +39003,7 @@ const TOOL_NAMES = {
 };
 
 function trackRecentTool(t) {
-  if(t==='home'||t==='pricing'||t==='compare'||t==='privacy') return;
+  if(t==='home'||t==='compare'||t==='privacy') return;
   try {
     let recent = JSON.parse(localStorage.getItem(RU_KEY)||'[]');
     recent = [t, ...recent.filter(x=>x!==t)].slice(0,5);
