@@ -3852,130 +3852,6 @@ if(typeof window.trackEvent==='undefined') window.trackEvent=function(){};
   <div class="rb" id="p2h-rb"><h4>✓ HTML ready</h4><p id="p2h-rm"></p></div>
 </div>
 
-<!-- ═══ COMPARE PDFs ═══ -->
-<div class="tool-panel" id="p-comparepdf">
-  <h2>🔀 Compare PDFs</h2>
-  <p class="tool-desc">Compare two PDFs side by side — highlights text differences between versions.</p>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-    <div class="upload-zone" onclick="document.getElementById('cmp-file1').click()" style="min-height:100px">
-      <input type="file" id="cmp-file1" accept=".pdf" onchange="cmpLoad(1,event)" hidden>
-      <div id="cmp-prompt1" class="upload-prompt"><span class="upload-icon">📄</span><span>Original PDF</span></div>
-      <div class="file-info" id="cmp-info1" style="display:none"></div>
-    </div>
-    <div class="upload-zone" onclick="document.getElementById('cmp-file2').click()" style="min-height:100px">
-      <input type="file" id="cmp-file2" accept=".pdf" onchange="cmpLoad(2,event)" hidden>
-      <div id="cmp-prompt2" class="upload-prompt"><span class="upload-icon">📄</span><span>Modified PDF</span></div>
-      <div class="file-info" id="cmp-info2" style="display:none"></div>
-    </div>
-  </div>
-  <div style="display:flex;gap:8px;margin:10px 0"><button class="btn btn-s" onclick="cmpClr()" style="margin-left:auto">✕ Clear</button></div>
-  <div class="progress-wrap" id="cmp-progress" style="display:none"><div class="pbar"><div class="pfill" id="cmp-pf"></div></div><span class="ptxt" id="cmp-pp">0%</span><span class="prog-label" id="cmp-prog-label"></span></div>
-  <div class="eb" id="cmp-err"></div>
-  <button class="btn btn-p btn-blk" id="cmp-btn" onclick="runComparePdf()" disabled>Compare</button>
-  <div id="cmp-result" style="display:none;margin-top:16px;max-height:500px;overflow-y:auto;padding:16px;background:var(--card);border-radius:8px;border:1px solid var(--border);font-size:13px;line-height:1.8"></div>
-</div>
-
-<!-- ═══ FLATTEN PDF ═══ -->
-<div class="tool-panel" id="p-flattenpdf">
-  <h2>📄 Flatten PDF</h2>
-  <p class="tool-desc">Flatten form fields and annotations into the page content — makes the PDF non-editable and print-safe.</p>
-  <div class="upload-zone" id="flat-zone" onclick="document.getElementById('flat-file').click()" ondrop="flatDrop(event)" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')">
-    <input type="file" id="flat-file" accept=".pdf" onchange="flatLoad(event)" hidden>
-    <div class="upload-prompt" id="flat-prompt"><span class="upload-icon">📄</span><span>Drop PDF here or click to browse</span></div>
-    <div class="file-info" id="flat-info" style="display:none"></div>
-  </div>
-  <div style="display:flex;gap:8px;margin:10px 0"><button class="btn btn-s" onclick="flatClr()" style="margin-left:auto">✕ Clear</button></div>
-  <div class="progress-wrap" id="flat-progress" style="display:none"><div class="pbar"><div class="pfill" id="flat-pf"></div></div><span class="ptxt" id="flat-pp">0%</span><span class="prog-label" id="flat-prog-label"></span></div>
-  <div class="eb" id="flat-err"></div>
-  <button class="btn btn-p btn-blk" id="flat-btn" onclick="runFlattenPdf()" disabled>Flatten PDF</button>
-  <div class="rb" id="flat-rb"><h4>✓ Flattened PDF ready</h4><p id="flat-rm"></p></div>
-</div>
-
-<!-- ═══ PAGE NUMBERS ═══ -->
-<div class="tool-panel" id="p-pagenumbers">
-  <h2>🔢 Add Page Numbers</h2>
-  <p class="tool-desc">Add page numbers to any PDF — choose position, format, and starting number.</p>
-  <div class="upload-zone" id="pgn-zone" onclick="document.getElementById('pgn-file').click()" ondrop="pgnDrop(event)" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')">
-    <input type="file" id="pgn-file" accept=".pdf" onchange="pgnLoad(event)" hidden>
-    <div class="upload-prompt" id="pgn-prompt"><span class="upload-icon">🔢</span><span>Drop PDF here or click to browse</span></div>
-    <div class="file-info" id="pgn-info" style="display:none"></div>
-  </div>
-  <div style="display:flex;gap:8px;margin:10px 0;flex-wrap:wrap;align-items:center">
-    <label style="font-size:12px;color:var(--muted)">Position:</label>
-    <select id="pgn-pos" style="background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:12px">
-      <option value="bottom-center">Bottom Center</option>
-      <option value="bottom-right">Bottom Right</option>
-      <option value="bottom-left">Bottom Left</option>
-      <option value="top-center">Top Center</option>
-      <option value="top-right">Top Right</option>
-      <option value="top-left">Top Left</option>
-    </select>
-    <label style="font-size:12px;color:var(--muted)">Format:</label>
-    <select id="pgn-fmt" style="background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:12px">
-      <option value="num">1, 2, 3…</option>
-      <option value="pof">Page 1 of N</option>
-      <option value="dash">— 1 —</option>
-    </select>
-    <label style="font-size:12px;color:var(--muted)">Start:</label>
-    <input type="number" id="pgn-start" value="1" min="1" style="background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:12px;width:55px">
-    <button class="btn btn-s" onclick="pgnClr()" style="margin-left:auto">✕ Clear</button>
-  </div>
-  <div class="progress-wrap" id="pgn-progress" style="display:none"><div class="pbar"><div class="pfill" id="pgn-pf"></div></div><span class="ptxt" id="pgn-pp">0%</span><span class="prog-label" id="pgn-prog-label"></span></div>
-  <div class="eb" id="pgn-err"></div>
-  <button class="btn btn-p btn-blk" id="pgn-btn" onclick="runPageNumbers()" disabled>Add Page Numbers</button>
-  <div class="rb" id="pgn-rb"><h4>✓ PDF ready</h4><p id="pgn-rm"></p></div>
-</div>
-
-<!-- ═══ HEADER / FOOTER ═══ -->
-<div class="tool-panel" id="p-headerfooter">
-  <h2>📝 Header / Footer</h2>
-  <p class="tool-desc">Add custom header and footer text to every page of your PDF.</p>
-  <div class="upload-zone" id="hf-zone" onclick="document.getElementById('hf-file').click()" ondrop="hfDrop(event)" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')">
-    <input type="file" id="hf-file" accept=".pdf" onchange="hfLoad(event)" hidden>
-    <div class="upload-prompt" id="hf-prompt"><span class="upload-icon">📝</span><span>Drop PDF here or click to browse</span></div>
-    <div class="file-info" id="hf-info" style="display:none"></div>
-  </div>
-  <div style="display:flex;flex-direction:column;gap:8px;margin:10px 0">
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-      <label style="font-size:12px;color:var(--muted);width:55px">Header:</label>
-      <input type="text" id="hf-header" placeholder="e.g. Company Name — Confidential" style="flex:1;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:13px;min-width:200px">
-    </div>
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-      <label style="font-size:12px;color:var(--muted);width:55px">Footer:</label>
-      <input type="text" id="hf-footer" placeholder="e.g. © 2026 Acme Corp" style="flex:1;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:13px;min-width:200px">
-    </div>
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-      <label style="font-size:12px;color:var(--muted)">Size:</label>
-      <input type="number" id="hf-size" value="9" min="6" max="24" style="background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:12px;width:55px">
-      <label style="font-size:12px;color:var(--muted)">Align:</label>
-      <select id="hf-align" style="background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:12px">
-        <option value="center">Center</option><option value="left">Left</option><option value="right">Right</option>
-      </select>
-      <button class="btn btn-s" onclick="hfClr()" style="margin-left:auto">✕ Clear</button>
-    </div>
-  </div>
-  <div class="progress-wrap" id="hf-progress" style="display:none"><div class="pbar"><div class="pfill" id="hf-pf"></div></div><span class="ptxt" id="hf-pp">0%</span><span class="prog-label" id="hf-prog-label"></span></div>
-  <div class="eb" id="hf-err"></div>
-  <button class="btn btn-p btn-blk" id="hf-btn" onclick="runHeaderFooter()" disabled>Add Header / Footer</button>
-  <div class="rb" id="hf-rb"><h4>✓ PDF ready</h4><p id="hf-rm"></p></div>
-</div>
-
-<!-- ═══ GRAYSCALE PDF ═══ -->
-<div class="tool-panel" id="p-grayscalepdf">
-  <h2>🖤 Grayscale PDF</h2>
-  <p class="tool-desc">Convert a colour PDF to black & white — saves ink and reduces file size for printing.</p>
-  <div class="upload-zone" id="gray-zone" onclick="document.getElementById('gray-file').click()" ondrop="grayDrop(event)" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')">
-    <input type="file" id="gray-file" accept=".pdf" onchange="grayLoad(event)" hidden>
-    <div class="upload-prompt" id="gray-prompt"><span class="upload-icon">🖤</span><span>Drop PDF here or click to browse</span></div>
-    <div class="file-info" id="gray-info" style="display:none"></div>
-  </div>
-  <div style="display:flex;gap:8px;margin:10px 0"><button class="btn btn-s" onclick="grayClr()" style="margin-left:auto">✕ Clear</button></div>
-  <div class="progress-wrap" id="gray-progress" style="display:none"><div class="pbar"><div class="pfill" id="gray-pf"></div></div><span class="ptxt" id="gray-pp">0%</span><span class="prog-label" id="gray-prog-label"></span></div>
-  <div class="eb" id="gray-err"></div>
-  <button class="btn btn-p btn-blk" id="gray-btn" onclick="runGrayscalePdf()" disabled>Convert to Grayscale</button>
-  <div class="rb" id="gray-rb"><h4>✓ Grayscale PDF ready</h4><p id="gray-rm"></p></div>
-</div>
-
 <!-- ═══ REVERSE PDF ═══ -->
 <div class="tool-panel" id="p-reversepdf">
   <h2>🔄 Reverse PDF</h2>
@@ -4837,7 +4713,7 @@ if(typeof window.trackEvent==='undefined') window.trackEvent=function(){};
   </div>
   <div class="card" id="rl-opts" style="display:none">
     <div class="fcol">
-      <div class="nb">The redline PDF embeds change markers directly into the document — additions underlined in green, deletions struck through in red. Download and share as a standard PDF.</div>
+      <div class="nb">Downloads a redline PDF comparing the text of both files: additions in green, deletions in red and struck through.</div>
     </div>
   </div>
   <div class="eb" id="rl-err"></div>
@@ -30814,7 +30690,7 @@ function sanitise(str){
 }
 function toast(m,d=3000){const t=document.getElementById('toast');t.textContent='✓ '+m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),d);}
 function showErr(id,m){const e=document.getElementById(id);e.textContent='⚠ '+m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),7000);}
-function showRes(id,m){const e=document.getElementById(id);e.querySelector('p').textContent=m;e.classList.add('show');}
+function showRes(id,m){const e=document.getElementById(id);if(!e)return;let p=e.querySelector('p');if(!p){p=document.createElement('p');e.appendChild(p);}p.textContent=m;e.classList.add('show');}
 // animProg — see updated version below with tab title progress
 
 function chip(f,rm){
@@ -32137,14 +32013,14 @@ async function runPdfToWord() {
   document.getElementById('ptw-progress').style.display = 'block';
   document.getElementById('ptw-rb').classList.remove('show');
 
-  const setP = (p, lbl) => {
+  const setPW = (p, lbl) => {
     document.getElementById('ptw-pf').style.width = p + '%';
     document.getElementById('ptw-pp').textContent = Math.round(p) + '%';
     if (lbl) document.getElementById('ptw-prog-label').textContent = lbl;
   };
 
   try {
-    setP(5, 'Loading PDF…');
+    setPW(5, 'Loading PDF…');
     const pj = await loadPJ(PTW.file);
     const tot = pj.numPages;
 
@@ -32162,7 +32038,7 @@ async function runPdfToWord() {
 
     for (let pi = 0; pi < pages.length; pi++) {
       const n = pages[pi];
-      setP(5 + (pi / pages.length) * 70, `Extracting page ${n} of ${tot}…`);
+      setPW(5 + (pi / pages.length) * 70, `Extracting page ${n} of ${tot}…`);
 
       const page = await pj.getPage(n);
       const content = await page.getTextContent({ normalizeWhitespace: true });
@@ -32218,7 +32094,7 @@ async function runPdfToWord() {
       allPageBlocks.push({ pageNum: n, blocks: processedBlocks });
     }
 
-    setP(80, 'Building Word document…');
+    setPW(80, 'Building Word document…');
 
     // ── Build DOCX from extracted blocks ──
     const { Document, Paragraph, TextRun, HeadingLevel, Packer, AlignmentType } = docx;
@@ -32268,7 +32144,7 @@ async function runPdfToWord() {
 
     if (children.length === 0) throw new Error('No text found in this PDF. For scanned PDFs, use the OCR tool first.');
 
-    setP(90, 'Saving .docx…');
+    setPW(90, 'Saving .docx…');
 
     const doc = new Document({
       creator: 'RightPDFKit',
@@ -32284,7 +32160,7 @@ async function runPdfToWord() {
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 2000);
 
-    setP(100, 'Done!');
+    setPW(100, 'Done!');
     document.getElementById('ptw-progress').style.display = 'none';
     showRes('ptw-rb', `${pages.length} page(s) converted → ${PTW.file.name.replace('.pdf', '')}.docx`);
     toast('Word document downloaded!');
@@ -34435,8 +34311,91 @@ async function runPdfToCsv() {
     fin(()=>{ const a=document.createElement('a'); a.href=u; a.download=S.csvFile.name.replace('.pdf','.csv'); a.click(); setTimeout(()=>URL.revokeObjectURL(u),2000); showRes('csv-rb','Exported to CSV'); toast('Downloaded!'); });
   } catch(e){ fin(()=>{}); showErr('csv-err',e.message); btn.disabled=false; }
 }
-async function runRedline() { if (!S.rlFile1||!S.rlFile2) return toast('Upload both PDFs'); showRes('rl-rb','File 1: '+fmt(S.rlFile1.size)+' · File 2: '+fmt(S.rlFile2.size)+'. Visual redline comparison coming soon.'); toast('Basic diff done'); }
-async function runNup() { if (!S.nupFile) return toast('Upload a PDF first'); showRes('nup-rb','N-up layout coming soon. Use Reorder + Resize for now.'); }
+async function _pdfLines(file){
+  const bytes=await readBytes(file);
+  const pj=await pdfjsLib.getDocument({data:bytes.slice()}).promise;
+  const lines=[];
+  for(let i=1;i<=pj.numPages;i++){
+    const tc=await (await pj.getPage(i)).getTextContent();
+    let cur='',lastY=null;
+    for(const it of tc.items){
+      const y=it.transform?Math.round(it.transform[5]):0;
+      if(lastY!==null && Math.abs(y-lastY)>3){ if(cur.trim()) lines.push(cur.trim()); cur=''; }
+      cur+=it.str+(it.hasEOL?' ':''); lastY=y;
+    }
+    if(cur.trim()) lines.push(cur.trim());
+  }
+  return lines;
+}
+async function runRedline() {
+  if (!S.rlFile1||!S.rlFile2) return toast('Upload both PDFs');
+  const btn=document.getElementById('rl-btn'); if(btn) btn.disabled=true;
+  try {
+    const a=await _pdfLines(S.rlFile1), b=await _pdfLines(S.rlFile2);
+    const n=a.length,m=b.length;
+    if(n*m>4000000) throw new Error('Documents are too long to compare line by line. Try fewer pages.');
+    const L=Array.from({length:n+1},()=>new Uint16Array(m+1));
+    for(let i=n-1;i>=0;i--) for(let j=m-1;j>=0;j--) L[i][j]=a[i]===b[j]?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
+    const out=[]; let i=0,j=0,add=0,del=0;
+    while(i<n&&j<m){ if(a[i]===b[j]){out.push('  '+a[i]);i++;j++;} else if(L[i+1][j]>=L[i][j+1]){out.push('- '+a[i]);del++;i++;} else {out.push('+ '+b[j]);add++;j++;} }
+    while(i<n){out.push('- '+a[i++]);del++;} while(j<m){out.push('+ '+b[j++]);add++;}
+    const clean=s=>s.replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"').replace(/[\u2013\u2014]/g,'-').replace(/[^\x20-\x7E\xA0-\xFF]/g,'?');
+    const pdf=await PDFDocument.create(); const f=await pdf.embedFont(StandardFonts.Helvetica);
+    const W=595.28,H=841.89,M=48,fs=9,lh=12.5; let pg=pdf.addPage([W,H]), y=H-M;
+    const put=(txt,col,strike)=>{
+      const words=clean(txt).split(' '); let line='';
+      const flush=()=>{ if(y-lh<M){pg=pdf.addPage([W,H]);y=H-M;} y-=lh; pg.drawText(line,{x:M,y,size:fs,font:f,color:col}); if(strike) pg.drawLine({start:{x:M,y:y+fs*0.35},end:{x:M+f.widthOfTextAtSize(line,fs),y:y+fs*0.35},thickness:0.7,color:col}); line=''; };
+      for(const w of words){ const t=line?line+' '+w:w; if(f.widthOfTextAtSize(t,fs)>W-2*M&&line){flush();line=w;} else line=t; }
+      flush();
+    };
+    put('Redline: '+S.rlFile1.name+' vs '+S.rlFile2.name,rgb(0,0,0),false); put('Removed text in red (struck through), added text in green.',rgb(0.4,0.4,0.4),false); y-=6;
+    for(const l of out){
+      if(l[0]==='-') put(l.slice(2),rgb(0.8,0.1,0.1),true);
+      else if(l[0]==='+') put(l.slice(2),rgb(0.05,0.55,0.2),false);
+      else put(l.slice(2),rgb(0.15,0.15,0.15),false);
+    }
+    const bytes=await pdf.save(); dlBytes(bytes,'redline.pdf');
+    showRes('rl-rb',del+' lines removed, '+add+' lines added. Redline PDF downloaded.');
+    toast('Redline report ready');
+  } catch(e){ showErr('rl-err',e.message); }
+  if(btn) btn.disabled=false;
+}
+async function runNup() {
+  if (!S.nupFile) return toast('Upload a PDF first');
+  const btn=document.getElementById('nup-btn'); btn.disabled=true;
+  const fin=animProg('nup-pf','nup-pp','nup-pw');
+  try {
+    const sel=(id,k)=>{const b=document.querySelector('#'+id+' .seg.on');return b?b.dataset[k]:null;};
+    const n=parseInt(sel('nup-layout','n')||'2',10);
+    const orient=sel('nup-orient','o')||'landscape';
+    const order=sel('nup-order','d')||'lr';
+    const size=sel('nup-size','s')||'a4';
+    const margin=Math.max(0,parseFloat(document.getElementById('nup-margin').value)||0);
+    const dims={a4:[595.28,841.89],letter:[612,792],a3:[841.89,1190.55]}[size]||[595.28,841.89];
+    let W=dims[0],H=dims[1]; if(orient==='landscape'){[W,H]=[H,W];}
+    const cols=n===2?2:2, rows=n===2?1:2;
+    const bytes=await readBytes(S.nupFile);
+    const src=await PDFDocument.load(bytes,{ignoreEncryption:true});
+    const out=await PDFDocument.create();
+    const embedded=await out.embedPages(src.getPages());
+    const cw=(W-margin*(cols+1))/cols, ch=(H-margin*(rows+1))/rows;
+    for(let i=0;i<embedded.length;i+=n){
+      const sheet=out.addPage([W,H]);
+      for(let k=0;k<n && i+k<embedded.length;k++){
+        const ep=embedded[i+k];
+        const col= order==='lr' ? k%cols : Math.floor(k/rows);
+        const row= order==='lr' ? Math.floor(k/cols) : k%rows;
+        const sc=Math.min(cw/ep.width,ch/ep.height);
+        const w=ep.width*sc,h=ep.height*sc;
+        const x=margin+col*(cw+margin)+(cw-w)/2;
+        const y=H-(margin+row*(ch+margin))-ch+(ch-h)/2;
+        sheet.drawPage(ep,{x,y,width:w,height:h});
+      }
+    }
+    const res=await out.save();
+    fin(()=>{ dlBytes(res,S.nupFile.name.replace(/\.pdf$/i,'')+'_'+n+'up.pdf'); showRes('nup-rb',embedded.length+' pages arranged onto '+out.getPageCount()+' sheets ('+fmt(res.length)+')'); toast('N-up created!'); btn.disabled=false; });
+  } catch(e){ fin(()=>{}); showErr('nup-err',e.message); btn.disabled=false; }
+}
 async function runImg2Pdf() {
   if (!S.i2pFiles.length) return toast('Add images first');
   const btn=document.getElementById('i2p-btn'); btn.disabled=true;
@@ -34455,8 +34414,83 @@ async function runImg2Pdf() {
     fin(()=>{ dlBytes(out,'images.pdf'); showRes('i2p-rb',S.i2pFiles.length+' image(s) → PDF'); toast('PDF created!'); });
   } catch(e){ fin(()=>{}); showErr('i2p-err',e.message); btn.disabled=false; }
 }
-async function runWord2Pdf() { if (!S.w2pFile) return toast('Upload a Word file first'); showRes('w2p-rb','Word to PDF needs server processing. For now: open in Google Docs → File → Download → PDF. This feature is coming soon.'); toast('Coming soon'); }
-
+async function _zipRead(buf,name){
+  const dv=new DataView(buf.buffer,buf.byteOffset,buf.byteLength);
+  let e=buf.length-22; while(e>=0 && dv.getUint32(e,true)!==0x06054b50) e--;
+  if(e<0) throw new Error('Not a valid .docx file');
+  const cnt=dv.getUint16(e+10,true); let p=dv.getUint32(e+16,true);
+  for(let i=0;i<cnt;i++){
+    if(dv.getUint32(p,true)!==0x02014b50) break;
+    const method=dv.getUint16(p+10,true), csize=dv.getUint32(p+20,true);
+    const nl=dv.getUint16(p+28,true), xl=dv.getUint16(p+30,true), cl=dv.getUint16(p+32,true), off=dv.getUint32(p+42,true);
+    const nm=new TextDecoder().decode(buf.subarray(p+46,p+46+nl));
+    if(nm===name){
+      const lnl=dv.getUint16(off+26,true), lxl=dv.getUint16(off+28,true);
+      const data=buf.subarray(off+30+lnl+lxl,off+30+lnl+lxl+csize);
+      if(method===0) return new TextDecoder().decode(data);
+      const ds=new DecompressionStream('deflate-raw');
+      const w=ds.writable.getWriter(); w.write(data); w.close();
+      return await new Response(ds.readable).text();
+    }
+    p+=46+nl+xl+cl;
+  }
+  throw new Error('Could not find document text in this file');
+}
+async function runWord2Pdf() {
+  if (!S.w2pFile) return toast('Upload a Word file first');
+  const btn=document.getElementById('w2p-btn'); btn.disabled=true;
+  const fin=animProg('w2p-pf','w2p-pp','w2p-pw');
+  try {
+    if(!/\.docx$/i.test(S.w2pFile.name)) throw new Error('Please upload a .docx file (older .doc files: open in Word and Save As .docx first)');
+    if(typeof DecompressionStream==='undefined') throw new Error('Your browser is too old for this tool. Please update Chrome, Edge or Safari.');
+    const buf=await readBytes(S.w2pFile);
+    const xml=await _zipRead(buf,'word/document.xml');
+    const doc=new DOMParser().parseFromString(xml,'application/xml');
+    const paras=[];
+    const ps=doc.getElementsByTagName('w:p');
+    for(let i=0;i<ps.length;i++){
+      const p=ps[i];
+      const st=p.getElementsByTagName('w:pStyle')[0];
+      const style=st?(st.getAttribute('w:val')||''):'';
+      let txt='';
+      const nodes=p.getElementsByTagName('*');
+      for(let j=0;j<nodes.length;j++){
+        const t=nodes[j].tagName;
+        if(t==='w:t') txt+=nodes[j].textContent;
+        else if(t==='w:tab') txt+='    ';
+        else if(t==='w:br') txt+='\n';
+      }
+      const head=/^Heading(\d)/i.exec(style)||(/^Title$/i.test(style)?[0,'1']:null);
+      const bold=!!p.getElementsByTagName('w:b')[0];
+      paras.push({txt,level:head?parseInt(head[1],10):0,bold});
+    }
+    const sizeBtn=document.querySelector('#w2p-size .seg.on');
+    const sz=(sizeBtn&&sizeBtn.dataset.s)==='letter'?[612,792]:[595.28,841.89];
+    const out=await PDFDocument.create();
+    const reg=await out.embedFont(StandardFonts.Helvetica), bld=await out.embedFont(StandardFonts.HelveticaBold);
+    const clean=s=>s.replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"').replace(/[\u2013\u2014]/g,'-').replace(/\u2026/g,'...').replace(/\u00A0/g,' ').replace(/[^\x20-\x7E\xA0-\xFF\n]/g,'?');
+    const M=64; let page=out.addPage(sz), y=sz[1]-M;
+    const nl=(h)=>{ if(y-h<M){ page=out.addPage(sz); y=sz[1]-M; } };
+    for(const pa of paras){
+      const size=pa.level?Math.max(13,22-pa.level*2):11;
+      const font=(pa.level||pa.bold)?bld:reg, lh=size*1.4;
+      const text=clean(pa.txt);
+      if(!text.trim()){ nl(lh*0.6); y-=lh*0.6; continue; }
+      for(const raw of text.split('\n')){
+        const words=raw.split(/\s+/).filter(Boolean); let line='';
+        const flush=()=>{ nl(lh); y-=lh; page.drawText(line,{x:M,y:y+size*0.25,size,font}); line=''; };
+        for(const w of words){
+          const test=line?line+' '+w:w;
+          if(font.widthOfTextAtSize(test,size)>sz[0]-2*M && line){ flush(); line=w; } else line=test;
+        }
+        if(line) flush();
+      }
+      y-=pa.level?lh*0.3:lh*0.25;
+    }
+    const res=await out.save();
+    fin(()=>{ dlBytes(res,S.w2pFile.name.replace(/\.docx$/i,'')+'.pdf'); showRes('w2p-rb','PDF created ('+out.getPageCount()+' pages, '+fmt(res.length)+'). Text and headings are converted; images and tables are not included.'); toast('PDF created!'); btn.disabled=false; });
+  } catch(e){ fin(()=>{}); showErr('w2p-err',e.message); btn.disabled=false; }
+}
 // ═══════════════════════════════════════
 // PDF TO POWERPOINT
 // ═══════════════════════════════════════
@@ -35286,391 +35320,6 @@ async function runPdfToHtml() {
     showErr('p2h-err', '⚠ ' + e.message);
   }
   document.getElementById('p2h-progress').style.display = 'none';
-  btn.disabled = false;
-}
-
-/* ═══════ COMPARE PDFs ═══════ */
-const CMP_S = { file1: null, file2: null };
-function cmpLoad(n, e) {
-  const f = e.target.files[0]; if (!f) return;
-  CMP_S['file' + n] = f;
-  document.getElementById('cmp-prompt' + n).style.display = 'none';
-  const info = document.getElementById('cmp-info' + n);
-  info.style.display = 'block';
-  info.innerHTML = `<strong>${f.name}</strong> <span style="color:var(--muted)">(${(f.size/1024).toFixed(0)} KB)</span>`;
-  document.getElementById('cmp-btn').disabled = !(CMP_S.file1 && CMP_S.file2);
-}
-function cmpClr() {
-  CMP_S.file1 = CMP_S.file2 = null;
-  [1, 2].forEach(n => {
-    document.getElementById('cmp-prompt' + n).style.display = '';
-    document.getElementById('cmp-info' + n).style.display = 'none';
-  });
-  document.getElementById('cmp-btn').disabled = true;
-  document.getElementById('cmp-result').style.display = 'none';
-}
-async function runComparePdf() {
-  if (!CMP_S.file1 || !CMP_S.file2) return;
-  const btn = document.getElementById('cmp-btn');
-  btn.disabled = true;
-  document.getElementById('cmp-progress').style.display = 'block';
-  document.getElementById('cmp-result').style.display = 'none';
-  const setP = (p, lbl) => {
-    document.getElementById('cmp-pf').style.width = p + '%';
-    document.getElementById('cmp-pp').textContent = Math.round(p) + '%';
-    if (lbl) document.getElementById('cmp-prog-label').textContent = lbl;
-  };
-  try {
-    setP(10, 'Reading original…');
-    const ab1 = await CMP_S.file1.arrayBuffer();
-    const pdf1 = await loadPJ(new Uint8Array(ab1));
-    setP(30, 'Reading modified…');
-    const ab2 = await CMP_S.file2.arrayBuffer();
-    const pdf2 = await loadPJ(new Uint8Array(ab2));
-
-    const maxPages = Math.max(pdf1.numPages, pdf2.numPages);
-    let diffHtml = '';
-    let diffCount = 0;
-
-    for (let i = 1; i <= maxPages; i++) {
-      setP(30 + (i / maxPages) * 60, `Comparing page ${i}/${maxPages}…`);
-      let text1 = '', text2 = '';
-      if (i <= pdf1.numPages) {
-        const p = await pdf1.getPage(i);
-        const tc = await p.getTextContent();
-        text1 = tc.items.map(it => it.str).join(' ').trim();
-      }
-      if (i <= pdf2.numPages) {
-        const p = await pdf2.getPage(i);
-        const tc = await p.getTextContent();
-        text2 = tc.items.map(it => it.str).join(' ').trim();
-      }
-      if (text1 !== text2) {
-        diffCount++;
-        const words1 = text1.split(/\s+/);
-        const words2 = text2.split(/\s+/);
-        let highlighted = '';
-        const maxW = Math.max(words1.length, words2.length);
-        for (let w = 0; w < maxW; w++) {
-          const w1 = words1[w] || '';
-          const w2 = words2[w] || '';
-          if (w1 !== w2) {
-            if (w1) highlighted += `<span style="background:rgba(255,60,60,0.3);text-decoration:line-through;padding:1px 2px;border-radius:2px">${w1}</span> `;
-            if (w2) highlighted += `<span style="background:rgba(60,255,60,0.3);padding:1px 2px;border-radius:2px">${w2}</span> `;
-          } else {
-            highlighted += w2 + ' ';
-          }
-        }
-        diffHtml += `<div style="margin-bottom:16px"><strong style="color:var(--accent)">Page ${i} — changed</strong><div style="margin-top:6px;color:var(--text)">${highlighted}</div></div>`;
-      } else {
-        diffHtml += `<div style="margin-bottom:8px;color:var(--muted)">Page ${i} — identical</div>`;
-      }
-    }
-
-    setP(100, 'Done');
-    const result = document.getElementById('cmp-result');
-    result.innerHTML = `<div style="margin-bottom:12px;font-weight:700;color:var(--text)">${diffCount} page(s) with differences out of ${maxPages}</div>` + diffHtml;
-    result.style.display = 'block';
-    trackRecent('comparepdf', 'Compare PDFs');
-  } catch (e) {
-    showErr('cmp-err', '⚠ ' + e.message);
-  }
-  document.getElementById('cmp-progress').style.display = 'none';
-  btn.disabled = false;
-}
-
-/* ═══════ FLATTEN PDF ═══════ */
-const FLAT_S = { file: null };
-function flatLoad(e) {
-  const f = (e.dataTransfer || e.target).files[0]; if (!f) return;
-  FLAT_S.file = f;
-  document.getElementById('flat-prompt').style.display = 'none';
-  const info = document.getElementById('flat-info');
-  info.style.display = 'block';
-  info.innerHTML = `<strong>${f.name}</strong> <span style="color:var(--muted)">(${(f.size/1024).toFixed(0)} KB)</span>`;
-  document.getElementById('flat-btn').disabled = false;
-}
-function flatDrop(e) { e.preventDefault(); e.currentTarget.classList.remove('drag'); flatLoad(e); }
-function flatClr() {
-  FLAT_S.file = null;
-  document.getElementById('flat-prompt').style.display = '';
-  document.getElementById('flat-info').style.display = 'none';
-  document.getElementById('flat-btn').disabled = true;
-  document.getElementById('flat-rb').classList.remove('show');
-}
-async function runFlattenPdf() {
-  if (!FLAT_S.file) return;
-  const btn = document.getElementById('flat-btn');
-  btn.disabled = true;
-  document.getElementById('flat-progress').style.display = 'block';
-  document.getElementById('flat-rb').classList.remove('show');
-  const setP = (p, lbl) => {
-    document.getElementById('flat-pf').style.width = p + '%';
-    document.getElementById('flat-pp').textContent = Math.round(p) + '%';
-    if (lbl) document.getElementById('flat-prog-label').textContent = lbl;
-  };
-  try {
-    setP(10, 'Loading PDF…');
-    const ab = await FLAT_S.file.arrayBuffer();
-    const pdf = await loadPJ(new Uint8Array(ab));
-    const { PDFDocument } = PDFLib;
-    const newDoc = await PDFDocument.create();
-
-    for (let i = 1; i <= pdf.numPages; i++) {
-      setP(10 + (i / pdf.numPages) * 75, `Flattening page ${i}/${pdf.numPages}…`);
-      const page = await pdf.getPage(i);
-      const vp = page.getViewport({ scale: 2 });
-      const canvas = document.createElement('canvas');
-      canvas.width = vp.width; canvas.height = vp.height;
-      await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
-      const jpgData = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.95));
-      const img = await newDoc.embedJpg(await jpgData.arrayBuffer());
-      const origVp = page.getViewport({ scale: 1 });
-      const p = newDoc.addPage([origVp.width, origVp.height]);
-      p.drawImage(img, { x: 0, y: 0, width: origVp.width, height: origVp.height });
-    }
-
-    setP(90, 'Saving…');
-    const pdfBytes = await newDoc.save();
-    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    const name = FLAT_S.file.name.replace(/\.pdf$/i, '_flat.pdf');
-    saveAs(blob, name);
-    setP(100, 'Done');
-    document.getElementById('flat-rm').textContent = `${pdf.numPages} page(s) · ${(blob.size / 1024).toFixed(0)} KB`;
-    showRes('flat-rb');
-    trackRecent('flattenpdf', 'Flatten PDF');
-  } catch (e) {
-    showErr('flat-err', '⚠ ' + e.message);
-  }
-  document.getElementById('flat-progress').style.display = 'none';
-  btn.disabled = false;
-}
-
-/* ═══════ PAGE NUMBERS ═══════ */
-const PGN_S = { file: null };
-function pgnLoad(e) {
-  const f = (e.dataTransfer || e.target).files[0]; if (!f) return;
-  PGN_S.file = f;
-  document.getElementById('pgn-prompt').style.display = 'none';
-  const info = document.getElementById('pgn-info');
-  info.style.display = 'block';
-  info.innerHTML = `<strong>${f.name}</strong> <span style="color:var(--muted)">(${(f.size/1024).toFixed(0)} KB)</span>`;
-  document.getElementById('pgn-btn').disabled = false;
-}
-function pgnDrop(e) { e.preventDefault(); e.currentTarget.classList.remove('drag'); pgnLoad(e); }
-function pgnClr() {
-  PGN_S.file = null;
-  document.getElementById('pgn-prompt').style.display = '';
-  document.getElementById('pgn-info').style.display = 'none';
-  document.getElementById('pgn-btn').disabled = true;
-  document.getElementById('pgn-rb').classList.remove('show');
-}
-async function runPageNumbers() {
-  if (!PGN_S.file) return;
-  const btn = document.getElementById('pgn-btn');
-  btn.disabled = true;
-  document.getElementById('pgn-progress').style.display = 'block';
-  document.getElementById('pgn-rb').classList.remove('show');
-  const setP = (p, lbl) => {
-    document.getElementById('pgn-pf').style.width = p + '%';
-    document.getElementById('pgn-pp').textContent = Math.round(p) + '%';
-    if (lbl) document.getElementById('pgn-prog-label').textContent = lbl;
-  };
-  try {
-    setP(10, 'Loading PDF…');
-    const ab = await PGN_S.file.arrayBuffer();
-    const { PDFDocument, rgb, StandardFonts } = PDFLib;
-    const pdfDoc = await PDFDocument.load(ab);
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    const pages = pdfDoc.getPages();
-    const pos = document.getElementById('pgn-pos').value;
-    const fmt = document.getElementById('pgn-fmt').value;
-    const startNum = parseInt(document.getElementById('pgn-start').value) || 1;
-    const fontSize = 10;
-    const margin = 30;
-
-    for (let i = 0; i < pages.length; i++) {
-      setP(10 + (i / pages.length) * 80, `Page ${i + 1}/${pages.length}…`);
-      const page = pages[i];
-      const { width, height } = page.getSize();
-      const num = startNum + i;
-      let label = '';
-      if (fmt === 'num') label = String(num);
-      else if (fmt === 'pof') label = `Page ${num} of ${pages.length + startNum - 1}`;
-      else if (fmt === 'dash') label = `— ${num} —`;
-      const textW = font.widthOfTextAtSize(label, fontSize);
-      let x, y;
-      if (pos.startsWith('bottom')) y = margin;
-      else y = height - margin;
-      if (pos.endsWith('center')) x = (width - textW) / 2;
-      else if (pos.endsWith('right')) x = width - margin - textW;
-      else x = margin;
-      page.drawText(label, { x, y, size: fontSize, font, color: rgb(0.4, 0.4, 0.4) });
-    }
-
-    setP(95, 'Saving…');
-    const pdfBytes = await pdfDoc.save();
-    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    saveAs(blob, PGN_S.file.name.replace(/\.pdf$/i, '_numbered.pdf'));
-    setP(100, 'Done');
-    document.getElementById('pgn-rm').textContent = `${pages.length} page(s) numbered`;
-    showRes('pgn-rb');
-    trackRecent('pagenumbers', 'Page Numbers');
-  } catch (e) {
-    showErr('pgn-err', '⚠ ' + e.message);
-  }
-  document.getElementById('pgn-progress').style.display = 'none';
-  btn.disabled = false;
-}
-
-/* ═══════ HEADER / FOOTER ═══════ */
-const HF_S = { file: null };
-function hfLoad(e) {
-  const f = (e.dataTransfer || e.target).files[0]; if (!f) return;
-  HF_S.file = f;
-  document.getElementById('hf-prompt').style.display = 'none';
-  const info = document.getElementById('hf-info');
-  info.style.display = 'block';
-  info.innerHTML = `<strong>${f.name}</strong> <span style="color:var(--muted)">(${(f.size/1024).toFixed(0)} KB)</span>`;
-  document.getElementById('hf-btn').disabled = false;
-}
-function hfDrop(e) { e.preventDefault(); e.currentTarget.classList.remove('drag'); hfLoad(e); }
-function hfClr() {
-  HF_S.file = null;
-  document.getElementById('hf-prompt').style.display = '';
-  document.getElementById('hf-info').style.display = 'none';
-  document.getElementById('hf-btn').disabled = true;
-  document.getElementById('hf-rb').classList.remove('show');
-}
-async function runHeaderFooter() {
-  if (!HF_S.file) return;
-  const headerText = document.getElementById('hf-header').value.trim();
-  const footerText = document.getElementById('hf-footer').value.trim();
-  if (!headerText && !footerText) return toast('Enter header or footer text');
-  const btn = document.getElementById('hf-btn');
-  btn.disabled = true;
-  document.getElementById('hf-progress').style.display = 'block';
-  document.getElementById('hf-rb').classList.remove('show');
-  const setP = (p, lbl) => {
-    document.getElementById('hf-pf').style.width = p + '%';
-    document.getElementById('hf-pp').textContent = Math.round(p) + '%';
-    if (lbl) document.getElementById('hf-prog-label').textContent = lbl;
-  };
-  try {
-    setP(10, 'Loading PDF…');
-    const ab = await HF_S.file.arrayBuffer();
-    const { PDFDocument, rgb, StandardFonts } = PDFLib;
-    const pdfDoc = await PDFDocument.load(ab);
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    const pages = pdfDoc.getPages();
-    const fontSize = parseInt(document.getElementById('hf-size').value) || 9;
-    const align = document.getElementById('hf-align').value;
-    const margin = 30;
-
-    for (let i = 0; i < pages.length; i++) {
-      setP(10 + (i / pages.length) * 80, `Page ${i + 1}/${pages.length}…`);
-      const page = pages[i];
-      const { width, height } = page.getSize();
-      const getX = (text) => {
-        const tw = font.widthOfTextAtSize(text, fontSize);
-        if (align === 'center') return (width - tw) / 2;
-        if (align === 'right') return width - margin - tw;
-        return margin;
-      };
-      if (headerText) {
-        page.drawText(headerText, { x: getX(headerText), y: height - margin, size: fontSize, font, color: rgb(0.4, 0.4, 0.4) });
-      }
-      if (footerText) {
-        page.drawText(footerText, { x: getX(footerText), y: margin - fontSize, size: fontSize, font, color: rgb(0.4, 0.4, 0.4) });
-      }
-    }
-
-    setP(95, 'Saving…');
-    const pdfBytes = await pdfDoc.save();
-    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    saveAs(blob, HF_S.file.name.replace(/\.pdf$/i, '_hf.pdf'));
-    setP(100, 'Done');
-    document.getElementById('hf-rm').textContent = `${pages.length} page(s) · header/footer added`;
-    showRes('hf-rb');
-    trackRecent('headerfooter', 'Header / Footer');
-  } catch (e) {
-    showErr('hf-err', '⚠ ' + e.message);
-  }
-  document.getElementById('hf-progress').style.display = 'none';
-  btn.disabled = false;
-}
-
-/* ═══════ GRAYSCALE PDF ═══════ */
-const GRAY_S = { file: null };
-function grayLoad(e) {
-  const f = (e.dataTransfer || e.target).files[0]; if (!f) return;
-  GRAY_S.file = f;
-  document.getElementById('gray-prompt').style.display = 'none';
-  const info = document.getElementById('gray-info');
-  info.style.display = 'block';
-  info.innerHTML = `<strong>${f.name}</strong> <span style="color:var(--muted)">(${(f.size/1024).toFixed(0)} KB)</span>`;
-  document.getElementById('gray-btn').disabled = false;
-}
-function grayDrop(e) { e.preventDefault(); e.currentTarget.classList.remove('drag'); grayLoad(e); }
-function grayClr() {
-  GRAY_S.file = null;
-  document.getElementById('gray-prompt').style.display = '';
-  document.getElementById('gray-info').style.display = 'none';
-  document.getElementById('gray-btn').disabled = true;
-  document.getElementById('gray-rb').classList.remove('show');
-}
-async function runGrayscalePdf() {
-  if (!GRAY_S.file) return;
-  const btn = document.getElementById('gray-btn');
-  btn.disabled = true;
-  document.getElementById('gray-progress').style.display = 'block';
-  document.getElementById('gray-rb').classList.remove('show');
-  const setP = (p, lbl) => {
-    document.getElementById('gray-pf').style.width = p + '%';
-    document.getElementById('gray-pp').textContent = Math.round(p) + '%';
-    if (lbl) document.getElementById('gray-prog-label').textContent = lbl;
-  };
-  try {
-    setP(10, 'Loading PDF…');
-    const ab = await GRAY_S.file.arrayBuffer();
-    const pdf = await loadPJ(new Uint8Array(ab));
-    const { PDFDocument } = PDFLib;
-    const newDoc = await PDFDocument.create();
-
-    for (let i = 1; i <= pdf.numPages; i++) {
-      setP(10 + (i / pdf.numPages) * 75, `Converting page ${i}/${pdf.numPages}…`);
-      const page = await pdf.getPage(i);
-      const vp = page.getViewport({ scale: 2 });
-      const canvas = document.createElement('canvas');
-      canvas.width = vp.width; canvas.height = vp.height;
-      const ctx = canvas.getContext('2d');
-      await page.render({ canvasContext: ctx, viewport: vp }).promise;
-      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const d = imgData.data;
-      for (let px = 0; px < d.length; px += 4) {
-        const gray = Math.round(d[px] * 0.299 + d[px + 1] * 0.587 + d[px + 2] * 0.114);
-        d[px] = d[px + 1] = d[px + 2] = gray;
-      }
-      ctx.putImageData(imgData, 0, 0);
-      const jpgData = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.92));
-      const img = await newDoc.embedJpg(await jpgData.arrayBuffer());
-      const origVp = page.getViewport({ scale: 1 });
-      const p = newDoc.addPage([origVp.width, origVp.height]);
-      p.drawImage(img, { x: 0, y: 0, width: origVp.width, height: origVp.height });
-    }
-
-    setP(95, 'Saving…');
-    const pdfBytes = await newDoc.save();
-    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    saveAs(blob, GRAY_S.file.name.replace(/\.pdf$/i, '_grayscale.pdf'));
-    setP(100, 'Done');
-    document.getElementById('gray-rm').textContent = `${pdf.numPages} page(s) · ${(blob.size / 1024).toFixed(0)} KB`;
-    showRes('gray-rb');
-    trackRecent('grayscalepdf', 'Grayscale PDF');
-  } catch (e) {
-    showErr('gray-err', '⚠ ' + e.message);
-  }
-  document.getElementById('gray-progress').style.display = 'none';
   btn.disabled = false;
 }
 
@@ -36857,7 +36506,7 @@ async function signPreviewPage() {
 
   try {
     const bytes = await readBytes(S.signFile);
-    const pj = await pdfjsLib.getDocument({data: bytes}).promise;
+    const pj = await pdfjsLib.getDocument({data:bytes.slice()}).promise;
     const totalPages = pj.numPages;
     document.getElementById('sign-pagecount').textContent = totalPages;
     document.getElementById('sign-page').max = totalPages;
@@ -37344,7 +36993,7 @@ async function edittextRenderPage() {
 
   try {
     const bytes = await readBytes(ET.file);
-    ET.pjDoc = ET.pjDoc || await pdfjsLib.getDocument({data: bytes}).promise;
+    ET.pjDoc = ET.pjDoc || await pdfjsLib.getDocument({data:bytes.slice()}).promise;
     ET.totalPages = ET.pjDoc.numPages;
     document.getElementById('edittext-pagecount').textContent = ET.totalPages;
     document.getElementById('edittext-pagenum').textContent = ET.pageNum;
@@ -37792,7 +37441,7 @@ async function pdfToMarkdown(file, opts = {}) {
   const useBold     = document.getElementById('pdftomd-bold')?.checked !== false;
 
   const bytes = await readBytes(file);
-  const pj    = await pdfjsLib.getDocument({ data: bytes }).promise;
+  const pj    = await pdfjsLib.getDocument({data:bytes.slice()}).promise;
   const total = Math.min(pj.numPages, maxPages);
 
   // Collect all text items with metadata
@@ -37922,7 +37571,7 @@ async function pdfToMarkdown(file, opts = {}) {
   const useBold     = document.getElementById('pdftomd-bold')?.checked !== false;
 
   const bytes = await readBytes(file);
-  const pj    = await pdfjsLib.getDocument({ data: bytes }).promise;
+  const pj    = await pdfjsLib.getDocument({data:bytes.slice()}).promise;
   const total = Math.min(pj.numPages, maxPages);
 
   // Collect all text items with metadata
@@ -38200,7 +37849,7 @@ async function runMdToPdf() {
     setP('mdtopdf-pf','mdtopdf-pp', 20, 'Building PDF…');
 
     // Parse markdown into tokens
-    const tokens = parseMarkdownTokens(text);
+    const _wa=s=>s.replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"').replace(/[\u2013\u2014]/g,'-').replace(/\u2026/g,'...').replace(/\u2022/g,'*').replace(/[\u2192]/g,'->').replace(/[^\n\r\t\x20-\x7E\xA0-\xFF]/g,'?'); const tokens = parseMarkdownTokens(_wa(text));
 
     // Create PDF
     const doc  = await PDFDocument.create();
@@ -38537,7 +38186,7 @@ async function rbLoad(f) {
   // Preview: count blank pages
   try {
     const bytes = await readBytes(f);
-    const pj = await pdfjsLib.getDocument({data: bytes}).promise;
+    const pj = await pdfjsLib.getDocument({data:bytes.slice()}).promise;
     const total = pj.numPages;
     const blanks = await detectBlankPages(pj, 'strict');
     const info = document.getElementById('rb-preview-info');
@@ -38590,7 +38239,7 @@ async function runRemoveBlanks() {
 
     setP('rb-pf','rb-pp', 10, 'Loading PDF…');
     const bytes = await readBytes(RB.file);
-    const pj  = await pdfjsLib.getDocument({data: bytes}).promise;
+    const pj  = await pdfjsLib.getDocument({data:bytes.slice()}).promise;
     const doc = await PDFDocument.load(bytes);
     const total = pj.numPages;
 
