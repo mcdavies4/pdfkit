@@ -4910,7 +4910,7 @@ if(typeof window.trackEvent==='undefined') window.trackEvent=function(){};
     ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
     ondragleave="this.style.borderColor=''"
     ondrop="event.preventDefault();this.style.borderColor='';i2pAddFiles(event.dataTransfer.files)">
-    <input type="file" id="i2p-in" accept="image/*" multiple onchange="i2pAddFiles(this.files)" onclick="event.stopPropagation()">
+    <input type="file" id="i2p-in" accept="image/*,.heic,.heif" multiple onchange="i2pAddFiles(this.files)" onclick="event.stopPropagation()">
     <div class="di">🖼</div>
     <h3>Drop images here</h3>
     <p>JPG, PNG, WebP, GIF — click to browse or drop multiple files</p>
@@ -33535,7 +33535,7 @@ function aiCmdLoad(f) { _load(f, 'aiCmdFile', 'ai-file-fd', 'ai-run-btn'); }
 function i2pAddFiles(files) {
   if (files && files.length > 0) {
     Array.from(files).forEach(f => {
-      if (f.type.startsWith('image/')) S.i2pFiles.push(f);
+      if ((f.type||'').startsWith('image/') || /\.(heic|heif|jpe?g|png|webp|gif|bmp)$/i.test(f.name||'')) S.i2pFiles.push(f);
     });
   }
   // Update UI
@@ -34396,23 +34396,57 @@ async function runNup() {
     fin(()=>{ dlBytes(res,S.nupFile.name.replace(/\.pdf$/i,'')+'_'+n+'up.pdf'); showRes('nup-rb',embedded.length+' pages arranged onto '+out.getPageCount()+' sheets ('+fmt(res.length)+')'); toast('N-up created!'); btn.disabled=false; });
   } catch(e){ fin(()=>{}); showErr('nup-err',e.message); btn.disabled=false; }
 }
+let _heicProm=null;
+function _loadHeic(){
+  if(window.heic2any) return Promise.resolve();
+  if(_heicProm) return _heicProm;
+  _heicProm=new Promise((res,rej)=>{const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js';sc.onload=()=>res();sc.onerror=()=>{_heicProm=null;rej(new Error('Could not load the HEIC converter. Check your connection and try again.'));};document.head.appendChild(sc);});
+  return _heicProm;
+}
+function _isHeic(f){return /\.(heic|heif)$/i.test(f.name||'')||/image\/hei[cf]/i.test(f.type||'');}
+async function _imgToEmbeddable(file,q){
+  const isJpg=/image\/jpe?g/i.test(file.type)||/\.jpe?g$/i.test(file.name);
+  const isPng=/image\/png/i.test(file.type)||/\.png$/i.test(file.name);
+  if(isJpg&&q>=1) return {kind:'jpg',bytes:await readBytes(file)};
+  if(isPng) return {kind:'png',bytes:await readBytes(file)};
+  let blob=file;
+  if(_isHeic(file)){
+    try{ const bm=await createImageBitmap(file); bm.close(); }
+    catch(_){ await _loadHeic(); const r=await heic2any({blob:file,toType:'image/jpeg',quality:0.95}); blob=Array.isArray(r)?r[0]:r; }
+  }
+  const bm=await createImageBitmap(blob);
+  const cv=document.createElement('canvas'); cv.width=bm.width; cv.height=bm.height;
+  const cx=cv.getContext('2d'); cx.fillStyle='#fff'; cx.fillRect(0,0,cv.width,cv.height); cx.drawImage(bm,0,0); bm.close();
+  const out=await new Promise(r=>cv.toBlob(r,'image/jpeg',Math.min(q||0.92,0.98)));
+  return {kind:'jpg',bytes:new Uint8Array(await out.arrayBuffer())};
+}
 async function runImg2Pdf() {
   if (!S.i2pFiles.length) return toast('Add images first');
   const btn=document.getElementById('i2p-btn'); btn.disabled=true;
   const fin=animProg('i2p-pf','i2p-pp','i2p-pw');
   try {
     const doc=await PDFDocument.create();
+    const sizes={a4:[595.28,841.89],letter:[612,792],a3:[841.89,1190.55]};
+    const q=S.i2pQuality||0.92, fit=S.i2pFit||'fit', orient=S.i2pOrient||'auto', size=S.i2pSize||'a4';
     for(const file of S.i2pFiles){
-      const bytes=await readBytes(file); let img;
-      if(file.type==='image/jpeg'||file.type==='image/jpg') img=await doc.embedJpg(bytes); else img=await doc.embedPng(bytes);
-      const sizes={a4:[595,842],letter:[612,792],a3:[842,1191]}; const [pw,ph]=sizes[S.i2pSize]||[595,842];
-      const page=doc.addPage([pw,ph]); const {width:iw,height:ih}=img.scale(1);
-      let dw=pw-40,dh=(ih/iw)*dw; if(dh>ph-40){dh=ph-40;dw=(iw/ih)*dh;}
+      const em=await _imgToEmbeddable(file,q);
+      const img=em.kind==='png'?await doc.embedPng(em.bytes):await doc.embedJpg(em.bytes);
+      const iw=img.width, ih=img.height;
+      let pw,ph,pad;
+      if(size==='match'){ pw=iw*0.75; ph=ih*0.75; pad=0; }
+      else { [pw,ph]=sizes[size]||sizes.a4; pad=20;
+        const land = orient==='landscape' || (orient==='auto' && iw>ih);
+        if(land) [pw,ph]=[Math.max(pw,ph),Math.min(pw,ph)]; else [pw,ph]=[Math.min(pw,ph),Math.max(pw,ph)]; }
+      const page=doc.addPage([pw,ph]);
+      const aw=pw-2*pad, ah=ph-2*pad;
+      let dw,dh;
+      if(size==='match'||fit==='stretch'){ dw=aw; dh=ah; }
+      else { const sc=fit==='fill'?Math.max(aw/iw,ah/ih):Math.min(aw/iw,ah/ih); dw=iw*sc; dh=ih*sc; }
       page.drawImage(img,{x:(pw-dw)/2,y:(ph-dh)/2,width:dw,height:dh});
     }
     const out=await doc.save();
-    fin(()=>{ dlBytes(out,'images.pdf'); showRes('i2p-rb',S.i2pFiles.length+' image(s) → PDF'); toast('PDF created!'); });
-  } catch(e){ fin(()=>{}); showErr('i2p-err',e.message); btn.disabled=false; }
+    fin(()=>{ const n=S.i2pFiles.length; const base=n===1?S.i2pFiles[0].name.replace(/\.[^.]+$/,''):'images'; dlBytes(out,base+'.pdf'); showRes('i2p-rb',n+' image(s) converted to PDF ('+fmt(out.length)+')'); toast('PDF created!'); btn.disabled=false; });
+  } catch(e){ fin(()=>{}); showErr('i2p-err',(e&&e.message)||'Could not read one of the images'); btn.disabled=false; }
 }
 async function _zipRead(buf,name){
   const dv=new DataView(buf.buffer,buf.byteOffset,buf.byteLength);
